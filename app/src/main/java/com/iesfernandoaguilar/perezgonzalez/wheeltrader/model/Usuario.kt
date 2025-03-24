@@ -10,5 +10,6 @@ data class Usuario(
     val correo: String,
     val correoPP: String,
     val rol: String,
-    val estado: String
+    val estado: String,
+    val salt: String
 )

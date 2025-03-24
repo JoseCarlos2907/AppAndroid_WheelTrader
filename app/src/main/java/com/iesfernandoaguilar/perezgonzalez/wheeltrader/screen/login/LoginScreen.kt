@@ -21,6 +21,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -31,42 +32,33 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.WheelTraderScreens
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screen.ConectionViewModel
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.ui.theme.customColorLight
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.io.FileInputStream
-import java.io.InputStreamReader
-import java.util.Properties
+import kotlinx.coroutines.withContext
 
 @RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun LoginScreen(
-    conectionViewModel: ConectionViewModel = viewModel(),
-    loginViewModel: LoginViewModel = viewModel(),
-    context: Context = LocalContext.current,
+    navController: NavHostController,
+    conectionViewModel: ConectionViewModel,
+    loginViewModel: LoginViewModel = LoginViewModel(
+        conectionViewModel = conectionViewModel
+    ),
     modifier: Modifier = Modifier
 ) {
 
     val loginUiState by loginViewModel.uiState.collectAsState()
     val conectionUiState by conectionViewModel.uiState.collectAsState()
 
-    val properties = Properties()
-    val assetManager = context.assets
-
-    properties.load(InputStreamReader(assetManager.open("conf.properties")))
-
-    conectionViewModel.viewModelScope.launch {
-        val address: String = properties.getProperty("ADDRESS")
-        val port: Int = Integer.parseInt(properties.getProperty("PORT"))
-
-        conectionViewModel.conectar(address, port)
-        Log.d("Login", "Conectando al servidor: " + conectionUiState.socket?.isConnected)
-
-        conectionViewModel.escucharDelServidor_Login(loginUiState.currentNombreUsuario, loginUiState.currentContrasenia)
+    loginViewModel.viewModelScope.launch(Dispatchers.IO) {
+        loginViewModel.confFlujos(conectionUiState.input, conectionUiState.output)
+        loginViewModel.escucharDelServidor_Login()
     }
-
-
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -156,12 +148,21 @@ fun LoginScreen(
 
                     Button(
                         onClick = {
-                            Log.d("Login", "Nombre usuario: ${loginUiState.currentNombreUsuario}")
-                            Log.d("Login", "Contraseña: ${loginUiState.currentContrasenia}")
-
-                            conectionViewModel.viewModelScope.launch {
-                                Log.d("Login", "Conexión: " + conectionUiState.socket?.port)
+                            // Lanzarlo en segundo plano
+                            loginViewModel.viewModelScope.launch(Dispatchers.IO) {
+                                // Proceso de comunicación entre la apliación y el servidor
+                                loginViewModel.iniciarSesion(loginUiState.currentNombreUsuario)
+                                // Espera a que llegue el objeto usuario
+                                Thread.sleep(3000)
+                                // Ejecuto la navegación en el hilo principal en caso de que el usuario se haya encontado en la base de datos
+                                withContext(Dispatchers.Main){
+                                    if(conectionUiState.usuario != null){
+                                        navController.navigate(WheelTraderScreens.Home.screenName)
+                                    }
+                                }
                             }
+
+
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
                     ) {

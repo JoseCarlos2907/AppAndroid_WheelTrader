@@ -6,6 +6,7 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Mensaje
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Usuario
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.utils.SecureUtils
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.utils.Serializador
 import kotlinx.coroutines.Dispatchers
@@ -21,67 +22,37 @@ import java.io.EOFException
 import java.net.Socket
 import java.util.Base64
 
-class ConectionViewModel: ViewModel() {
+class ConectionViewModel : ViewModel() {
     private var _uiState = MutableStateFlow(ConectionUiState())
     val uiState: StateFlow<ConectionUiState> = _uiState.asStateFlow()
 
-    fun conectar(address: String, port: Int){
-        viewModelScope.launch(Dispatchers.IO) {
-            val socket = Socket(address, port)
-            _uiState.value = _uiState.value.copy(
-                socket = socket,
-                input = socket.getInputStream(),
-                output = socket.getOutputStream()
-            )
-        }
-
+    fun conectar(address: String, port: Int) {
+        val socket = Socket(address, port)
+        _uiState.value = _uiState.value.copy(
+            socket = socket,
+            input = socket.getInputStream(),
+            output = socket.getOutputStream()
+        )
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun escucharDelServidor_Login(nombreUsuario: String, contrasenia: String){
-        var dis = DataInputStream(_uiState.value.input)
-        var dos = DataOutputStream(_uiState.value.output)
-        var iniciaSesion = false
-
-        var usuarioJSON: String = ""
-
-        var msgRespuesta = Mensaje()
-        while (!iniciaSesion){
-            try {
-                var linea: String = dis.readUTF()
-                var msgServidor: Mensaje = Serializador.decodificarMensaje(linea)
-
-                if ("ENVIA_SALT".equals(msgServidor.getTipo())){
-                    // TODO: Enviar la contaseña del usuario hasheada con el salt
-                    msgRespuesta = Mensaje()
-                    msgRespuesta.setTipo("INICIAR_SESION")
-                    msgRespuesta.addParam(nombreUsuario)
-                    msgRespuesta.addParam(SecureUtils.generate512(contrasenia, Base64.getDecoder().decode(msgServidor.getParams().get(0))))
-                    dos.writeUTF(Serializador.codificarMensaje(msgRespuesta))
-                }else if("INICIA_SESION".equals(msgServidor.getTipo())){
-                    if("si".equals(msgServidor.getParams().get(0))){
-                        iniciaSesion = true
-                        usuarioJSON = msgServidor.getParams().get(1)
-                    }else if("no".equals(msgServidor.getParams().get(0))){
-                        // TODO: Mostrar que no coincide la contraseña
-                    }
-                }
-
-            } catch (e: EOFException){
-                Log.d("Login", e.message?: "Error")
-            }
-        }
-
-        // TODO: Guardar el usuario en la sesión y redirigir al usuario a la pantalla de bienvenido
-        Log.d("Login", usuarioJSON)
-    }
-
-    fun cerrarConexion(){
+    fun cerrarConexion() {
         _uiState.value = _uiState.value.copy(
             socket = null,
             input = null,
             output = null
         )
+    }
+
+    fun iniciarSesion(usu: Usuario){
+        _uiState.value = _uiState.value.copy(usuario = usu)
+    }
+
+    fun cerrarSesion(){
+        _uiState.value = _uiState.value.copy(usuario = null)
+    }
+
+    fun existeSesion(): Boolean{
+        return uiState.value.usuario != null
     }
 
 }
