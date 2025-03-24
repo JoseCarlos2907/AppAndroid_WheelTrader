@@ -2,7 +2,9 @@ package com.iesfernandoaguilar.perezgonzalez.wheeltrader.screen.login
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -36,6 +38,7 @@ import java.io.FileInputStream
 import java.io.InputStreamReader
 import java.util.Properties
 
+@RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun LoginScreen(
@@ -46,6 +49,7 @@ fun LoginScreen(
 ) {
 
     val loginUiState by loginViewModel.uiState.collectAsState()
+    val conectionUiState by conectionViewModel.uiState.collectAsState()
 
     val properties = Properties()
     val assetManager = context.assets
@@ -53,10 +57,15 @@ fun LoginScreen(
     properties.load(InputStreamReader(assetManager.open("conf.properties")))
 
     conectionViewModel.viewModelScope.launch {
-        conectionViewModel.conectar(properties.getProperty("ADDRESS"), Integer.parseInt(properties.getProperty("PORT")))
+        val address: String = properties.getProperty("ADDRESS")
+        val port: Int = Integer.parseInt(properties.getProperty("PORT"))
+
+        conectionViewModel.conectar(address, port)
+        Log.d("Login", "Conectando al servidor: " + conectionUiState.socket?.isConnected)
+
+        conectionViewModel.escucharDelServidor_Login(loginUiState.currentNombreUsuario, loginUiState.currentContrasenia)
     }
 
-    val conectionUiState by conectionViewModel.uiState.collectAsState()
 
 
     Column(

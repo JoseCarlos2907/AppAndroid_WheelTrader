@@ -6,33 +6,35 @@ import java.security.NoSuchAlgorithmException
 import java.security.SecureRandom
 
 class SecureUtils {
-    private fun bytesToHex(bytes: ByteArray): String {
-        val sb = StringBuilder()
-        for (b in bytes) sb.append(((b.toInt() and 0xff) + 0x100).toString(16).substring(1))
-        return sb.toString()
-    }
-
-    fun generate512(passwordToHash: String, salt: ByteArray?): String? {
-        // public static String generate512(String passwordToHash){
-        var generatedPassword: String? = null
-        try {
-            val md = MessageDigest.getInstance("SHA-512")
-            md.update(salt)
-            val byteOfTextToHash = passwordToHash.toByteArray(StandardCharsets.UTF_8)
-            val hashedByteArray = md.digest(byteOfTextToHash)
-
-            generatedPassword = bytesToHex(hashedByteArray)
-        } catch (e: NoSuchAlgorithmException) {
-            e.printStackTrace()
+    companion object{
+        private fun bytesToHex(bytes: ByteArray): String {
+            val sb = StringBuilder()
+            for (b in bytes) sb.append(((b.toInt() and 0xff) + 0x100).toString(16).substring(1))
+            return sb.toString()
         }
-        return generatedPassword
-    }
 
-    fun getSalt(): ByteArray {
-        val random = SecureRandom()
-        val salt = ByteArray(16)
-        random.nextBytes(salt)
-        return salt
+        fun generate512(passwordToHash: String, salt: ByteArray): String {
+            // public static String generate512(String passwordToHash){
+            var generatedPassword: String = ""
+            try {
+                val md = MessageDigest.getInstance("SHA-512")
+                md.update(salt)
+                val byteOfTextToHash = passwordToHash.toByteArray(StandardCharsets.UTF_8)
+                val hashedByteArray = md.digest(byteOfTextToHash)
+
+                generatedPassword = bytesToHex(hashedByteArray)
+            } catch (e: NoSuchAlgorithmException) {
+                e.printStackTrace()
+            }
+            return generatedPassword
+        }
+
+        fun getSalt(): ByteArray {
+            val random = SecureRandom()
+            val salt = ByteArray(16)
+            random.nextBytes(salt)
+            return salt
+        }
     }
 
     fun main() {
