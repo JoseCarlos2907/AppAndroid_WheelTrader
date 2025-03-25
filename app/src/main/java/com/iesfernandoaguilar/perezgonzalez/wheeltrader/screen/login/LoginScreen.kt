@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
 import android.util.Log
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -18,6 +19,9 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -30,9 +34,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.google.android.material.snackbar.Snackbar
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.WheelTraderScreens
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screen.ConectionViewModel
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.ui.theme.customColorLight
@@ -44,6 +50,7 @@ import kotlinx.coroutines.withContext
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun LoginScreen(
+    context: Context,
     navController: NavHostController,
     conectionViewModel: ConectionViewModel,
     loginViewModel: LoginViewModel = LoginViewModel(
@@ -56,7 +63,10 @@ fun LoginScreen(
     val conectionUiState by conectionViewModel.uiState.collectAsState()
 
     loginViewModel.viewModelScope.launch(Dispatchers.IO) {
-        loginViewModel.confFlujos(conectionUiState.input, conectionUiState.output)
+        loginViewModel.confFlujos(conectionUiState.input, conectionUiState.output, context)
+        loginViewModel.onError = { context, msg ->
+            Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
+        }
         loginViewModel.escucharDelServidor_Login()
     }
 

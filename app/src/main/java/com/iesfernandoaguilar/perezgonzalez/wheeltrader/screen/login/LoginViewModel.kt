@@ -1,6 +1,10 @@
 package com.iesfernandoaguilar.perezgonzalez.wheeltrader.screen.login
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.collectAsState
@@ -37,10 +41,14 @@ class LoginViewModel(
 
     private var dis: DataInputStream? = null
     private var dos: DataOutputStream? = null
+    lateinit var onError: ((Context, String) -> Unit)
+    @SuppressLint("StaticFieldLeak")
+    lateinit var context: Context
 
-    fun confFlujos(inputStream: InputStream?, outputStream: OutputStream?){
+    fun confFlujos(inputStream: InputStream?, outputStream: OutputStream?, context: Context){
         this.dis = DataInputStream(inputStream)
         this.dos = DataOutputStream(outputStream)
+        this.context = context
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -50,6 +58,8 @@ class LoginViewModel(
         var usuarioJSON = ""
 
         var msgRespuesta: Mensaje
+
+        val handler = Handler(Looper.getMainLooper())
         while (!iniciaSesion) {
             try {
                 var linea: String = this.dis?.readUTF()?: ""
@@ -73,7 +83,9 @@ class LoginViewModel(
                         iniciaSesion = true
                         usuarioJSON = msgServidor.getParams().get(1)
                     } else if ("no".equals(msgServidor.getParams().get(0))) {
-                        // TODO: Mostrar que no coincide la contraseña
+                        handler.post{
+                            onError.invoke(context, "Credenciales incorrectas")
+                        }
                     }
                 }
 
@@ -93,14 +105,6 @@ class LoginViewModel(
         msg.setTipo("OBTENER_SALT")
         msg.addParam(nombre)
         this.dos?.writeUTF(Serializador.codificarMensaje(msg))
-    }
-
-    fun prueba() {
-        var i = 0
-        while (true) {
-            Thread.sleep(2000)
-            Log.d("Login", "Bucle: " + i++)
-        }
     }
 
     fun onNombreUsuarioChange(nombreUsuario: String){
