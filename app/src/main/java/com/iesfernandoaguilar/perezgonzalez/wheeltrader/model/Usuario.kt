@@ -1,15 +1,16 @@
 package com.iesfernandoaguilar.perezgonzalez.wheeltrader.model
 
 data class Usuario(
-    val id: Long,
-    val nombre: String,
-    val apellidos: String,
-    val dni: String,
-    val nombreUsuario: String,
-    val contrasenia: String,
-    val correo: String,
-    val correoPP: String,
-    val rol: String,
-    val estado: String,
-    val salt: String
+    var idUsuario: Long,
+    var nombre: String,
+    var apellidos: String,
+    var dni: String,
+    var direccion: String,
+    var nombreUsuario: String,
+    var contrasenia: String,
+    var correo: String,
+    var correoPP: String,
+    var rol: String,
+    var estado: String,
+    var salt: String
 )

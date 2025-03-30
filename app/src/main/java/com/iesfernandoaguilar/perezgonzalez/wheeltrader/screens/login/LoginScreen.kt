@@ -1,4 +1,4 @@
-package com.iesfernandoaguilar.perezgonzalez.wheeltrader.screen.login
+package com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.login
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -6,6 +6,7 @@ import android.os.Build
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -19,32 +20,42 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Snackbar
-import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
-import androidx.core.app.ActivityCompat
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.google.android.material.snackbar.Snackbar
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.WheelTraderScreens
-import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screen.ConectionViewModel
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.ConectionUiState
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.ConectionViewModel
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.registro.Reg1Screen
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.registro.Reg2Screen
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.registro.Reg3Screen
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.registro.Reg4Screen
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.ui.theme.customColorLight
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+
+enum class LoginScreens(val screenName: String){
+    Login(screenName = "login"),
+    Reg1(screenName = "reg1"),
+    Reg2(screenName = "reg2"),
+    Reg3(screenName = "reg3"),
+    Reg4(screenName = "reg4")
+}
 
 @RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("CoroutineCreationDuringComposition")
@@ -52,6 +63,7 @@ import kotlinx.coroutines.withContext
 fun LoginScreen(
     context: Context,
     navController: NavHostController,
+    loginNavController: NavHostController = rememberNavController(),
     conectionViewModel: ConectionViewModel,
     loginViewModel: LoginViewModel = LoginViewModel(
         conectionViewModel = conectionViewModel
@@ -70,10 +82,68 @@ fun LoginScreen(
         loginViewModel.escucharDelServidor_Login()
     }
 
+    NavHost(
+        navController = loginNavController,
+        startDestination = LoginScreens.Login.screenName,
+        modifier = modifier.fillMaxSize()
+    ){
+        composable(route = LoginScreens.Login.screenName){
+            LoginForm(
+                navController = navController,
+                loginNavController = loginNavController,
+                conectionUiState = conectionUiState,
+                loginUiState = loginUiState,
+                loginViewModel = loginViewModel,
+                modifier = modifier
+            )
+        }
+
+        composable(route = LoginScreens.Reg1.screenName){
+            Reg1Screen(
+                //loginNavController = loginNavController
+            )
+        }
+
+        composable(route = LoginScreens.Reg2.screenName){
+            Reg2Screen(
+                loginNavController = loginNavController
+            )
+        }
+
+        composable(route = LoginScreens.Reg3.screenName){
+            Reg3Screen(
+                loginNavController = loginNavController
+            )
+        }
+
+        composable(route = LoginScreens.Reg4.screenName){
+            Reg4Screen(
+                loginNavController = loginNavController
+            )
+        }
+    }
+
+}
+
+@Composable
+fun LoginForm(
+    navController: NavHostController,
+    loginNavController: NavHostController,
+    conectionUiState: ConectionUiState,
+    loginUiState: LoginUiState,
+    loginViewModel: LoginViewModel,
+    modifier: Modifier = Modifier
+){
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceAround,
-        modifier = modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize().background(
+            brush = Brush.linearGradient(
+                colors = listOf(Color.Black, Color(0xFF525151)),
+                start = Offset(0f, 0f),
+                end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
+            )
+        )
     ) {
         Row(
             horizontalArrangement = Arrangement.Center,
@@ -82,7 +152,8 @@ fun LoginScreen(
         ) {
             Text(
                 text = "Bienvenido",
-                style = MaterialTheme.typography.titleLarge
+                style = MaterialTheme.typography.titleLarge,
+                color = Color.White
             )
         }
 
@@ -92,7 +163,7 @@ fun LoginScreen(
             modifier = Modifier.weight(0.6F)
         ) {
             Card(
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
                 modifier = Modifier.fillMaxSize().padding(20.dp)
             ) {
                 Column(
@@ -103,7 +174,7 @@ fun LoginScreen(
                     Text(
                         text = "Iniciar Sesión",
                         style = MaterialTheme.typography.titleLarge,
-                        color = Color(0x00FF1c1c1c)
+                        color = MaterialTheme.colorScheme.primary
                     )
 
                     OutlinedTextField(
@@ -174,20 +245,21 @@ fun LoginScreen(
 
 
                         },
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                     ) {
                         Text(
                             text = "Iniciar Sesión",
                             style = MaterialTheme.typography.labelMedium,
-                            color = Color(0xFF1c1c1c)
+                            color = Color.Black
                         )
                     }
 
                     Button(
                         onClick = {
-                            Log.d("Login", "Registrarse: Sin función")
+                            loginNavController.navigate(LoginScreens.Reg1.screenName)
+                            // Log.d("Login", "Registrarse: Sin función")
                         },
-                        colors = ButtonDefaults.buttonColors(containerColor = customColorLight)
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
                     ) {
                         Text(
                             text = "Registrarse",
@@ -208,7 +280,8 @@ fun LoginScreen(
                 text = "Recuperar contraseña",
                 style = MaterialTheme.typography.labelMedium,
                 textDecoration = TextDecoration.Underline,
-                modifier = Modifier.clickable { Log.d("Login", "Recuperar Contraseña: Sin función") }
+                modifier = Modifier.clickable { Log.d("Login", "Recuperar Contraseña: Sin función") },
+                color = Color.White
             )
         }
     }

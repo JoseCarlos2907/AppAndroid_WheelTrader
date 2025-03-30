@@ -1,7 +1,5 @@
-package com.iesfernandoaguilar.perezgonzalez.wheeltrader.screen.home
+package com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.home
 
-import android.content.Context
-import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,7 +9,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screen.ConectionViewModel
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.ConectionViewModel
 
 @Composable
 fun HomeScreen(

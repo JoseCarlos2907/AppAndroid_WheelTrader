@@ -1,4 +1,4 @@
-package com.iesfernandoaguilar.perezgonzalez.wheeltrader.screen
+package com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens
 
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Usuario
 import java.io.InputStream
