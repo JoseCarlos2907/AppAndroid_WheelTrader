@@ -16,7 +16,8 @@ class ConectionViewModel : ViewModel() {
         _uiState.value = _uiState.value.copy(
             socket = socket,
             input = socket.getInputStream(),
-            output = socket.getOutputStream()
+            output = socket.getOutputStream(),
+            usuario = null
         )
     }
 

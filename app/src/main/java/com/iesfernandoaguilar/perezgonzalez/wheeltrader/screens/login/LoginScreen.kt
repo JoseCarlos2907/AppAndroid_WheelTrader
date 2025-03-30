@@ -23,6 +23,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -38,6 +39,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.WheelTraderScreens
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Usuario
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.ConectionUiState
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.ConectionViewModel
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.registro.Reg1Screen
@@ -80,6 +82,12 @@ fun LoginScreen(
             Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
         }
         loginViewModel.escucharDelServidor_Login()
+    }
+
+    LaunchedEffect (conectionUiState.usuario) {
+        if (conectionUiState.usuario != null) {
+            navController.navigate(WheelTraderScreens.Home.screenName)
+        }
     }
 
     NavHost(
@@ -234,13 +242,15 @@ fun LoginForm(
                                 // Proceso de comunicación entre la apliación y el servidor
                                 loginViewModel.iniciarSesion(loginUiState.currentNombreUsuario)
                                 // Espera a que llegue el objeto usuario
-                                Thread.sleep(3000)
+                                // Thread.sleep(6000)
                                 // Ejecuto la navegación en el hilo principal en caso de que el usuario se haya encontado en la base de datos
-                                withContext(Dispatchers.Main){
+                                /*withContext(Dispatchers.Main){
+                                    Log.d("Login", "Contexto main")
                                     if(conectionUiState.usuario != null){
+                                        Log.d("Login", "No es Nulo")
                                         navController.navigate(WheelTraderScreens.Home.screenName)
                                     }
-                                }
+                                }*/
                             }
 
 

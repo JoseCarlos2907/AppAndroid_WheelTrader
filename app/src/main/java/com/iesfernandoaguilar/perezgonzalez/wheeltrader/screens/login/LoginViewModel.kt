@@ -98,8 +98,10 @@ class LoginViewModel(
 
         Log.d("Login", usuarioJSON)
 
+        var cadena = String() + usuarioJSON.toString()
+
         var mapper = jacksonObjectMapper()
-        conectionViewModel.iniciarSesion(mapper.readValue(usuarioJSON, Usuario::class.java))
+        conectionViewModel.iniciarSesion(mapper.readValue(cadena, Usuario::class.java))
     }
 
     fun iniciarSesion(nombre: String){
