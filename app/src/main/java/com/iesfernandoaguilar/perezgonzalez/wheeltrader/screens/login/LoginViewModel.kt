@@ -57,48 +57,42 @@ class LoginViewModel(
                 var linea: String = this.dis?.readUTF()?: ""
                 var msgServidor: Mensaje = Serializador.decodificarMensaje(linea)
 
-                when(msgServidor.getTipo()){
-                    "ENVIA_SALT" -> {
-                        //Log.d("Login","ENVIA_SALT")
-                        msgRespuesta = Mensaje()
-                        msgRespuesta.setTipo("INICIAR_SESION")
-                        msgRespuesta.addParam(_uiState.value.currentNombreUsuario)
-                        msgRespuesta.addParam(
-                            SecureUtils.generate512(
-                                _uiState.value.currentContrasenia,
-                                Base64.getDecoder().decode(msgServidor.getParams().get(0))
-                            )
+                var tipo = msgServidor.getTipo()
+                if("ENVIA_SALT".equals(tipo)){
+                    Log.d("Login","ENVIA_SALT")
+                    msgRespuesta = Mensaje()
+                    msgRespuesta.setTipo("INICIAR_SESION")
+                    msgRespuesta.addParam(_uiState.value.currentNombreUsuario)
+                    msgRespuesta.addParam(
+                        SecureUtils.generate512(
+                            _uiState.value.currentContrasenia,
+                            Base64.getDecoder().decode(msgServidor.getParams().get(0))
                         )
-                        this.dos?.writeUTF(Serializador.codificarMensaje(msgRespuesta))
-                    }
-
-                    "INICIA_SESION" -> {
-                        //Log.d("Login","INICIA_SESION")
-                        if ("si".equals(msgServidor.getParams().get(0))) {
-                            iniciaSesion = true
-                            usuarioJSON = msgServidor.getParams().get(1)
-                        } else if ("no".equals(msgServidor.getParams().get(0))) {
-                            handler.post{
-                                onError.invoke(context, "Credenciales incorrectas")
-                            }
+                    )
+                    this.dos?.writeUTF(Serializador.codificarMensaje(msgRespuesta))
+                }else if("INICIA_SESION".equals(tipo)){
+                    Log.d("Login","INICIA_SESION;"+msgServidor.getParams().get(0))
+                    if ("si".equals(msgServidor.getParams().get(0))) {
+                        iniciaSesion = true
+                        usuarioJSON = msgServidor.getParams().get(1)
+                    } else if ("no".equals(msgServidor.getParams().get(0))) {
+                        handler.post{
+                            onError.invoke(context, "Credenciales incorrectas")
                         }
                     }
+                }else if("DNI_EXISTE".equals(tipo)){
+                    // Avisar a la interfaz para cambiar de pantalla al paso 2
 
-                    "DNI_EXISTE" -> {
-                        // Avisar a la interfaz para cambiar de pantalla al paso 2
-                    }
+                }else if("USUARIO_EXISTE".equals(tipo)){
+                    // Avisar a la interfaz para cambiar de pantalla al paso 3
 
-                    "USUARIO_EXISTE" -> {
-                        // Avisar a la interfaz para cambiar de pantalla al paso 3
-                    }
+                }else if("USUARIO_REGISTRADO".equals(tipo)){
+                    // Avisar a la interfaz para cambiar de pantalla al paso 4
 
-                    "USUARIO_REGISTRADO" -> {
-                        // Avisar a la interfaz para cambiar de pantalla al paso 4
-                    }
                 }
-
             } catch (e: EOFException) {
                 Log.d("Login", e.message ?: "Error")
+                break;
             }
         }
 

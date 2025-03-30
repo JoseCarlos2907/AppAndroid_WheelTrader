@@ -39,7 +39,7 @@ import com.iesfernandoaguilar.perezgonzalez.wheeltrader.ui.theme.WheelTraderThem
 
 @Composable
 fun Reg1Screen(
-    //loginNavController: NavController,
+    loginNavController: NavController,
     //loginUiState: LoginUiState,
     //loginViewModel: LoginViewModel,
     modifier: Modifier = Modifier
@@ -121,7 +121,7 @@ fun Reg1Screen(
             ) {
                 Button(
                     onClick = {
-                        //loginNavController.navigate(LoginScreens.Login.screenName)
+                        loginNavController.navigate(LoginScreens.Reg2.screenName)
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                     modifier = Modifier.width(150.dp).height(40.dp)
@@ -136,7 +136,7 @@ fun Reg1Screen(
 
                 Button(
                     onClick = {
-                        //loginNavController.navigate(LoginScreens.Reg2.screenName)
+                        loginNavController.navigate(LoginScreens.Login.screenName)
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
                     modifier = Modifier.width(150.dp).height(40.dp)
@@ -195,10 +195,10 @@ fun textField(
     )
 }
 
-@Preview
+/*@Preview
 @Composable
 fun reg1ScreenPreview(){
     WheelTraderTheme {
         Reg1Screen()
     }
-}
+}*/

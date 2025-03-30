@@ -100,7 +100,7 @@ fun LoginScreen(
 
         composable(route = LoginScreens.Reg1.screenName){
             Reg1Screen(
-                //loginNavController = loginNavController
+                loginNavController = loginNavController
             )
         }
 
