@@ -1,5 +1,6 @@
 package com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.registro
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -126,8 +127,19 @@ fun Reg2Screen(
                 Button(
                     onClick = {
                         loginViewModel.viewModelScope.launch(Dispatchers.IO) {
-                            loginViewModel.comprobarNombreUsuYCorreo(loginUiState.nombreUsuario, loginUiState.correo)
+                            if (
+                                loginUiState.nombreUsuario.length < 1 ||
+                                loginUiState.correo.length < 1 ||
+                                loginUiState.correoPP.length < 1
+                            ) {
+                                loginViewModel.mostrarToast("Debe rellenar todos los campos")
+                            } else if (!loginUiState.correo.matches(Regex("^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\\.[a-zA-Z]{2,3}$"))) {
+                                loginViewModel.mostrarToast("El formato del correo es incorrecto")
+                            } else {
+                                loginViewModel.comprobarNombreUsuYCorreo(loginUiState.nombreUsuario, loginUiState.correo)
+                            }
                         }
+
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                     modifier = Modifier.width(150.dp).height(40.dp)

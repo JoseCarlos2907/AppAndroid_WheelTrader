@@ -1,6 +1,7 @@
 package com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.registro
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -34,6 +35,7 @@ import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.login.LoginScree
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.login.LoginUiState
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.login.LoginViewModel
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.ui.theme.WheelTraderTheme
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -161,9 +163,16 @@ fun Reg3Screen(
             ) {
                 Button(
                     onClick = {
-                        loginViewModel.viewModelScope.launch {
-                            loginViewModel.registrarUsuario()
+                        loginViewModel.viewModelScope.launch(Dispatchers.IO) {
+                            if (!loginUiState.contrasenia.matches(Regex("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{6,}$"))) {
+                                loginViewModel.mostrarToast("La contraseña no cumple los requisitos mínimos")
+                            } else if (loginUiState.contrasenia != loginUiState.confContra) {
+                                loginViewModel.mostrarToast("Las contraseñas no coinciden")
+                            } else {
+                                loginViewModel.registrarUsuario()
+                            }
                         }
+
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                     modifier = Modifier.width(150.dp).height(40.dp)

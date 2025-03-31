@@ -36,6 +36,7 @@ class LoginViewModel(
     lateinit var onError: ((Context, String) -> Unit)
     @SuppressLint("StaticFieldLeak")
     lateinit var context: Context
+    lateinit var handler: Handler
 
     fun confFlujos(inputStream: InputStream?, outputStream: OutputStream?, context: Context){
         this.dis = DataInputStream(inputStream)
@@ -51,7 +52,7 @@ class LoginViewModel(
 
         var msgRespuesta: Mensaje
 
-        val handler = Handler(Looper.getMainLooper())
+        this.handler = Handler(Looper.getMainLooper())
         while (!iniciaSesion) {
             try {
                 var linea: String = this.dis?.readUTF()?: ""
@@ -83,6 +84,9 @@ class LoginViewModel(
                 }else if("DNI_EXISTE".equals(tipo)){
                     if("si".equals(msgServidor.getParams().get(0))){
                         // Avisar a la interfaz que ya existe un usuario con ese dni
+                        handler.post{
+                            onError.invoke(context, "El DNI ya ha sido registrado")
+                        }
                     }else if("no".equals(msgServidor.getParams().get(0))){
                         _uiState.value = _uiState.value.copy(goToPaso2 = true)
                     }
@@ -90,6 +94,9 @@ class LoginViewModel(
                 }else if("USUARIO_EXISTE".equals(tipo)){
                     if("si".equals(msgServidor.getParams().get(0))){
                         // Avisar a la interfaz que ya existe un usuario con ese nombre de usuario o correo
+                        handler.post{
+                            onError.invoke(context, "El nombre de usuario o el correo ya ha sido registrado")
+                        }
                     }else if("no".equals(msgServidor.getParams().get(0))){
                         _uiState.value = _uiState.value.copy(goToPaso3 = true)
                     }
@@ -232,5 +239,11 @@ class LoginViewModel(
 
     fun reiniciarGoToPaso4(){
         _uiState.value = _uiState.value.copy(goToPaso4 = false)
+    }
+
+    fun mostrarToast(msg:String){
+        handler.post{
+            onError.invoke(context, msg)
+        }
     }
 }

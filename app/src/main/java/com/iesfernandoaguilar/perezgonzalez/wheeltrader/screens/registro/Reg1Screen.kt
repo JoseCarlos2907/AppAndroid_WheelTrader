@@ -1,5 +1,6 @@
 package com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.registro
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -144,12 +145,21 @@ fun Reg1Screen(
             ) {
                 Button(
                     onClick = {
-                        if(){
-
-                        }
                         loginViewModel.viewModelScope.launch(Dispatchers.IO) {
-                            loginViewModel.comprobarDNI(loginUiState.dni)
+                            if (
+                                loginUiState.nombre.length < 1 ||
+                                loginUiState.apellidos.length < 1 ||
+                                loginUiState.dni.length < 1 ||
+                                loginUiState.direccion.length < 1
+                            ) {
+                                loginViewModel.mostrarToast("Debe rellenar todos los campos")
+                            } else if (!loginUiState.dni.matches(Regex("^[0-9]{8}[A-Z]$"))) {
+                                loginViewModel.mostrarToast("El formato del dni es incorrecto")
+                            } else {
+                                loginViewModel.comprobarDNI(loginUiState.dni)
+                            }
                         }
+
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                     modifier = Modifier
