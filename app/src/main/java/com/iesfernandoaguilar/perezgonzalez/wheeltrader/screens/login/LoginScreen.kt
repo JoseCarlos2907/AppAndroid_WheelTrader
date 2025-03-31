@@ -84,6 +84,7 @@ fun LoginScreen(
         loginViewModel.escucharDelServidor_Login()
     }
 
+    // Controla que al iniciar sesión se cambie de ventana
     LaunchedEffect (conectionUiState.usuario) {
         if (conectionUiState.usuario != null) {
             navController.navigate(WheelTraderScreens.Home.screenName)
@@ -108,19 +109,25 @@ fun LoginScreen(
 
         composable(route = LoginScreens.Reg1.screenName){
             Reg1Screen(
-                loginNavController = loginNavController
+                loginNavController = loginNavController,
+                loginUiState = loginUiState,
+                loginViewModel = loginViewModel
             )
         }
 
         composable(route = LoginScreens.Reg2.screenName){
             Reg2Screen(
-                loginNavController = loginNavController
+                loginNavController = loginNavController,
+                loginUiState = loginUiState,
+                loginViewModel = loginViewModel
             )
         }
 
         composable(route = LoginScreens.Reg3.screenName){
             Reg3Screen(
-                loginNavController = loginNavController
+                loginNavController = loginNavController,
+                loginUiState = loginUiState,
+                loginViewModel = loginViewModel
             )
         }
 
@@ -241,19 +248,7 @@ fun LoginForm(
                             loginViewModel.viewModelScope.launch(Dispatchers.IO) {
                                 // Proceso de comunicación entre la apliación y el servidor
                                 loginViewModel.iniciarSesion(loginUiState.currentNombreUsuario)
-                                // Espera a que llegue el objeto usuario
-                                // Thread.sleep(6000)
-                                // Ejecuto la navegación en el hilo principal en caso de que el usuario se haya encontado en la base de datos
-                                /*withContext(Dispatchers.Main){
-                                    Log.d("Login", "Contexto main")
-                                    if(conectionUiState.usuario != null){
-                                        Log.d("Login", "No es Nulo")
-                                        navController.navigate(WheelTraderScreens.Home.screenName)
-                                    }
-                                }*/
                             }
-
-
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                     ) {
@@ -267,7 +262,6 @@ fun LoginForm(
                     Button(
                         onClick = {
                             loginNavController.navigate(LoginScreens.Reg1.screenName)
-                            // Log.d("Login", "Registrarse: Sin función")
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
                     ) {

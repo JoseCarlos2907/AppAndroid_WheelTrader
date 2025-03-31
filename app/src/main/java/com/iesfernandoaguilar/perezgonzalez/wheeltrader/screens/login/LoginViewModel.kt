@@ -81,14 +81,22 @@ class LoginViewModel(
                         }
                     }
                 }else if("DNI_EXISTE".equals(tipo)){
-                    // Avisar a la interfaz para cambiar de pantalla al paso 2
+                    if("si".equals(msgServidor.getParams().get(0))){
+                        // Avisar a la interfaz que ya existe un usuario con ese dni
+                    }else if("no".equals(msgServidor.getParams().get(0))){
+                        _uiState.value = _uiState.value.copy(goToPaso2 = true)
+                    }
 
                 }else if("USUARIO_EXISTE".equals(tipo)){
-                    // Avisar a la interfaz para cambiar de pantalla al paso 3
+                    if("si".equals(msgServidor.getParams().get(0))){
+                        // Avisar a la interfaz que ya existe un usuario con ese nombre de usuario o correo
+                    }else if("no".equals(msgServidor.getParams().get(0))){
+                        _uiState.value = _uiState.value.copy(goToPaso3 = true)
+                    }
 
                 }else if("USUARIO_REGISTRADO".equals(tipo)){
                     // Avisar a la interfaz para cambiar de pantalla al paso 4
-
+                    _uiState.value = _uiState.value.copy(goToPaso4 = true)
                 }
             } catch (e: EOFException) {
                 Log.d("Login", e.message ?: "Error")
@@ -111,33 +119,118 @@ class LoginViewModel(
         this.dos?.writeUTF(Serializador.codificarMensaje(msg))
     }
 
-    fun registroPaso1(dni: String){
+    fun comprobarDNI(dni: String){
         var msg = Mensaje()
         msg.setTipo("COMPROBAR_DNI")
         msg.addParam(dni)
         this.dos?.writeUTF(Serializador.codificarMensaje(msg))
     }
 
-    fun onRegistroPaso1Change(
-        nombre: String,
-        apellidos: String,
-        dni: String,
-        direccion: String
-    ){
-        var us = _uiState.value.usuarioRegistro
-        us?.nombre = nombre
-        us?.apellidos = apellidos
-        us?.dni = dni
-        us?.direccion = direccion
-
-        _uiState.value.copy(usuarioRegistro = us)
+    fun comprobarNombreUsuYCorreo(nombreUsuario: String, correo: String){
+        var msg = Mensaje()
+        msg.setTipo("COMPROBAR_NOMUSU_CORREO")
+        msg.addParam(nombreUsuario)
+        msg.addParam(correo)
+        this.dos?.writeUTF(Serializador.codificarMensaje(msg))
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun registrarUsuario(){
+        var salt: ByteArray = SecureUtils.getSalt()
+        var contraseniaHasheada: String = SecureUtils.generate512(_uiState.value.contrasenia, salt)
+
+        var usuario = Usuario(
+            nombre = _uiState.value.nombre,
+            apellidos = _uiState.value.apellidos,
+            dni = _uiState.value.dni,
+            direccion = _uiState.value.direccion,
+            nombreUsuario = _uiState.value.nombreUsuario,
+            contrasenia = contraseniaHasheada,
+            correo = _uiState.value.correo,
+            correoPP = _uiState.value.correoPP,
+            salt = Base64.getEncoder().encodeToString(salt)
+        )
+
+        var mapper = jacksonObjectMapper()
+        var msg = Mensaje()
+        msg.setTipo("REGISTRAR_USUARIO")
+        msg.addParam(mapper.writeValueAsString(usuario))
+        this.dos?.writeUTF(Serializador.codificarMensaje(msg))
+    }
+
+    fun limpiarRegistro(){
+        _uiState.value = _uiState.value.copy(
+            nombre = "",
+            apellidos = "",
+            dni = "",
+            direccion = "",
+
+            nombreUsuario = "",
+            correo = "",
+            correoPP = "",
+
+            contrasenia = "",
+            confContra = ""
+        )
+    }
+
+    // Login
     fun onNombreUsuarioChange(nombreUsuario: String){
         _uiState.value = _uiState.value.copy(currentNombreUsuario = nombreUsuario)
     }
 
     fun onContraseniaChange(contrasenia: String){
         _uiState.value = _uiState.value.copy(currentContrasenia = contrasenia)
+    }
+
+    // Registro paso 1
+    fun onNombreChange(nombre: String){
+        _uiState.value = _uiState.value.copy(nombre = nombre)
+    }
+
+    fun onApellidosChange(apellidos: String){
+        _uiState.value = _uiState.value.copy(apellidos = apellidos)
+    }
+
+    fun onDniChange(dni: String){
+        _uiState.value = _uiState.value.copy(dni = dni)
+    }
+
+    fun onDireccionChange(direccion: String){
+        _uiState.value = _uiState.value.copy(direccion = direccion)
+    }
+
+    fun reiniciarGoToPaso2(){
+        _uiState.value = _uiState.value.copy(goToPaso2 = false)
+    }
+
+    // Registro paso 2
+    fun onNombreUsuarioRegistroChange(nombreUsuario: String){
+        _uiState.value = _uiState.value.copy(nombreUsuario = nombreUsuario)
+    }
+
+    fun onCorreoChange(correo: String){
+        _uiState.value = _uiState.value.copy(correo = correo)
+    }
+
+    fun onCorreoPPChange(correoPP: String){
+        _uiState.value = _uiState.value.copy(correoPP = correoPP)
+    }
+
+    fun reiniciarGoToPaso3(){
+        _uiState.value = _uiState.value.copy(goToPaso3 = false)
+    }
+
+    // Registro paso 3
+    fun onContraseniaRegistroChange(contrasenia: String){
+        _uiState.value = _uiState.value.copy(contrasenia = contrasenia)
+    }
+
+    fun onConfContraChange(confContra: String){
+        _uiState.value = _uiState.value.copy(confContra = confContra)
+    }
+
+    fun reiniciarGoToPaso4(){
+        _uiState.value = _uiState.value.copy(goToPaso4 = false)
     }
 }

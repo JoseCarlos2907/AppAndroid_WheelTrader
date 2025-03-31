@@ -115,7 +115,6 @@ fun Reg4Screen(
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                     modifier = Modifier.width(160.dp).height(40.dp)
-
                 ) {
                     Text(
                         text = "Iniciar Sesión",

@@ -16,6 +16,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -24,16 +25,31 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.R
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.login.LoginScreens
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.login.LoginUiState
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.login.LoginViewModel
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.ui.theme.WheelTraderTheme
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @Composable
 fun Reg2Screen(
     loginNavController: NavController,
+    loginUiState: LoginUiState,
+    loginViewModel: LoginViewModel,
     modifier: Modifier = Modifier
 ){
+    loginViewModel.reiniciarGoToPaso3()
+
+    LaunchedEffect(loginUiState.goToPaso3) {
+        if(loginUiState.goToPaso3){
+            loginNavController.navigate(LoginScreens.Reg3.screenName)
+        }
+    }
+
     Column(
         verticalArrangement = Arrangement.SpaceEvenly,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -86,11 +102,11 @@ fun Reg2Screen(
                     verticalArrangement = Arrangement.SpaceEvenly,
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    textField(placeHolder = "Nombre de Usuario", value = ""){}
+                    textField(placeHolder = "Nombre de Usuario", value = loginUiState.nombreUsuario, onValueChange = { loginViewModel.onNombreUsuarioRegistroChange(it) })
 
-                    textField(placeHolder = "Correo", value = ""){}
+                    textField(placeHolder = "Correo", value = loginUiState.correo, onValueChange = { loginViewModel.onCorreoChange(it) })
 
-                    textField(placeHolder = "Correo de Paypal", value = ""){}
+                    textField(placeHolder = "Correo de Paypal", value = loginUiState.correoPP, onValueChange = { loginViewModel.onCorreoPPChange(it) })
 
                 }
             }
@@ -109,7 +125,9 @@ fun Reg2Screen(
             ) {
                 Button(
                     onClick = {
-                        loginNavController.navigate(LoginScreens.Reg3.screenName)
+                        loginViewModel.viewModelScope.launch(Dispatchers.IO) {
+                            loginViewModel.comprobarNombreUsuYCorreo(loginUiState.nombreUsuario, loginUiState.correo)
+                        }
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                     modifier = Modifier.width(150.dp).height(40.dp)

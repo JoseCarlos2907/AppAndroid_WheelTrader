@@ -1,7 +1,7 @@
 package com.iesfernandoaguilar.perezgonzalez.wheeltrader.model
 
 data class Usuario(
-    var idUsuario: Long,
+    var idUsuario: Long = -1,
     var nombre: String,
     var apellidos: String,
     var dni: String,
@@ -10,7 +10,7 @@ data class Usuario(
     var contrasenia: String,
     var correo: String,
     var correoPP: String,
-    var rol: String,
-    var estado: String,
+    var rol: String = "USUARIO",
+    var estado: String = "ACTIVO",
     var salt: String
 )

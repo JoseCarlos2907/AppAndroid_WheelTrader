@@ -1,5 +1,7 @@
 package com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.registro
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -16,6 +18,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -24,16 +27,32 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.R
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.login.LoginScreens
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.login.LoginUiState
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.login.LoginViewModel
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.ui.theme.WheelTraderTheme
+import kotlinx.coroutines.launch
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun Reg3Screen(
     loginNavController: NavController,
+    loginUiState: LoginUiState,
+    loginViewModel: LoginViewModel,
     modifier: Modifier = Modifier
 ) {
+    loginViewModel.reiniciarGoToPaso4()
+
+    LaunchedEffect(loginUiState.goToPaso4) {
+        if(loginUiState.goToPaso4){
+            loginViewModel.limpiarRegistro()
+            loginNavController.navigate(LoginScreens.Reg4.screenName)
+        }
+    }
+
     Column(
         verticalArrangement = Arrangement.SpaceEvenly,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -91,9 +110,9 @@ fun Reg3Screen(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier.weight(0.7f).fillMaxSize()
                     ) {
-                        textField(placeHolder = "Contraseña", value = ""){}
+                        textField(placeHolder = "Contraseña", value = loginUiState.contrasenia, onValueChange = { loginViewModel.onContraseniaRegistroChange(it) })
 
-                        textField(placeHolder = "Confirmar contraseña", value = ""){}
+                        textField(placeHolder = "Confirmar contraseña", value = loginUiState.confContra, onValueChange = { loginViewModel.onConfContraChange(it) })
                     }
 
                     Column(
@@ -142,7 +161,9 @@ fun Reg3Screen(
             ) {
                 Button(
                     onClick = {
-                        loginNavController.navigate(LoginScreens.Reg4.screenName)
+                        loginViewModel.viewModelScope.launch {
+                            loginViewModel.registrarUsuario()
+                        }
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                     modifier = Modifier.width(150.dp).height(40.dp)
