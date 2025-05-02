@@ -59,6 +59,9 @@ fun wheeltraderApp(
     Scaffold(
         topBar = {
             mainAppBar()
+        },
+        bottomBar = {
+            // TODO: Hacer una comprobación de si está iniciado sesión o no, en caso de que si, mostrar la barra inferior
         }
     ) { contentPadding ->
 
@@ -86,7 +89,7 @@ fun wheeltraderApp(
 
             composable(route = WheelTraderScreens.Home.screenName) {
                 HomeScreen(
-                    conectionViewModel = conectionViewModel
+                    // conectionViewModel = conectionViewModel
                 )
             }
         }
