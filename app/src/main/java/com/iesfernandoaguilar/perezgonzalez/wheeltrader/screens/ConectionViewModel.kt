@@ -12,13 +12,15 @@ class ConectionViewModel : ViewModel() {
     val uiState: StateFlow<ConectionUiState> = _uiState.asStateFlow()
 
     fun conectar(address: String, port: Int) {
-        val socket = Socket(address, port)
-        _uiState.value = _uiState.value.copy(
-            socket = socket,
-            input = socket.getInputStream(),
-            output = socket.getOutputStream(),
-            usuario = null
-        )
+        if(_uiState.value.socket == null){
+            val socket = Socket(address, port)
+            _uiState.value = _uiState.value.copy(
+                socket = socket,
+                input = socket.getInputStream(),
+                output = socket.getOutputStream(),
+                usuario = null
+            )
+        }
     }
 
     fun cerrarConexion() {

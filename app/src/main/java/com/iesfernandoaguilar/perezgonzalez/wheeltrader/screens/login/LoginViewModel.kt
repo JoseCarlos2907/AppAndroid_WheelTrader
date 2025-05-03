@@ -56,11 +56,12 @@ class LoginViewModel(
         while (!iniciaSesion) {
             try {
                 var linea: String = this.dis?.readUTF()?: ""
+                Log.d("Login", linea)
                 var msgServidor: Mensaje = Serializador.decodificarMensaje(linea)
 
                 var tipo = msgServidor.getTipo()
                 if("ENVIA_SALT".equals(tipo)){
-                    Log.d("Login","ENVIA_SALT")
+                    // Log.d("Login","ENVIA_SALT")
                     msgRespuesta = Mensaje()
                     msgRespuesta.setTipo("INICIAR_SESION")
                     msgRespuesta.addParam(_uiState.value.currentNombreUsuario)
@@ -71,8 +72,9 @@ class LoginViewModel(
                         )
                     )
                     this.dos?.writeUTF(Serializador.codificarMensaje(msgRespuesta))
+                    this.dos?.flush()
                 }else if("INICIA_SESION".equals(tipo)){
-                    Log.d("Login","INICIA_SESION;"+msgServidor.getParams().get(0))
+                    // Log.d("Login","INICIA_SESION;"+msgServidor.getParams().get(0))
                     if ("si".equals(msgServidor.getParams().get(0))) {
                         iniciaSesion = true
                         usuarioJSON = msgServidor.getParams().get(1)
@@ -111,7 +113,7 @@ class LoginViewModel(
             }
         }
 
-        Log.d("Login", usuarioJSON)
+        // Log.d("Login", usuarioJSON)
 
         var cadena = String() + usuarioJSON.toString()
 

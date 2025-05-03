@@ -20,6 +20,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -39,6 +40,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.WheelTraderScreens
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.mainAppBar
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.mainBottomBar
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Usuario
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.ConectionUiState
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.ConectionViewModel
@@ -87,57 +90,64 @@ fun LoginScreen(
     // Controla que al iniciar sesión se cambie de ventana
     LaunchedEffect (conectionUiState.usuario) {
         if (conectionUiState.usuario != null) {
-            navController.navigate(WheelTraderScreens.Home.screenName)
+            navController.navigate(WheelTraderScreens.App.screenName)
         }
     }
 
-    NavHost(
-        navController = loginNavController,
-        startDestination = LoginScreens.Login.screenName,
-        modifier = modifier.fillMaxSize()
-    ){
-        composable(route = LoginScreens.Login.screenName){
-            LoginForm(
-                navController = navController,
-                loginNavController = loginNavController,
-                conectionUiState = conectionUiState,
-                loginUiState = loginUiState,
-                loginViewModel = loginViewModel,
-                modifier = modifier
-            )
-        }
+    Scaffold(
+        topBar = {
+            mainAppBar()
+        },
+    ) { innerPadding ->
+        NavHost(
+            navController = loginNavController,
+            startDestination = LoginScreens.Login.screenName,
+            modifier = modifier.fillMaxSize().padding(innerPadding)
+        ){
+            composable(route = LoginScreens.Login.screenName){
+                LoginForm(
+                    navController = navController,
+                    loginNavController = loginNavController,
+                    conectionUiState = conectionUiState,
+                    loginUiState = loginUiState,
+                    loginViewModel = loginViewModel,
+                    modifier = modifier
+                )
+            }
 
-        composable(route = LoginScreens.Reg1.screenName){
-            Reg1Screen(
-                loginNavController = loginNavController,
-                loginUiState = loginUiState,
-                loginViewModel = loginViewModel
-            )
-        }
+            composable(route = LoginScreens.Reg1.screenName){
+                Reg1Screen(
+                    loginNavController = loginNavController,
+                    loginUiState = loginUiState,
+                    loginViewModel = loginViewModel
+                )
+            }
 
-        composable(route = LoginScreens.Reg2.screenName){
-            Reg2Screen(
-                loginNavController = loginNavController,
-                loginUiState = loginUiState,
-                loginViewModel = loginViewModel
-            )
-        }
+            composable(route = LoginScreens.Reg2.screenName){
+                Reg2Screen(
+                    loginNavController = loginNavController,
+                    loginUiState = loginUiState,
+                    loginViewModel = loginViewModel
+                )
+            }
 
-        composable(route = LoginScreens.Reg3.screenName){
-            Reg3Screen(
-                loginNavController = loginNavController,
-                loginUiState = loginUiState,
-                loginViewModel = loginViewModel
-            )
-        }
+            composable(route = LoginScreens.Reg3.screenName){
+                Reg3Screen(
+                    loginNavController = loginNavController,
+                    loginUiState = loginUiState,
+                    loginViewModel = loginViewModel
+                )
+            }
 
-        composable(route = LoginScreens.Reg4.screenName){
-            Reg4Screen(
-                loginNavController = loginNavController
-            )
+            composable(route = LoginScreens.Reg4.screenName){
+                Reg4Screen(
+                    loginNavController = loginNavController
+                )
+            }
+
+            // TODO: Hacer la funcionalidad de Recuperar Contraseña
         }
     }
-
 }
 
 @Composable

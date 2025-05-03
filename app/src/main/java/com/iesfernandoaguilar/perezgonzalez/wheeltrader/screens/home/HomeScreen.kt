@@ -27,6 +27,7 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -50,11 +51,9 @@ import com.iesfernandoaguilar.perezgonzalez.wheeltrader.ui.theme.WheelTraderThem
 
 @Composable
 fun HomeScreen(
-    //conectionViewModel: ConectionViewModel,
+    filterButtonOnClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    //val conectionUiState by conectionViewModel.uiState.collectAsState()
-
     val opciones = listOf("Coches", "Motos", "Camionetas", "Camiones", "Maquinaria")
     val imagenes = listOf(R.drawable.fotofiltrocoche, R.drawable.fotofiltromoto, R.drawable.fotofiltrocamioneta, R.drawable.fotofiltrocamion, R.drawable.fotofiltromaquinaria)
 
@@ -73,23 +72,23 @@ fun HomeScreen(
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.weight(0.2F)
+            modifier = Modifier.weight(0.1F)
         ) {
             Text(
                 //text = "Hola,\n\n${conectionUiState.usuario?.nombreUsuario ?: "_NOMBRE_"}"
-                text = "Hola,\n\nprueba123",
-                style = MaterialTheme.typography.titleLarge,
+                text = "Hola, prueba123",
+                style = MaterialTheme.typography.labelMedium,
                 color = Color.White,
                 textAlign = TextAlign.Center,
             )
         }
 
         Row(
-            modifier = Modifier.weight(0.3F).padding(top = 10.dp,bottom = 10.dp)
+            modifier = Modifier.weight(0.4F).padding(top = 10.dp,bottom = 10.dp)
         ){
             Card(
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
-                modifier = Modifier.fillMaxSize().padding(10.dp)
+                modifier = Modifier.fillMaxSize().padding(10.dp).height(200.dp)
             ) {
                 Column(
                     verticalArrangement = Arrangement.SpaceEvenly,
@@ -110,11 +109,22 @@ fun HomeScreen(
                                 topEnd = 0.dp,
                                 bottomEnd = 0.dp
                             ),
+                            colors = TextFieldDefaults.colors(
+                                unfocusedContainerColor = Color.White,
+                                focusedContainerColor = Color.White,
+                                cursorColor = Color(0x00FF1c1c1c),
+                                focusedTextColor = Color(0x00FF1c1c1c),
+                                unfocusedTextColor = Color(0x00FF1c1c1c),
+                                focusedLabelColor = Color(0x00FF1c1c1c),
+                                unfocusedLabelColor = Color(0x00FF1c1c1c),
+                                unfocusedIndicatorColor = Color.Transparent,
+                                focusedIndicatorColor = Color.Transparent
+                            ),
                             modifier = Modifier.weight(1F).height(50.dp).fillMaxWidth().offset(x = 4.dp),
                         )
 
                         Button(
-                            onClick = {},
+                            onClick = { filterButtonOnClick() },
                             shape = RoundedCornerShape(
                                 topStart = 0.dp,
                                 bottomStart = 0.dp,
@@ -210,6 +220,6 @@ fun tipoVehiculoCard(
 @Composable
 fun PreviewHome() {
     WheelTraderTheme {
-        HomeScreen()
+        // HomeScreen()
     }
 }

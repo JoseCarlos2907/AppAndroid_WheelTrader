@@ -7,9 +7,9 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsControllerCompat
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.ui.theme.WheelTraderTheme
 
 class MainActivity : ComponentActivity() {
@@ -18,6 +18,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            window.navigationBarColor = Color.Black.toArgb()
             WheelTraderTheme(darkTheme = false) {
                 wheeltraderApp()
             }
