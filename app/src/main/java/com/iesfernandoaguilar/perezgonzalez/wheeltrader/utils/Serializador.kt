@@ -9,7 +9,7 @@ class Serializador {
         }
 
         fun decodificarMensaje(cadena: String): Mensaje {
-            val msg: Mensaje = Mensaje()
+            val msg = Mensaje()
 
             val cadenaSplit = cadena.split(";".toRegex()).dropLastWhile { it.isEmpty() }
                 .toTypedArray()

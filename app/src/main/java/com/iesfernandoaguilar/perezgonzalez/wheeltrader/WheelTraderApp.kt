@@ -57,6 +57,7 @@ import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.login.LoginScree
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.ui.theme.WheelTraderTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.InputStreamReader
 import java.util.Properties
 
@@ -76,42 +77,42 @@ fun wheeltraderApp(
     context: Context = LocalContext.current,
     modifier: Modifier = Modifier
 ){
-    // val navBackStackEntry by navController.currentBackStackEntryAsState()
-    // val currentRoute = navBackStackEntry?.destination?.route
-    // val showBottomBar = remember { mutableStateOf(false) }
+    val properties = Properties()
+    val assetManager = context.assets
 
-        val properties = Properties()
-        val assetManager = context.assets
+    properties.load(InputStreamReader(assetManager.open("conf.properties")))
 
-        properties.load(InputStreamReader(assetManager.open("conf.properties")))
-
-        conectionViewModel.viewModelScope.launch(Dispatchers.IO) {
+    /*LaunchedEffect(Unit) {
+        withContext(Dispatchers.IO){
             conectionViewModel.conectar(properties.getProperty("ADDRESS"), Integer.parseInt(properties.getProperty("PORT")))
         }
+    }*/
 
-        NavHost(
-            navController = navController,
-            startDestination = WheelTraderScreens.Login.screenName,
-            modifier = modifier
-        ){
-            composable(route = WheelTraderScreens.Login.screenName){
-                // showBottomBar.value = false
-                LoginScreen(
-                    context = context,
-                    conectionViewModel = conectionViewModel,
-                    navController = navController
-                )
-            }
+    conectionViewModel.viewModelScope.launch(Dispatchers.IO) {
+        conectionViewModel.conectar(properties.getProperty("ADDRESS"), Integer.parseInt(properties.getProperty("PORT")))
+    }
 
-            composable(route = WheelTraderScreens.App.screenName) {
-                // showBottomBar.value = true
-                AppScreen(
-                    context = context,
-                    conectionViewModel = conectionViewModel,
-                    navController = navController
-                )
-            }
+    NavHost(
+        navController = navController,
+        startDestination = WheelTraderScreens.Login.screenName,
+        modifier = modifier
+    ){
+        composable(route = WheelTraderScreens.Login.screenName){
+            LoginScreen(
+                context = context,
+                conectionViewModel = conectionViewModel,
+                navController = navController
+            )
         }
+
+        composable(route = WheelTraderScreens.App.screenName) {
+            AppScreen(
+                context = context,
+                conectionViewModel = conectionViewModel,
+                navController = navController
+            )
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

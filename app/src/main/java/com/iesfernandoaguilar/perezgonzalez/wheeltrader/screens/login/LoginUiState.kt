@@ -6,6 +6,7 @@ data class LoginUiState (
     // Login
     var currentNombreUsuario: String = "",
     var currentContrasenia: String = "",
+    var iniciaSesion: Boolean = false,
 
     // Registro paso 1
     var nombre: String = "",

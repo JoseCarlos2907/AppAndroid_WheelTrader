@@ -171,6 +171,7 @@ fun HomeScreen(
         ) {
             items(opciones) { opcion ->
                 tipoVehiculoCard(
+                    {},
                     imagenes.get(opciones.indexOf(opcion)),
                     opcion
                 )
@@ -181,12 +182,14 @@ fun HomeScreen(
 
 @Composable
 fun tipoVehiculoCard(
+    onClick: () -> Unit,
     imagen: Int,
     texto: String
 ){
     Row{
         Card(
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
+            onClick = onClick,
             modifier = Modifier.height(100.dp).padding(10.dp)
         ) {
             Row {

@@ -5,11 +5,30 @@ import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Usuario
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import java.io.DataInputStream
+import java.io.DataOutputStream
 import java.net.Socket
 
 class ConectionViewModel : ViewModel() {
     private var _uiState = MutableStateFlow(ConectionUiState())
     val uiState: StateFlow<ConectionUiState> = _uiState.asStateFlow()
+
+    private var dis: DataInputStream? = null
+    private var dos: DataOutputStream? = null
+
+    fun getDataInputStream(): DataInputStream? {
+        return dis ?: run {
+            dis = DataInputStream(_uiState.value.input)
+            dis
+        }
+    }
+
+    fun getDataOutputStream(): DataOutputStream? {
+        return dos ?: run {
+            dos = DataOutputStream(_uiState.value.output)
+            dos
+        }
+    }
 
     fun conectar(address: String, port: Int) {
         if(_uiState.value.socket == null){

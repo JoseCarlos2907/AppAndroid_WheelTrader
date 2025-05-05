@@ -87,6 +87,16 @@ fun LoginScreen(
         loginViewModel.escucharDelServidor_Login()
     }
 
+    /*LaunchedEffect(Unit) {
+        withContext(Dispatchers.IO) {
+            loginViewModel.confFlujos(conectionUiState.input, conectionUiState.output, context)
+            loginViewModel.onError = { context, msg ->
+                Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
+            }
+            loginViewModel.escucharDelServidor_Login()
+        }
+    }*/
+
     // Controla que al iniciar sesión se cambie de ventana
     LaunchedEffect (conectionUiState.usuario) {
         if (conectionUiState.usuario != null) {

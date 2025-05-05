@@ -31,30 +31,32 @@ class LoginViewModel(
     private val _uiState = MutableStateFlow(LoginUiState())
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
 
-    private var dis: DataInputStream? = null
-    private var dos: DataOutputStream? = null
+    private val dis: DataInputStream? by lazy { conectionViewModel.getDataInputStream() }
+    private val dos: DataOutputStream? by lazy { conectionViewModel.getDataOutputStream() }
+
+    // private var dis: DataInputStream? = null
+    // private var dos: DataOutputStream? = null
     lateinit var onError: ((Context, String) -> Unit)
     @SuppressLint("StaticFieldLeak")
     lateinit var context: Context
     lateinit var handler: Handler
 
     fun confFlujos(inputStream: InputStream?, outputStream: OutputStream?, context: Context){
-        this.dis = DataInputStream(inputStream)
-        this.dos = DataOutputStream(outputStream)
+        // this.dis = DataInputStream(inputStream)
+        // this.dos = DataOutputStream(outputStream)
         this.context = context
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun escucharDelServidor_Login() {
-        var iniciaSesion = false
-
         var usuarioJSON = ""
 
         var msgRespuesta: Mensaje
 
         this.handler = Handler(Looper.getMainLooper())
-        while (!iniciaSesion) {
+        while (!uiState.value.iniciaSesion) {
             try {
+                Log.d("Login", "Antes de leer")
                 var linea: String = this.dis?.readUTF()?: ""
                 Log.d("Login", linea)
                 var msgServidor: Mensaje = Serializador.decodificarMensaje(linea)
@@ -76,8 +78,9 @@ class LoginViewModel(
                 }else if("INICIA_SESION".equals(tipo)){
                     // Log.d("Login","INICIA_SESION;"+msgServidor.getParams().get(0))
                     if ("si".equals(msgServidor.getParams().get(0))) {
-                        iniciaSesion = true
+                        _uiState.value = _uiState.value.copy(iniciaSesion = true)
                         usuarioJSON = msgServidor.getParams().get(1)
+                        break;
                     } else if ("no".equals(msgServidor.getParams().get(0))) {
                         handler.post{
                             onError.invoke(context, "Credenciales incorrectas")
@@ -106,6 +109,8 @@ class LoginViewModel(
                 }else if("USUARIO_REGISTRADO".equals(tipo)){
                     // Avisar a la interfaz para cambiar de pantalla al paso 4
                     _uiState.value = _uiState.value.copy(goToPaso4 = true)
+                }else{
+                    Log.d("Login", linea)
                 }
             } catch (e: EOFException) {
                 Log.d("Login", e.message ?: "Error")
@@ -113,12 +118,15 @@ class LoginViewModel(
             }
         }
 
-        // Log.d("Login", usuarioJSON)
+        if(uiState.value.iniciaSesion){
+            // Log.d("Login", usuarioJSON)
 
-        var cadena = String() + usuarioJSON.toString()
+            var cadena = String() + usuarioJSON.toString()
 
-        var mapper = jacksonObjectMapper()
-        conectionViewModel.iniciarSesion(mapper.readValue(cadena, Usuario::class.java))
+            var mapper = jacksonObjectMapper()
+            conectionViewModel.iniciarSesion(mapper.readValue(cadena, Usuario::class.java))
+            // Log.d("Login", "Logea")
+        }
     }
 
     fun iniciarSesion(nombre: String){
