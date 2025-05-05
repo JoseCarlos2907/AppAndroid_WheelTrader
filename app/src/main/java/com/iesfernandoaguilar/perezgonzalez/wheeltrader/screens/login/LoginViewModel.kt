@@ -40,93 +40,103 @@ class LoginViewModel(
     @SuppressLint("StaticFieldLeak")
     lateinit var context: Context
     lateinit var handler: Handler
+    var lectorLogin: Thread? = null
 
-    fun confFlujos(inputStream: InputStream?, outputStream: OutputStream?, context: Context){
-        // this.dis = DataInputStream(inputStream)
-        // this.dos = DataOutputStream(outputStream)
+    fun confVM(context: Context){
         this.context = context
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun escucharDelServidor_Login() {
-        var usuarioJSON = ""
+        if(lectorLogin?.isAlive == true) return
 
-        var msgRespuesta: Mensaje
+        lectorLogin = Thread(){
+            Log.d("Login", "Arranca hilo")
+            var usuarioJSON = ""
 
-        this.handler = Handler(Looper.getMainLooper())
-        while (!uiState.value.iniciaSesion) {
-            try {
-                Log.d("Login", "Antes de leer")
-                var linea: String = this.dis?.readUTF()?: ""
-                Log.d("Login", linea)
-                var msgServidor: Mensaje = Serializador.decodificarMensaje(linea)
+            var msgRespuesta: Mensaje
 
-                var tipo = msgServidor.getTipo()
-                if("ENVIA_SALT".equals(tipo)){
-                    // Log.d("Login","ENVIA_SALT")
-                    msgRespuesta = Mensaje()
-                    msgRespuesta.setTipo("INICIAR_SESION")
-                    msgRespuesta.addParam(_uiState.value.currentNombreUsuario)
-                    msgRespuesta.addParam(
-                        SecureUtils.generate512(
-                            _uiState.value.currentContrasenia,
-                            Base64.getDecoder().decode(msgServidor.getParams().get(0))
+            this.handler = Handler(Looper.getMainLooper())
+            while (!uiState.value.iniciaSesion) {
+                try {
+                    // Log.d("Login", "Antes de leer")
+                    var linea: String = this.dis?.readUTF()?: ""
+                    // Log.d("Login", linea)
+                    var msgServidor: Mensaje = Serializador.decodificarMensaje(linea)
+
+                    var tipo = msgServidor.getTipo()
+                    if("ENVIA_SALT".equals(tipo)){
+                        // Log.d("Login","ENVIA_SALT")
+                        msgRespuesta = Mensaje()
+                        msgRespuesta.setTipo("INICIAR_SESION")
+                        msgRespuesta.addParam(_uiState.value.currentNombreUsuario)
+                        msgRespuesta.addParam(
+                            SecureUtils.generate512(
+                                _uiState.value.currentContrasenia,
+                                Base64.getDecoder().decode(msgServidor.getParams().get(0))
+                            )
                         )
-                    )
-                    this.dos?.writeUTF(Serializador.codificarMensaje(msgRespuesta))
-                    this.dos?.flush()
-                }else if("INICIA_SESION".equals(tipo)){
-                    // Log.d("Login","INICIA_SESION;"+msgServidor.getParams().get(0))
-                    if ("si".equals(msgServidor.getParams().get(0))) {
-                        _uiState.value = _uiState.value.copy(iniciaSesion = true)
-                        usuarioJSON = msgServidor.getParams().get(1)
-                        break;
-                    } else if ("no".equals(msgServidor.getParams().get(0))) {
-                        handler.post{
-                            onError.invoke(context, "Credenciales incorrectas")
+                        this.dos?.writeUTF(Serializador.codificarMensaje(msgRespuesta))
+                        this.dos?.flush()
+                    }else if("INICIA_SESION".equals(tipo)){
+                        // Log.d("Login","INICIA_SESION;"+msgServidor.getParams().get(0))
+                        if ("si".equals(msgServidor.getParams().get(0))) {
+                            _uiState.value = _uiState.value.copy(iniciaSesion = true)
+                            usuarioJSON = msgServidor.getParams().get(1)
+                            break;
+                        } else if ("no".equals(msgServidor.getParams().get(0))) {
+                            handler.post{
+                                onError.invoke(context, "Credenciales incorrectas")
+                            }
                         }
-                    }
-                }else if("DNI_EXISTE".equals(tipo)){
-                    if("si".equals(msgServidor.getParams().get(0))){
-                        // Avisar a la interfaz que ya existe un usuario con ese dni
-                        handler.post{
-                            onError.invoke(context, "El DNI ya ha sido registrado")
+                    }else if("DNI_EXISTE".equals(tipo)){
+                        if("si".equals(msgServidor.getParams().get(0))){
+                            // Avisar a la interfaz que ya existe un usuario con ese dni
+                            handler.post{
+                                onError.invoke(context, "El DNI ya ha sido registrado")
+                            }
+                        }else if("no".equals(msgServidor.getParams().get(0))){
+                            _uiState.value = _uiState.value.copy(goToPaso2 = true)
                         }
-                    }else if("no".equals(msgServidor.getParams().get(0))){
-                        _uiState.value = _uiState.value.copy(goToPaso2 = true)
-                    }
 
-                }else if("USUARIO_EXISTE".equals(tipo)){
-                    if("si".equals(msgServidor.getParams().get(0))){
-                        // Avisar a la interfaz que ya existe un usuario con ese nombre de usuario o correo
-                        handler.post{
-                            onError.invoke(context, "El nombre de usuario o el correo ya ha sido registrado")
+                    }else if("USUARIO_EXISTE".equals(tipo)){
+                        if("si".equals(msgServidor.getParams().get(0))){
+                            // Avisar a la interfaz que ya existe un usuario con ese nombre de usuario o correo
+                            handler.post{
+                                onError.invoke(context, "El nombre de usuario o el correo ya ha sido registrado")
+                            }
+                        }else if("no".equals(msgServidor.getParams().get(0))){
+                            _uiState.value = _uiState.value.copy(goToPaso3 = true)
                         }
-                    }else if("no".equals(msgServidor.getParams().get(0))){
-                        _uiState.value = _uiState.value.copy(goToPaso3 = true)
-                    }
 
-                }else if("USUARIO_REGISTRADO".equals(tipo)){
-                    // Avisar a la interfaz para cambiar de pantalla al paso 4
-                    _uiState.value = _uiState.value.copy(goToPaso4 = true)
-                }else{
-                    Log.d("Login", linea)
+                    }else if("USUARIO_REGISTRADO".equals(tipo)){
+                        // Avisar a la interfaz para cambiar de pantalla al paso 4
+                        _uiState.value = _uiState.value.copy(goToPaso4 = true)
+                    }else{
+                        Log.d("Login", linea)
+                    }
+                } catch (e: EOFException) {
+                    Log.d("Login", e.message ?: "Error")
+                    break;
                 }
-            } catch (e: EOFException) {
-                Log.d("Login", e.message ?: "Error")
-                break;
+            }
+
+            if(uiState.value.iniciaSesion){
+                Log.d("Login", usuarioJSON)
+
+                var cadena = String() + usuarioJSON.toString()
+
+                var mapper = jacksonObjectMapper()
+                conectionViewModel.iniciarSesion(mapper.readValue(cadena, Usuario::class.java))
+                // Log.d("Login", "Logea")
             }
         }
+        lectorLogin?.start()
+    }
 
-        if(uiState.value.iniciaSesion){
-            // Log.d("Login", usuarioJSON)
-
-            var cadena = String() + usuarioJSON.toString()
-
-            var mapper = jacksonObjectMapper()
-            conectionViewModel.iniciarSesion(mapper.readValue(cadena, Usuario::class.java))
-            // Log.d("Login", "Logea")
-        }
+    fun pararEscuchaServidor_Login(){
+        lectorLogin?.interrupt()
+        lectorLogin = null
     }
 
     fun iniciarSesion(nombre: String){

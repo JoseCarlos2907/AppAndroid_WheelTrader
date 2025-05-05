@@ -24,6 +24,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -35,6 +36,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -79,23 +81,21 @@ fun LoginScreen(
     val loginUiState by loginViewModel.uiState.collectAsState()
     val conectionUiState by conectionViewModel.uiState.collectAsState()
 
-    loginViewModel.viewModelScope.launch(Dispatchers.IO) {
-        loginViewModel.confFlujos(conectionUiState.input, conectionUiState.output, context)
-        loginViewModel.onError = { context, msg ->
-            Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
-        }
-        loginViewModel.escucharDelServidor_Login()
-    }
-
-    /*LaunchedEffect(Unit) {
+    LaunchedEffect(Unit) {
         withContext(Dispatchers.IO) {
-            loginViewModel.confFlujos(conectionUiState.input, conectionUiState.output, context)
+            loginViewModel.confVM(context)
             loginViewModel.onError = { context, msg ->
                 Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
             }
             loginViewModel.escucharDelServidor_Login()
         }
-    }*/
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            loginViewModel.pararEscuchaServidor_Login()
+        }
+    }
 
     // Controla que al iniciar sesión se cambie de ventana
     LaunchedEffect (conectionUiState.usuario) {

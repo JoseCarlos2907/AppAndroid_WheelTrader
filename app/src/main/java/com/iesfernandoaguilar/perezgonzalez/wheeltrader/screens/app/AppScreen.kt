@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -21,6 +22,7 @@ import androidx.navigation.compose.rememberNavController
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.mainAppBar
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.mainBottomBar
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.ConectionViewModel
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.anuncios.ListaAnuncios
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros.filtroTodo.FiltroTodo
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros.FiltrosViewModel
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros.TiposFiltros
@@ -56,26 +58,19 @@ fun AppScreen(
     modifier: Modifier = Modifier
 ){
     val appUiState by appViewModel.uiState.collectAsState()
-    val conectionUiState by conectionViewModel.uiState.collectAsState()
+    val filtrosUiState by filtrosViewModel.uiState.collectAsState()
 
-    appViewModel.changeGoToListaAnuncios(false)
-
-    /*LaunchedEffect(Unit) {
+    LaunchedEffect(Unit) {
         withContext(Dispatchers.IO) {
-            appViewModel.confFlujos(conectionUiState.input, conectionUiState.output, context)
+            appViewModel.confVM(context)
             appViewModel.escucharDelServidor_App()
         }
-    }*/
-
-    appViewModel.viewModelScope.launch(Dispatchers.IO) {
-        appViewModel.confFlujos(conectionUiState.input, conectionUiState.output, context)
-        appViewModel.escucharDelServidor_App()
     }
 
-    LaunchedEffect(appUiState.goToListaAnuncios) {
-        if(appUiState.goToListaAnuncios){
-            Log.d("App", "Va a lista anuncios")
-            appNavController.navigate(AppScreens.ListaAnuncios.screenName)
+    DisposableEffect(Unit) {
+        onDispose {
+            Log.d("App", "Se cierra el hilo principal")
+            appViewModel.pararEscuchaServidor_App()
         }
     }
 
@@ -98,6 +93,31 @@ fun AppScreen(
                 )
             }
 
+            composable(route = AppScreens.TipoFiltros.screenName){
+                TiposFiltros(
+                    filtrosViewModel = filtrosViewModel,
+                    appNavController = appNavController
+                )
+            }
+
+            composable(route = AppScreens.FiltroTodo.screenName){
+                FiltroTodo(
+                    appNavController = appNavController,
+                    filtroTodoViewModel = filtroTodoViewModel,
+                    appUiState = appUiState,
+                    appViewModel = appViewModel,
+                    filtrosViewModel = filtrosViewModel
+                )
+            }
+
+            composable(route = AppScreens.ListaAnuncios.screenName){
+                ListaAnuncios(
+                    appViewModel = appViewModel,
+                    appUiState = appUiState,
+                    filtrosUiState = filtrosUiState
+                )
+            }
+
             composable(route = AppScreens.ConfUsu.screenName){
                 // TODO: Hacer la pantalla de Conf. Usuario
             }
@@ -108,21 +128,6 @@ fun AppScreen(
 
             composable(route = AppScreens.PubAnuncio.screenName){
                 // TODO: Hacer la pantalla de Publicar Anuncio
-            }
-
-            composable(route = AppScreens.TipoFiltros.screenName){
-                TiposFiltros(
-                    // appViewModel = appViewModel,
-                    filtrosViewModel = filtrosViewModel,
-                    appNavController = appNavController
-                )
-            }
-
-            composable(route = AppScreens.FiltroTodo.screenName){
-                FiltroTodo(
-                    filtroTodoViewModel = filtroTodoViewModel,
-                    appViewModel = appViewModel
-                )
             }
         }
     }

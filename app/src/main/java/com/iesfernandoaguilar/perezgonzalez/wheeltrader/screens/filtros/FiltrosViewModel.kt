@@ -1,5 +1,7 @@
 package com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros
 
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.interfaces.IFiltro
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Anuncio
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.filtros.FiltroCoche
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.filtros.FiltroTodo
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.login.LoginUiState
@@ -13,5 +15,9 @@ class FiltrosViewModel() {
 
     fun asignarTipoFiltro(tipo: String){
         _uiState.value = _uiState.value.copy(tipoFiltro = tipo)
+    }
+
+    fun asignarFiltroTodo(filtro: IFiltro){
+        _uiState.value = _uiState.value.copy(filtroTodo = filtro)
     }
 }

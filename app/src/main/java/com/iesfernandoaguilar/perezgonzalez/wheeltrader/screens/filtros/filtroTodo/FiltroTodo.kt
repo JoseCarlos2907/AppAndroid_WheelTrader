@@ -17,6 +17,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -29,8 +30,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.interfaces.IFiltro
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.filtros.FiltroTodo
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.app.AppScreens
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.app.AppUiState
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.app.AppViewModel
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros.FiltrosViewModel
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.ui.theme.WheelTraderTheme
@@ -39,8 +43,11 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun FiltroTodo(
+    appNavController: NavController,
     filtroTodoViewModel: FiltroTodoViewModel,
+    filtrosViewModel: FiltrosViewModel,
     appViewModel: AppViewModel,
+    appUiState: AppUiState,
     modifier: Modifier = Modifier
 ){
     val filtroTodoUiState by filtroTodoViewModel.uiState.collectAsState()
@@ -144,7 +151,7 @@ fun FiltroTodo(
                             color = Color(0x00FF1c1c1c)
                         )
                     },
-                    // keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     enabled = true,
                     singleLine = true,
                     colors = TextFieldDefaults.colors(
@@ -174,7 +181,7 @@ fun FiltroTodo(
                             color = Color(0x00FF1c1c1c)
                         )
                     },
-                    // keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     enabled = true,
                     singleLine = true,
                     colors = TextFieldDefaults.colors(
@@ -238,7 +245,7 @@ fun FiltroTodo(
                             color = Color(0x00FF1c1c1c)
                         )
                     },
-                    // keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     enabled = true,
                     singleLine = true,
                     colors = TextFieldDefaults.colors(
@@ -322,7 +329,7 @@ fun FiltroTodo(
         Row (
             modifier = Modifier.fillMaxWidth().weight(0.25F)
         ) {
-
+            // TODO: Hacer el card con los tipos de vehiculos
         }
 
         Row (
@@ -341,12 +348,9 @@ fun FiltroTodo(
                     if (!filtroTodoUiState.ciudad.isEmpty()) filtroTodo.ciudad = filtroTodoUiState.ciudad
                     if (!filtroTodoUiState.provincia.isEmpty()) filtroTodo.provincia = filtroTodoUiState.provincia
 
-                    appViewModel.viewModelScope.launch(Dispatchers.IO) {
-                        appViewModel.obtenerAnuncios(
-                            filtro = filtroTodo,
-                            primeraCarga = true
-                        )
-                    }
+                    filtrosViewModel.asignarFiltroTodo(filtroTodo)
+
+                    appNavController.navigate(AppScreens.ListaAnuncios.screenName)
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
             ) {
