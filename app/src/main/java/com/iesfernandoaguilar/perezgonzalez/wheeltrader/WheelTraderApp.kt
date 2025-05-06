@@ -143,10 +143,15 @@ fun mainAppBar(
 
 @Composable
 fun mainBottomBar(
+    confUsuarioOnClick: () -> Unit,
+    homeOnClick: () -> Unit,
+    notificacionesOnClick: () -> Unit,
+    publicarAnuncioOnClick: () -> Unit,
     modifier: Modifier = Modifier
 ){
     val opciones = listOf("Conf. Usuario", "Home", "Notificaciones", "Publicar Anuncio")
     val iconos = listOf(R.drawable.iconoconfusuarioazul, R.drawable.iconohomeazul, R.drawable.icononotificacionazul, R.drawable.iconoaniadirazul)
+    val onclicks = listOf(confUsuarioOnClick, homeOnClick, notificacionesOnClick, publicarAnuncioOnClick)
 
     BottomAppBar(
         containerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -158,9 +163,7 @@ fun mainBottomBar(
             opciones.forEach{item->
                 NavigationBarItem(
                     selected = false,
-                    onClick = {
-
-                    },
+                    onClick = onclicks.get(opciones.indexOf(item)),
                     icon = {
                         Image(
                             painter = painterResource(iconos.get(opciones.indexOf(item))),
@@ -179,6 +182,6 @@ fun mainBottomBar(
 @Composable
 fun previewBottomBar() {
     WheelTraderTheme {
-        mainBottomBar()
+        // mainBottomBar()
     }
 }

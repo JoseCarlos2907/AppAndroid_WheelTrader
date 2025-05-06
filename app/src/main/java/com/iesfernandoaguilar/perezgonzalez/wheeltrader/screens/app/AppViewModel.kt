@@ -3,9 +3,14 @@ package com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.app
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -16,9 +21,11 @@ import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Mensaje
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.filtros.FiltroTodo
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.ConectionViewModel
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.utils.Serializador
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import java.io.DataInputStream
 import java.io.DataOutputStream
 import java.io.EOFException
@@ -28,6 +35,7 @@ import java.io.OutputStream
 class AppViewModel(
     private val conectionViewModel: ConectionViewModel
 ): ViewModel() {
+
     private val _uiState = MutableStateFlow(AppUiState())
     val uiState: StateFlow<AppUiState> = _uiState.asStateFlow()
 
@@ -36,13 +44,24 @@ class AppViewModel(
 
     @SuppressLint("StaticFieldLeak")
     lateinit var context: Context
+    lateinit var handler: Handler
     var lectorApp: Thread? = null
+    var i: Int = 0
+
+    /*init {
+        viewModelScope.launch {
+            delay(1000)
+            aniadirAnuncios(listOf(
+                Anuncio(idAnuncio = 1, provincia = "pr", ciudad = "ciu", estado = "est", precio = 0.01, guardado = true, descripcion = "desc", tipoVehiculo = "tipo", fechaPublicacion = null, fechaExpiracion = null, numSerieBastidor = "serie", matricula = "mat", vendedor = null, venta = null),
+                Anuncio(idAnuncio = 2, provincia = "pr", ciudad = "ciu", estado = "est", precio = 0.01, guardado = true, descripcion = "desc", tipoVehiculo = "tipo", fechaPublicacion = null, fechaExpiracion = null, numSerieBastidor = "serie", matricula = "mat", vendedor = null, venta = null))
+            )
+        }
+    }*/
 
     fun confVM(context: Context){
         this.context = context
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     fun escucharDelServidor_App(){
         if(lectorApp?.isAlive == true) return
 
@@ -50,10 +69,9 @@ class AppViewModel(
             var mapper = jacksonObjectMapper()
             var cierraSesion = false
 
-            var msgRespuesta: Mensaje
+            this.handler = Handler(Looper.getMainLooper())
             while (!cierraSesion){
                 try{
-                    // Log.d("App", "Antes de leer: " + conectionViewModel.uiState.value.socket)
                     var linea: String = this.dis?.readUTF()?: "NoInfo"
                     Log.d("App", linea)
                     var msgServidor: Mensaje = Serializador.decodificarMensaje(linea)
@@ -75,10 +93,10 @@ class AppViewModel(
                                 imagenesAnuncios.add(bytesImg)
                             }*/
 
-                            // TODO: Guardar los anuncios en algún uiState o algo así para poder pasarlo a la pantalla de la lista de anuncios
-
                             var anuncios: List<Anuncio> = mapper.readValue(msgServidor.getParams().get(1), object: TypeReference<List<Anuncio>>(){})
                             aniadirAnuncios(anuncios)
+                            Log.d("App", _uiState.value.anunciosEncontrados.size.toString())
+
                         }
                         "" -> {
 
@@ -117,10 +135,11 @@ class AppViewModel(
     }
 
     fun aniadirAnuncios(anunciosNuevos: List<Anuncio>){
-        _uiState.value = _uiState.value.copy(anunciosEncontrados = _uiState.value.anunciosEncontrados + anunciosNuevos)
+        _uiState.value = _uiState.value.copy(anunciosEncontrados = _uiState.value.anunciosEncontrados.toList() + anunciosNuevos)
+        Log.d("App", _uiState.value.anunciosEncontrados.size.toString())
     }
 
     fun vaciarAnuncios(){
-        _uiState.value = _uiState.value.copy(anunciosEncontrados = ArrayList())
+        _uiState.value = _uiState.value.copy(anunciosEncontrados = emptyList())
     }
 }

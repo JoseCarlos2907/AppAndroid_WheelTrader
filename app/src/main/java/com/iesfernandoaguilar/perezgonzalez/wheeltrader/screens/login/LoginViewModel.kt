@@ -34,8 +34,6 @@ class LoginViewModel(
     private val dis: DataInputStream? by lazy { conectionViewModel.getDataInputStream() }
     private val dos: DataOutputStream? by lazy { conectionViewModel.getDataOutputStream() }
 
-    // private var dis: DataInputStream? = null
-    // private var dos: DataOutputStream? = null
     lateinit var onError: ((Context, String) -> Unit)
     @SuppressLint("StaticFieldLeak")
     lateinit var context: Context

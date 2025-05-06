@@ -87,8 +87,8 @@ fun LoginScreen(
             loginViewModel.onError = { context, msg ->
                 Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
             }
-            loginViewModel.escucharDelServidor_Login()
         }
+        loginViewModel.escucharDelServidor_Login()
     }
 
     DisposableEffect(Unit) {
