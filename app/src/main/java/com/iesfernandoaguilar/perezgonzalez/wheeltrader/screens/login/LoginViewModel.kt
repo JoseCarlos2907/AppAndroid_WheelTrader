@@ -34,7 +34,7 @@ class LoginViewModel(
     private val dis: DataInputStream? by lazy { conectionViewModel.getDataInputStream() }
     private val dos: DataOutputStream? by lazy { conectionViewModel.getDataOutputStream() }
 
-    lateinit var onError: ((Context, String) -> Unit)
+    lateinit var showMsg: ((Context, String) -> Unit)
     @SuppressLint("StaticFieldLeak")
     lateinit var context: Context
     lateinit var handler: Handler
@@ -84,14 +84,14 @@ class LoginViewModel(
                             break;
                         } else if ("no".equals(msgServidor.getParams().get(0))) {
                             handler.post{
-                                onError.invoke(context, "Credenciales incorrectas")
+                                showMsg.invoke(context, "Credenciales incorrectas")
                             }
                         }
                     }else if("DNI_EXISTE".equals(tipo)){
                         if("si".equals(msgServidor.getParams().get(0))){
                             // Avisar a la interfaz que ya existe un usuario con ese dni
                             handler.post{
-                                onError.invoke(context, "El DNI ya ha sido registrado")
+                                showMsg.invoke(context, "El DNI ya ha sido registrado")
                             }
                         }else if("no".equals(msgServidor.getParams().get(0))){
                             _uiState.value = _uiState.value.copy(goToPaso2 = true)
@@ -101,7 +101,7 @@ class LoginViewModel(
                         if("si".equals(msgServidor.getParams().get(0))){
                             // Avisar a la interfaz que ya existe un usuario con ese nombre de usuario o correo
                             handler.post{
-                                onError.invoke(context, "El nombre de usuario o el correo ya ha sido registrado")
+                                showMsg.invoke(context, "El nombre de usuario o el correo ya ha sido registrado")
                             }
                         }else if("no".equals(msgServidor.getParams().get(0))){
                             _uiState.value = _uiState.value.copy(goToPaso3 = true)
@@ -261,7 +261,7 @@ class LoginViewModel(
 
     fun mostrarToast(msg:String){
         handler.post{
-            onError.invoke(context, msg)
+            showMsg.invoke(context, msg)
         }
     }
 }

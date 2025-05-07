@@ -9,6 +9,7 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.fasterxml.jackson.core.type.TypeReference
@@ -42,21 +43,11 @@ class AppViewModel(
     private val dis: DataInputStream? by lazy { conectionViewModel.getDataInputStream() }
     private val dos: DataOutputStream? by lazy { conectionViewModel.getDataOutputStream() }
 
+    lateinit var showMsg: ((Context, String) -> Unit)
     @SuppressLint("StaticFieldLeak")
     lateinit var context: Context
     lateinit var handler: Handler
     var lectorApp: Thread? = null
-    var i: Int = 0
-
-    /*init {
-        viewModelScope.launch {
-            delay(1000)
-            aniadirAnuncios(listOf(
-                Anuncio(idAnuncio = 1, provincia = "pr", ciudad = "ciu", estado = "est", precio = 0.01, guardado = true, descripcion = "desc", tipoVehiculo = "tipo", fechaPublicacion = null, fechaExpiracion = null, numSerieBastidor = "serie", matricula = "mat", vendedor = null, venta = null),
-                Anuncio(idAnuncio = 2, provincia = "pr", ciudad = "ciu", estado = "est", precio = 0.01, guardado = true, descripcion = "desc", tipoVehiculo = "tipo", fechaPublicacion = null, fechaExpiracion = null, numSerieBastidor = "serie", matricula = "mat", vendedor = null, venta = null))
-            )
-        }
-    }*/
 
     fun confVM(context: Context){
         this.context = context
@@ -81,7 +72,7 @@ class AppViewModel(
                     // Log.d("App", tipo)
                     when(tipo){
                         "ENVIA_ANUNCIOS" -> {
-                            Log.d("App", msgServidor.getParams().get(1))
+                            // Log.d("App", msgServidor.getParams().get(1))
 
                             var imagenesAnuncios: ArrayList<ByteArray> = ArrayList()
                             var cantAnuncios = Integer.parseInt(msgServidor.getParams().get(2))
@@ -95,8 +86,16 @@ class AppViewModel(
 
                             var anuncios: List<Anuncio> = mapper.readValue(msgServidor.getParams().get(1), object: TypeReference<List<Anuncio>>(){})
                             aniadirAnuncios(anuncios)
-                            Log.d("App", _uiState.value.anunciosEncontrados.size.toString())
-
+                        }
+                        "ANUNCIO_GUARDADO" -> {
+                            handler.post{
+                                showMsg.invoke(context, "Anuncio guardado correctamente")
+                            }
+                        }
+                        "ANUNCIO_ELIMINADO_GUARDADOS" -> {
+                            handler.post{
+                                showMsg.invoke(context, "Anuncio eliminado de guardados")
+                            }
                         }
                         "" -> {
 
@@ -128,7 +127,7 @@ class AppViewModel(
         msg.addParam(filtroJSON)
         msg.addParam(filtro?.tipoFiltro?: "Todo")
         msg.addParam(if (primeraCarga) "si" else "no")
-        msg.addParam((conectionViewModel.uiState.value.usuario?.idUsuario?: -1L).toString())
+        msg.addParam((conectionViewModel.uiState.value.usuario?.idUsuario?: 2).toString())
 
         this.dos?.writeUTF(Serializador.codificarMensaje(msg))
         this.dos?.flush()
@@ -136,10 +135,40 @@ class AppViewModel(
 
     fun aniadirAnuncios(anunciosNuevos: List<Anuncio>){
         _uiState.value = _uiState.value.copy(anunciosEncontrados = _uiState.value.anunciosEncontrados.toList() + anunciosNuevos)
-        Log.d("App", _uiState.value.anunciosEncontrados.size.toString())
     }
 
     fun vaciarAnuncios(){
         _uiState.value = _uiState.value.copy(anunciosEncontrados = emptyList())
+    }
+
+    fun guardarAnuncio(nombreUsuario: String, idAnuncio: Long){
+        var msg = Mensaje()
+        msg.setTipo("GUARDAR_ANUNCIO")
+        msg.addParam(idAnuncio.toString())
+        msg.addParam(nombreUsuario)
+
+        this.dos?.writeUTF(Serializador.codificarMensaje(msg))
+        this.dos?.flush()
+    }
+
+    fun eliminarGuardado(nombreUsuario: String, idAnuncio: Long){
+        var msg = Mensaje()
+        msg.setTipo("ELIMINAR_ANUNCIO_GUARDADOS")
+        msg.addParam(idAnuncio.toString())
+        msg.addParam(nombreUsuario)
+
+        this.dos?.writeUTF(Serializador.codificarMensaje(msg))
+        this.dos?.flush()
+    }
+}
+
+class AppViewModelFactory(
+    private val conectionViewModel: ConectionViewModel
+): ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(AppViewModel::class.java)) {
+            return AppViewModel(conectionViewModel) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }

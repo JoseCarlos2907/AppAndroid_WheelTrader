@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
 import android.util.Log
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -15,12 +16,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.mainAppBar
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.mainBottomBar
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Usuario
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.ConectionViewModel
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.anuncios.ListaAnuncios
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.confUsuario.ConfUsuario
@@ -56,14 +59,13 @@ enum class AppScreens(val screenName: String){
 @Composable
 fun AppScreen(
     context: Context,
-    navController: NavHostController,
     appNavController: NavHostController = rememberNavController(),
     conectionViewModel: ConectionViewModel,
-    appViewModel: AppViewModel = AppViewModel(
-        conectionViewModel = conectionViewModel
+    appViewModel: AppViewModel = viewModel(
+        factory = AppViewModelFactory(conectionViewModel),
     ),
-    filtrosViewModel: FiltrosViewModel = FiltrosViewModel(),
-    filtroTodoViewModel: FiltroTodoViewModel = FiltroTodoViewModel(),
+    filtrosViewModel: FiltrosViewModel = viewModel(),
+    filtroTodoViewModel: FiltroTodoViewModel = viewModel(),
     modifier: Modifier = Modifier
 ){
     val conectionUiState by conectionViewModel.uiState.collectAsState()
@@ -72,6 +74,9 @@ fun AppScreen(
     LaunchedEffect(Unit) {
         withContext(Dispatchers.IO) {
             appViewModel.confVM(context)
+            appViewModel.showMsg = { context, msg ->
+                Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
+            }
         }
         appViewModel.escucharDelServidor_App()
     }
@@ -132,7 +137,8 @@ fun AppScreen(
             composable(route = AppScreens.ListaAnuncios.screenName){
                 ListaAnuncios(
                     appViewModel = appViewModel,
-                    filtrosUiState = filtrosUiState
+                    filtrosUiState = filtrosUiState,
+                    conectionUiState = conectionUiState
                 )
             }
 

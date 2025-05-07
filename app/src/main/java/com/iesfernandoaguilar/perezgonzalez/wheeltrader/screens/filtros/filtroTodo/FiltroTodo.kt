@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
@@ -332,6 +333,7 @@ fun FiltroTodo(
         }
 
         Row (
+            horizontalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxWidth().weight(0.1F)
         ) {
             Button(
@@ -352,6 +354,7 @@ fun FiltroTodo(
                     buscarOnClick()
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
+                modifier = Modifier.width(300.dp)
             ) {
                 Text(
                     text = "Buscar",

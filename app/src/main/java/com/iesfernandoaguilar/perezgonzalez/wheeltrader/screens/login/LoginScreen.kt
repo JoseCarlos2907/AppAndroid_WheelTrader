@@ -84,7 +84,7 @@ fun LoginScreen(
     LaunchedEffect(Unit) {
         withContext(Dispatchers.IO) {
             loginViewModel.confVM(context)
-            loginViewModel.onError = { context, msg ->
+            loginViewModel.showMsg = { context, msg ->
                 Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
             }
         }

@@ -1,5 +1,6 @@
 package com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros
 
+import androidx.lifecycle.ViewModel
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.interfaces.IFiltro
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Anuncio
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.filtros.FiltroCoche
@@ -9,7 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-class FiltrosViewModel() {
+class FiltrosViewModel(): ViewModel() {
     private val _uiState = MutableStateFlow(FiltrosUiState())
     val uiState: StateFlow<FiltrosUiState> = _uiState.asStateFlow()
 
