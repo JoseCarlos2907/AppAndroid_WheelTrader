@@ -1,6 +1,6 @@
 package com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.anuncios
 
-import android.util.Log
+import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -11,13 +11,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -33,11 +29,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -45,12 +41,8 @@ import androidx.lifecycle.viewModelScope
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.R
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Anuncio
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.ConectionUiState
-import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.ConectionViewModel
-import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.app.AppUiState
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.app.AppViewModel
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros.FiltrosUiState
-import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros.FiltrosViewModel
-import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.login.LoginViewModel
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.ui.theme.WheelTraderTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -64,10 +56,27 @@ fun ListaAnuncios(
     modifier: Modifier = Modifier
 ) {
     val appUiState by appViewModel.uiState.collectAsState()
+    val listState = rememberLazyListState()
+
+    LaunchedEffect(listState) {
+        snapshotFlow {
+            val ultimoAnuncioVisible = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
+            val anunciosTotales = listState.layoutInfo.totalItemsCount
+            ultimoAnuncioVisible to anunciosTotales
+        }.collect{(ultimoAnuncioVisible, anunciosTotales) ->
+            if(ultimoAnuncioVisible != null && ultimoAnuncioVisible >= anunciosTotales-1 && !appUiState.cargando && !appUiState.noHayMasAnuncios){
+                withContext(Dispatchers.IO){
+                    appViewModel.obtenerAnuncios(filtrosUiState.filtro, false)
+                    filtrosUiState.filtro!!.pagina++
+                }
+            }
+        }
+    }
 
     LaunchedEffect (Unit) {
         withContext(Dispatchers.IO){
-            appViewModel.obtenerAnuncios(filtrosUiState.filtroTodo, true)
+            appViewModel.obtenerAnuncios(filtrosUiState.filtro, true)
+            filtrosUiState.filtro!!.pagina++
         }
     }
 
@@ -92,6 +101,7 @@ fun ListaAnuncios(
         )
 
         LazyColumn(
+            state = listState,
             verticalArrangement = Arrangement.spacedBy(20.dp),
             modifier = Modifier.fillMaxSize()
         ) {
@@ -111,19 +121,16 @@ fun ListaAnuncios(
                                 anuncio.guardado = true
                             }
                         }
-                    }
+                    },
+                    bytesImagen = appUiState.imagenesAnuncios.get(appUiState.anunciosEncontrados.indexOf(anuncio))
                 )
             }
 
-            /*item {
-                CircularProgressIndicator()
-                LaunchedEffect(Unit) {
-                    withContext(Dispatchers.IO){
-                        appViewModel.obtenerAnuncios(filtrosUiState.filtroTodo, false)
-                        Log.d("App", "Otra carga: " + appUiState.anunciosEncontrados.size)
-                    }
+            if(appUiState.cargando){
+                item{
+                    CircularProgressIndicator()
                 }
-            }*/
+            }
         }
     }
 }
@@ -131,6 +138,7 @@ fun ListaAnuncios(
 @Composable
 private fun CardAnuncio(
     anuncio: Anuncio,
+    bytesImagen: ByteArray,
     onClickGuardar: () -> Unit,
     modifier: Modifier = Modifier
 ){
@@ -167,11 +175,7 @@ private fun CardAnuncio(
                     horizontalArrangement = Arrangement.Center,
                     modifier = Modifier.fillMaxWidth().padding(12.dp)
                 ) {
-                    // TODO: Aquí va la imagen del vehículo
-                    Image(
-                        painter = painterResource(R.drawable.logoblanco),
-                        contentDescription = "",
-                    )
+                    imagenByteArray(bytesImagen)
                 }
 
                 Row(
@@ -215,6 +219,22 @@ private fun CardAnuncio(
                 }
             }
         }
+    }
+}
+
+@Composable
+fun imagenByteArray(imagen: ByteArray){
+    val bitmap = remember(imagen) {
+        BitmapFactory.decodeByteArray(imagen, 0, imagen.size)
+    }
+
+    bitmap?.let {
+        val imagenBitmap = it.asImageBitmap()
+        Image(
+            bitmap = imagenBitmap,
+            contentDescription = "",
+            modifier = Modifier.height(150.dp)
+        )
     }
 }
 

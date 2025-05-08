@@ -14,6 +14,9 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -36,6 +39,8 @@ import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.home.HomeScreen
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.publicar.ListaTiposVehiculos
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.publicar.PublicarCoche
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -70,6 +75,27 @@ fun AppScreen(
     filtroTodoViewModel: FiltroTodoViewModel = viewModel(),
     modifier: Modifier = Modifier
 ){
+    /*val scope = rememberCoroutineScope()
+    val job = remember { mutableStateOf<Job?>(null) }
+
+    LaunchedEffect(Unit) {
+        job.value = scope.launch(Dispatchers.IO) {
+            while (isActive){
+                appViewModel.confVM(context)
+                appViewModel.showMsg = { context, msg ->
+                    Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
+                }
+                appViewModel.escucharDelServidor_App()
+            }
+        }
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            job.value?.cancel()
+        }
+    }*/
+
     val conectionUiState by conectionViewModel.uiState.collectAsState()
     val filtrosUiState by filtrosViewModel.uiState.collectAsState()
 

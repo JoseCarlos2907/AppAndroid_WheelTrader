@@ -76,16 +76,17 @@ class AppViewModel(
 
                             var imagenesAnuncios: ArrayList<ByteArray> = ArrayList()
                             var cantAnuncios = Integer.parseInt(msgServidor.getParams().get(2))
-                            /*for (i in 0..cantAnuncios){
+                            for (i in 0 until cantAnuncios){
                                 var longitudImg = this.dis?.readInt()?: 0
                                 Log.d("App", longitudImg.toString())
                                 var bytesImg = ByteArray(longitudImg)
                                 this.dis?.readFully(bytesImg)
                                 imagenesAnuncios.add(bytesImg)
-                            }*/
+                            }
 
                             var anuncios: List<Anuncio> = mapper.readValue(msgServidor.getParams().get(1), object: TypeReference<List<Anuncio>>(){})
-                            aniadirAnuncios(anuncios)
+                            aniadirAnuncios(anuncios, imagenesAnuncios)
+
                         }
                         "ANUNCIO_GUARDADO" -> {
                             handler.post{
@@ -119,6 +120,8 @@ class AppViewModel(
     }
 
     fun obtenerAnuncios(filtro: IFiltro?, primeraCarga: Boolean){
+        if (_uiState.value.cargando) return
+
         var mapper = ObjectMapper()
         var filtroJSON = mapper.writeValueAsString(filtro)
 
@@ -131,10 +134,17 @@ class AppViewModel(
 
         this.dos?.writeUTF(Serializador.codificarMensaje(msg))
         this.dos?.flush()
+
+        _uiState.value = _uiState.value.copy( cargando = true )
     }
 
-    fun aniadirAnuncios(anunciosNuevos: List<Anuncio>){
-        _uiState.value = _uiState.value.copy(anunciosEncontrados = _uiState.value.anunciosEncontrados.toList() + anunciosNuevos)
+    fun aniadirAnuncios(anunciosNuevos: List<Anuncio>, imagenes: List<ByteArray>){
+        _uiState.value = _uiState.value.copy(
+            anunciosEncontrados = _uiState.value.anunciosEncontrados.toList() + anunciosNuevos,
+            imagenesAnuncios = _uiState.value.imagenesAnuncios.toList() + imagenes,
+            cargando = false,
+            noHayMasAnuncios = anunciosNuevos.size < 2
+        )
     }
 
     fun vaciarAnuncios(){

@@ -12,7 +12,7 @@ data class FiltroTodo(
     var tiposVehiculo: List<String> = listOf("Coche", "Moto", "Camion", "Camioneta", "Maquinaria"),
     var ciudad: String? = null,
     var provincia: String? = null,
-    var pagina: Int = 0,
-    var cantidadPorPagina: Int = 10,
+    override var pagina: Int = 0,
+    override var cantidadPorPagina: Int = 2,
     override var tipoFiltro: String = "Todo"
 ): IFiltro

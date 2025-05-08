@@ -26,8 +26,12 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -53,6 +57,8 @@ import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.registro.Reg3Scr
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.registro.Reg4Screen
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.ui.theme.customColorLight
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -77,6 +83,26 @@ fun LoginScreen(
     ),
     modifier: Modifier = Modifier
 ) {
+    /*val scope = rememberCoroutineScope()
+    val job = remember { mutableStateOf<Job?>(null) }
+
+    LaunchedEffect(Unit) {
+        job.value = scope.launch(Dispatchers.IO) {
+            while (isActive){
+                loginViewModel.confVM(context)
+                loginViewModel.showMsg = { context, msg ->
+                    Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
+                }
+                loginViewModel.escucharDelServidor_Login()
+            }
+        }
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            job.value?.cancel()
+        }
+    }*/
 
     val loginUiState by loginViewModel.uiState.collectAsState()
     val conectionUiState by conectionViewModel.uiState.collectAsState()

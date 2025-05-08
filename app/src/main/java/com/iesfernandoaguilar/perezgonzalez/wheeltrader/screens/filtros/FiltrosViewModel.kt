@@ -2,10 +2,6 @@ package com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros
 
 import androidx.lifecycle.ViewModel
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.interfaces.IFiltro
-import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Anuncio
-import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.filtros.FiltroCoche
-import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.filtros.FiltroTodo
-import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.login.LoginUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,6 +15,6 @@ class FiltrosViewModel(): ViewModel() {
     }
 
     fun asignarFiltroTodo(filtro: IFiltro){
-        _uiState.value = _uiState.value.copy(filtroTodo = filtro)
+        _uiState.value = _uiState.value.copy(filtro = filtro)
     }
 }
