@@ -8,10 +8,12 @@ import android.os.Looper
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Mensaje
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Usuario
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.ConectionViewModel
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.app.AppViewModel
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.utils.SecureUtils
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.utils.Serializador
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -263,5 +265,16 @@ class LoginViewModel(
         handler.post{
             showMsg.invoke(context, msg)
         }
+    }
+}
+
+class LoginViewModelFactory(
+    private val conectionViewModel: ConectionViewModel
+): ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(LoginViewModel::class.java)) {
+            return LoginViewModel(conectionViewModel) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }

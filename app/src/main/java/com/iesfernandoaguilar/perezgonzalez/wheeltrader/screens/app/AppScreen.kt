@@ -21,6 +21,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.WheelTraderScreens
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.mainAppBar
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.mainBottomBar
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Usuario
@@ -59,6 +60,7 @@ enum class AppScreens(val screenName: String){
 @Composable
 fun AppScreen(
     context: Context,
+    navController: NavHostController,
     appNavController: NavHostController = rememberNavController(),
     conectionViewModel: ConectionViewModel,
     appViewModel: AppViewModel = viewModel(
@@ -145,7 +147,11 @@ fun AppScreen(
             composable(route = AppScreens.ConfUsu.screenName){
                 ConfUsuario(
                     conectionUiState = conectionUiState,
-                    conectionViewModel = conectionViewModel
+                    conectionViewModel = conectionViewModel,
+                    onClickCerrarSesion = {
+                        conectionViewModel.cerrarSesion()
+                        navController.navigate(WheelTraderScreens.Login.screenName)
+                    }
                 )
             }
 

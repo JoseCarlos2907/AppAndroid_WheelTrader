@@ -72,8 +72,8 @@ fun LoginScreen(
     navController: NavHostController,
     loginNavController: NavHostController = rememberNavController(),
     conectionViewModel: ConectionViewModel,
-    loginViewModel: LoginViewModel = LoginViewModel(
-        conectionViewModel = conectionViewModel
+    loginViewModel: LoginViewModel = viewModel(
+        factory = LoginViewModelFactory(conectionViewModel = conectionViewModel)
     ),
     modifier: Modifier = Modifier
 ) {
@@ -81,14 +81,17 @@ fun LoginScreen(
     val loginUiState by loginViewModel.uiState.collectAsState()
     val conectionUiState by conectionViewModel.uiState.collectAsState()
 
-    LaunchedEffect(Unit) {
-        withContext(Dispatchers.IO) {
-            loginViewModel.confVM(context)
-            loginViewModel.showMsg = { context, msg ->
-                Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
+    LaunchedEffect(conectionUiState.usuario) {
+        if(conectionUiState.usuario == null){
+            withContext(Dispatchers.IO) {
+                loginViewModel.confVM(context)
+                loginViewModel.showMsg = { context, msg ->
+                    Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
+                }
             }
+            loginViewModel.escucharDelServidor_Login()
         }
-        loginViewModel.escucharDelServidor_Login()
+        Log.d("Login", "Entra " + conectionUiState.usuario)
     }
 
     DisposableEffect(Unit) {

@@ -108,7 +108,8 @@ fun wheeltraderApp(
         composable(route = WheelTraderScreens.App.screenName) {
             AppScreen(
                 context = context,
-                conectionViewModel = conectionViewModel
+                conectionViewModel = conectionViewModel,
+                navController = navController
             )
         }
     }

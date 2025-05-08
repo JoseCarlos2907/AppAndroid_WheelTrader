@@ -35,6 +35,7 @@ import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.ConectionViewMod
 fun ConfUsuario(
     conectionUiState: ConectionUiState,
     conectionViewModel: ConectionViewModel,
+    onClickCerrarSesion: () -> Unit,
     modifier: Modifier = Modifier
 ){
     var acordeon1 by remember { mutableStateOf(false) }
@@ -176,6 +177,23 @@ fun ConfUsuario(
             boton({}, "Mis Pagos")
             boton({}, "Mis Compras")
             boton({}, "Mis Reuniones")
+        }
+
+        Row (
+            modifier = Modifier.fillMaxWidth().padding(start = 12.dp, end = 12.dp)
+        ){
+            Button(
+                onClick = { onClickCerrarSesion() },
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
+                modifier = Modifier.fillMaxWidth()
+            ){
+                Text(
+                    text = "Cerrar Sesión",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = Color.White
+                )
+            }
+
         }
     }
 }
