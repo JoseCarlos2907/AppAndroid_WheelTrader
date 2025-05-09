@@ -78,7 +78,7 @@ class AppViewModel(
                             var cantAnuncios = Integer.parseInt(msgServidor.getParams().get(2))
                             for (i in 0 until cantAnuncios){
                                 var longitudImg = this.dis?.readInt()?: 0
-                                Log.d("App", longitudImg.toString())
+                                // Log.d("App", longitudImg.toString())
                                 var bytesImg = ByteArray(longitudImg)
                                 this.dis?.readFully(bytesImg)
                                 imagenesAnuncios.add(bytesImg)
@@ -124,6 +124,7 @@ class AppViewModel(
 
         var mapper = ObjectMapper()
         var filtroJSON = mapper.writeValueAsString(filtro)
+        // Log.d("App", filtroJSON)
 
         var msg = Mensaje()
         msg.setTipo("OBTENER_ANUNCIOS")
@@ -148,7 +149,10 @@ class AppViewModel(
     }
 
     fun vaciarAnuncios(){
-        _uiState.value = _uiState.value.copy(anunciosEncontrados = emptyList())
+        _uiState.value = _uiState.value.copy(
+            anunciosEncontrados = emptyList(),
+            imagenesAnuncios = emptyList()
+        )
     }
 
     fun guardarAnuncio(nombreUsuario: String, idAnuncio: Long){

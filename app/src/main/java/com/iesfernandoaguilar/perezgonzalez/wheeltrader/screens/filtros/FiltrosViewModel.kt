@@ -14,7 +14,7 @@ class FiltrosViewModel(): ViewModel() {
         _uiState.value = _uiState.value.copy(tipoFiltro = tipo)
     }
 
-    fun asignarFiltroTodo(filtro: IFiltro){
+    fun asignarFiltro(filtro: IFiltro){
         _uiState.value = _uiState.value.copy(filtro = filtro)
     }
 }

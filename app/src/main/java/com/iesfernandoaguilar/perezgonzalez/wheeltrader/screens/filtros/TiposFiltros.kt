@@ -35,8 +35,14 @@ fun TiposFiltros(
             filtrosViewModel.asignarTipoFiltro("Todo")
             appNavController.navigate(AppScreens.FiltroTodo.screenName)
         },
-        {},
-        {},
+        {
+            filtrosViewModel.asignarTipoFiltro("Coche")
+            appNavController.navigate(AppScreens.FiltroCoche.screenName)
+        },
+        {
+            filtrosViewModel.asignarTipoFiltro("Moto")
+            appNavController.navigate(AppScreens.FiltroMoto.screenName)
+        },
         {},
         {},
         {},

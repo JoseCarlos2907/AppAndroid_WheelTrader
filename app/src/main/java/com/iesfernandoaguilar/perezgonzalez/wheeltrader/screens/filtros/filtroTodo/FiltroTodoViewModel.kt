@@ -43,4 +43,23 @@ class FiltroTodoViewModel(): ViewModel() {
         _uiState.value = _uiState.value.copy(provincia = provincia)
     }
 
+    fun cambiarTipoCoche(marcado: Boolean){
+        _uiState.value = _uiState.value.copy(tipoCoche = marcado)
+    }
+
+    fun cambiarTipoMoto(marcado: Boolean){
+        _uiState.value = _uiState.value.copy(tipoMoto = marcado)
+    }
+
+    fun cambiarTipoCamioneta(marcado: Boolean){
+        _uiState.value = _uiState.value.copy(tipoCamioneta = marcado)
+    }
+
+    fun cambiarTipoCamion(marcado: Boolean){
+        _uiState.value = _uiState.value.copy(tipoCamion = marcado)
+    }
+
+    fun cambiarTipoMaquinaria(marcado: Boolean){
+        _uiState.value = _uiState.value.copy(tipoMaquinaria = marcado)
+    }
 }

@@ -8,5 +8,10 @@ data class FiltroTodoUiState (
     var precioMinimo: String = "",
     var precioMaximo: String = "",
     var ciudad: String = "",
-    var provincia: String = ""
+    var provincia: String = "",
+    var tipoCoche: Boolean = false,
+    var tipoMoto: Boolean = false,
+    var tipoCamion: Boolean = false,
+    var tipoCamioneta: Boolean = false,
+    var tipoMaquinaria: Boolean = false,
 )

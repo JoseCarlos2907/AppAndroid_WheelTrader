@@ -34,6 +34,8 @@ import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.confUsuario.Conf
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros.filtroTodo.FiltroTodo
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros.FiltrosViewModel
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros.TiposFiltros
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros.filtroCoche.FiltroCoche
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros.filtroMoto.FiltroMoto
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros.filtroTodo.FiltroTodoViewModel
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.home.HomeScreen
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.publicar.ListaTiposVehiculos
@@ -56,6 +58,8 @@ enum class AppScreens(val screenName: String){
 
     TipoFiltros(screenName = "tipo_filtros"),
     FiltroTodo(screenName = "filtro_todo"),
+    FiltroCoche(screenName = "filtro_coche"),
+    FiltroMoto(screenName = "filtro_moto"),
 
     ListaAnuncios(screenName = "lista_anuncios")
 }
@@ -72,7 +76,6 @@ fun AppScreen(
         factory = AppViewModelFactory(conectionViewModel),
     ),
     filtrosViewModel: FiltrosViewModel = viewModel(),
-    filtroTodoViewModel: FiltroTodoViewModel = viewModel(),
     modifier: Modifier = Modifier
 ){
     /*val scope = rememberCoroutineScope()
@@ -156,8 +159,21 @@ fun AppScreen(
             composable(route = AppScreens.FiltroTodo.screenName){
                 FiltroTodo(
                     buscarOnClick = { appNavController.navigate(AppScreens.ListaAnuncios.screenName) },
-                    filtroTodoViewModel = filtroTodoViewModel,
                     appViewModel = appViewModel,
+                    filtrosViewModel = filtrosViewModel
+                )
+            }
+
+            composable(route = AppScreens.FiltroCoche.screenName){
+                FiltroCoche(
+                    buscarOnClick = { appNavController.navigate(AppScreens.ListaAnuncios.screenName) },
+                    filtrosViewModel = filtrosViewModel
+                )
+            }
+
+            composable(route = AppScreens.FiltroMoto.screenName){
+                FiltroMoto(
+                    buscarOnClick = { appNavController.navigate(AppScreens.ListaAnuncios.screenName) },
                     filtrosViewModel = filtrosViewModel
                 )
             }

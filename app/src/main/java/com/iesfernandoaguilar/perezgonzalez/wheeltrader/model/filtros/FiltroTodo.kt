@@ -9,7 +9,7 @@ data class FiltroTodo(
     var anioMaximo: Int? = null,
     var precioMinimo: Double? = null,
     var precioMaximo: Double? = null,
-    var tiposVehiculo: List<String> = listOf("Coche", "Moto", "Camion", "Camioneta", "Maquinaria"),
+    var tiposVehiculo: ArrayList<String> = ArrayList(),
     var ciudad: String? = null,
     var provincia: String? = null,
     override var pagina: Int = 0,

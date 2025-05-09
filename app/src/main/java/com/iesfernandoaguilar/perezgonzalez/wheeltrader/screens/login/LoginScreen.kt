@@ -6,6 +6,7 @@ import android.os.Build
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -32,11 +34,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
@@ -45,6 +51,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.R
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.WheelTraderScreens
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.mainAppBar
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.mainBottomBar
@@ -198,6 +205,8 @@ fun LoginForm(
     loginViewModel: LoginViewModel,
     modifier: Modifier = Modifier
 ){
+    var pwVisible by remember { mutableStateOf(false) }
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceAround,
@@ -273,6 +282,14 @@ fun LoginForm(
                             Text(
                                 text = "Contraseña",
                                 color = Color(0x00FF1c1c1c)
+                            )
+                        },
+                        visualTransformation = if (pwVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                        trailingIcon = {
+                            Image(
+                                painter = if(pwVisible) painterResource(R.drawable.iconopwvisible) else painterResource(R.drawable.iconopwnovisible),
+                                contentDescription = "",
+                                modifier = Modifier.clickable { pwVisible = !pwVisible }
                             )
                         },
                         enabled = true,

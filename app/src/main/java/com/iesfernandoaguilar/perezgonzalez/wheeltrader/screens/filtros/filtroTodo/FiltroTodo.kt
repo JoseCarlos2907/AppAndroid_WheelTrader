@@ -13,6 +13,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxColors
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -31,6 +36,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.interfaces.IFiltro
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.filtros.FiltroTodo
@@ -45,7 +51,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun FiltroTodo(
     buscarOnClick: () -> Unit,
-    filtroTodoViewModel: FiltroTodoViewModel,
+    filtroTodoViewModel: FiltroTodoViewModel = viewModel(),
     filtrosViewModel: FiltrosViewModel,
     appViewModel: AppViewModel,
     modifier: Modifier = Modifier
@@ -329,7 +335,150 @@ fun FiltroTodo(
         Row (
             modifier = Modifier.fillMaxWidth().weight(0.25F)
         ) {
-            // TODO: Hacer el card con los tipos de vehiculos
+            Card(
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+                modifier = Modifier.fillMaxSize().padding(20.dp)
+            ){
+
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth().weight(0.5F)
+                    ) {
+                        Column(
+                            modifier = Modifier.weight(0.33F)
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Checkbox(
+                                    checked = filtroTodoUiState.tipoCoche,
+                                    onCheckedChange = { filtroTodoViewModel.cambiarTipoCoche(it) },
+                                    colors = CheckboxDefaults.colors(
+                                        uncheckedColor = Color.White,
+                                        checkmarkColor = Color(0xFF1c1c1c)
+                                    )
+                                )
+
+                                Text(
+                                    text = "Coche",
+                                    color = Color.White,
+                                    style = MaterialTheme.typography.bodySmall
+                                )
+                            }
+                        }
+
+                        Column(
+                            modifier = Modifier.weight(0.33F)
+                        ) {
+                            Row (
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Checkbox(
+                                    checked = filtroTodoUiState.tipoCamion,
+                                    onCheckedChange = { filtroTodoViewModel.cambiarTipoCamion(it) },
+                                    colors = CheckboxDefaults.colors(
+                                        uncheckedColor = Color.White,
+                                        checkmarkColor = Color(0xFF1c1c1c)
+                                    )
+                                )
+
+                                Text(
+                                    text = "Camion",
+                                    color = Color.White,
+                                    style = MaterialTheme.typography.bodySmall
+                                )
+                            }
+                        }
+
+                        Column(
+                            modifier = Modifier.weight(0.33F)
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Checkbox(
+                                    checked = filtroTodoUiState.tipoMaquinaria,
+                                    onCheckedChange = { filtroTodoViewModel.cambiarTipoMaquinaria(it) },
+                                    colors = CheckboxDefaults.colors(
+                                        uncheckedColor = Color.White,
+                                        checkmarkColor = Color(0xFF1c1c1c)
+                                    )
+                                )
+
+                                Text(
+                                    text = "Maquinaria",
+                                    color = Color.White,
+                                    style = MaterialTheme.typography.bodySmall
+                                )
+                            }
+                        }
+                    }
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth().weight(0.5F)
+                    ) {
+                        Column(
+                            modifier = Modifier.weight(0.33F)
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Checkbox(
+                                    checked = filtroTodoUiState.tipoMoto,
+                                    onCheckedChange = { filtroTodoViewModel.cambiarTipoMoto(it) },
+                                    colors = CheckboxDefaults.colors(
+                                        uncheckedColor = Color.White,
+                                        checkmarkColor = Color(0xFF1c1c1c)
+                                    )
+                                )
+
+                                Text(
+                                    text = "Moto",
+                                    color = Color.White,
+                                    style = MaterialTheme.typography.bodySmall
+                                )
+                            }
+                        }
+
+                        Column(
+                            modifier = Modifier.weight(0.33F)
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Checkbox(
+                                    checked = filtroTodoUiState.tipoCamioneta,
+                                    onCheckedChange = { filtroTodoViewModel.cambiarTipoCamioneta(it) },
+                                    colors = CheckboxDefaults.colors(
+                                        uncheckedColor = Color.White,
+                                        checkmarkColor = Color(0xFF1c1c1c)
+                                    )
+                                )
+
+                                Text(
+                                    text = "Camioneta",
+                                    color = Color.White,
+                                    style = MaterialTheme.typography.bodySmall
+                                )
+                            }
+                        }
+
+                        Column(
+                            modifier = Modifier.weight(0.33F)
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                // Vacío porque no hay otro tipo de Vehículo, está como relleno
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         Row (
@@ -349,7 +498,36 @@ fun FiltroTodo(
                     if (!filtroTodoUiState.ciudad.isEmpty()) filtroTodo.ciudad = filtroTodoUiState.ciudad
                     if (!filtroTodoUiState.provincia.isEmpty()) filtroTodo.provincia = filtroTodoUiState.provincia
 
-                    filtrosViewModel.asignarFiltroTodo(filtroTodo)
+                    if(filtroTodoUiState.tipoCoche){
+                        filtroTodo.tiposVehiculo.add("Coche")
+                    }
+
+                    if(filtroTodoUiState.tipoMoto){
+                        filtroTodo.tiposVehiculo.add("Moto")
+                    }
+
+                    if(filtroTodoUiState.tipoCamioneta){
+                        filtroTodo.tiposVehiculo.add("Camioneta")
+                    }
+
+                    if(filtroTodoUiState.tipoCamion){
+                        filtroTodo.tiposVehiculo.add("Camion")
+                    }
+
+                    if(filtroTodoUiState.tipoMaquinaria){
+                        filtroTodo.tiposVehiculo.add("Maquinaria")
+                    }
+
+                    if(filtroTodo.tiposVehiculo.isEmpty()){
+                        filtroTodo.tiposVehiculo.add("Coche")
+                        filtroTodo.tiposVehiculo.add("Moto")
+                        filtroTodo.tiposVehiculo.add("Camioneta")
+                        filtroTodo.tiposVehiculo.add("Camion")
+                        filtroTodo.tiposVehiculo.add("Maquinaria")
+
+                    }
+
+                    filtrosViewModel.asignarFiltro(filtroTodo)
 
                     buscarOnClick()
                 },
