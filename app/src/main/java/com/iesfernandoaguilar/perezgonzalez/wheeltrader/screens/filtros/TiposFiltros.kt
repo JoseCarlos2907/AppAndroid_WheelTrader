@@ -43,9 +43,18 @@ fun TiposFiltros(
             filtrosViewModel.asignarTipoFiltro("Moto")
             appNavController.navigate(AppScreens.FiltroMoto.screenName)
         },
-        {},
-        {},
-        {},
+        {
+            filtrosViewModel.asignarTipoFiltro("Camioneta")
+            appNavController.navigate(AppScreens.FiltroCamioneta.screenName)
+        },
+        {
+            filtrosViewModel.asignarTipoFiltro("Camion")
+            appNavController.navigate(AppScreens.FiltroCamion.screenName)
+        },
+        {
+            filtrosViewModel.asignarTipoFiltro("Maquinaria")
+            appNavController.navigate(AppScreens.FiltroMaquinaria.screenName)
+        },
     )
 
     LazyColumn(

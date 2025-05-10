@@ -34,7 +34,10 @@ import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.confUsuario.Conf
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros.filtroTodo.FiltroTodo
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros.FiltrosViewModel
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros.TiposFiltros
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros.filtroCamion.FiltroCamion
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros.filtroCamioneta.FiltroCamioneta
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros.filtroCoche.FiltroCoche
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros.filtroMaquinaria.FiltroMaquinaria
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros.filtroMoto.FiltroMoto
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros.filtroTodo.FiltroTodoViewModel
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.home.HomeScreen
@@ -60,6 +63,9 @@ enum class AppScreens(val screenName: String){
     FiltroTodo(screenName = "filtro_todo"),
     FiltroCoche(screenName = "filtro_coche"),
     FiltroMoto(screenName = "filtro_moto"),
+    FiltroCamioneta(screenName = "filtro_camioneta"),
+    FiltroCamion(screenName = "filtro_camion"),
+    FiltroMaquinaria(screenName = "filtro_maquinaria"),
 
     ListaAnuncios(screenName = "lista_anuncios")
 }
@@ -173,6 +179,27 @@ fun AppScreen(
 
             composable(route = AppScreens.FiltroMoto.screenName){
                 FiltroMoto(
+                    buscarOnClick = { appNavController.navigate(AppScreens.ListaAnuncios.screenName) },
+                    filtrosViewModel = filtrosViewModel
+                )
+            }
+
+            composable(route = AppScreens.FiltroCamioneta.screenName){
+                FiltroCamioneta(
+                    buscarOnClick = { appNavController.navigate(AppScreens.ListaAnuncios.screenName) },
+                    filtrosViewModel = filtrosViewModel
+                )
+            }
+
+            composable(route = AppScreens.FiltroCamion.screenName){
+                FiltroCamion(
+                    buscarOnClick = { appNavController.navigate(AppScreens.ListaAnuncios.screenName) },
+                    filtrosViewModel = filtrosViewModel
+                )
+            }
+
+            composable(route = AppScreens.FiltroMaquinaria.screenName){
+                FiltroMaquinaria(
                     buscarOnClick = { appNavController.navigate(AppScreens.ListaAnuncios.screenName) },
                     filtrosViewModel = filtrosViewModel
                 )
