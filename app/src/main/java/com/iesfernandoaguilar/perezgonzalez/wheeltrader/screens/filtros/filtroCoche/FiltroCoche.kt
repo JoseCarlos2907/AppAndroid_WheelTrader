@@ -59,7 +59,7 @@ fun FiltroCoche(
 ) {
     val filtroCocheUiState by filtroCocheViewModel.uiState.collectAsState()
 
-    var tiposCombustible = listOf("Gasolina", "Electrico")
+    var tiposCombustible = listOf("Gasolina", "Electrico", "Diesel", "Hibrido")
     var tiposCombustiblesDesplegado by remember { mutableStateOf(false) }
 
     var transmision = listOf("Manual", "Automatica")

@@ -223,7 +223,10 @@ private fun CardAnuncio(
 }
 
 @Composable
-fun imagenByteArray(imagen: ByteArray){
+fun imagenByteArray(
+    imagen: ByteArray,
+    modifier: Modifier = Modifier
+){
     val bitmap = remember(imagen) {
         BitmapFactory.decodeByteArray(imagen, 0, imagen.size)
     }

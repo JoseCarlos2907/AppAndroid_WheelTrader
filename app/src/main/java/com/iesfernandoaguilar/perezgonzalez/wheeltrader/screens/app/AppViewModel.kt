@@ -2,6 +2,7 @@ package com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.app
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.net.Uri
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
@@ -49,6 +50,9 @@ class AppViewModel(
     lateinit var handler: Handler
     var lectorApp: Thread? = null
 
+    lateinit var anuncioPublicar: Anuncio
+    lateinit var imagenesPublicar: List<ByteArray>
+
     fun confVM(context: Context){
         this.context = context
     }
@@ -69,6 +73,7 @@ class AppViewModel(
                     // Log.d("App", "Aqui no llega")
 
                     var tipo = msgServidor.getTipo()
+                    var msgRespuesta: Mensaje
                     // Log.d("App", tipo)
                     when(tipo){
                         "ENVIA_ANUNCIOS" -> {
@@ -88,19 +93,54 @@ class AppViewModel(
                             aniadirAnuncios(anuncios, imagenesAnuncios)
 
                         }
+
                         "ANUNCIO_GUARDADO" -> {
                             handler.post{
                                 showMsg.invoke(context, "Anuncio guardado correctamente")
                             }
                         }
+
                         "ANUNCIO_ELIMINADO_GUARDADOS" -> {
                             handler.post{
                                 showMsg.invoke(context, "Anuncio eliminado de guardados")
                             }
                         }
-                        "" -> {
 
+                        "DATOS_VALIDOS" -> {
+                            if("si".equals(msgServidor.getParams().get(0))){
+                                msgRespuesta = Mensaje()
+                                msgRespuesta.setTipo("PUBLICAR_ANUNCIO")
+
+                                var anuncioJSON = mapper.writeValueAsString(anuncioPublicar)
+                                msgRespuesta.addParam(anuncioJSON)
+                                msgRespuesta.addParam(imagenesPublicar.size.toString())
+
+                                this.dos?.writeUTF(Serializador.codificarMensaje(msgRespuesta))
+                                this.dos?.flush()
+
+                                for (i in 0 until imagenesPublicar.size){
+                                    this.dos?.writeInt(imagenesPublicar.get(i).size)
+                                    this.dos?.flush()
+
+                                    this.dos?.write(imagenesPublicar.get(i))
+                                    this.dos?.flush()
+                                }
+
+                            }else if("no".equals(msgServidor.getParams().get(0))){
+                                handler.post{
+                                    showMsg.invoke(context, "Datos introducidos no válidos")
+                                }
+                            }
                         }
+
+                        "ANUNCIO_PUBLICADO" -> {
+                            handler.post{
+                                showMsg.invoke(context, "Anuncio publicado correctamente")
+                            }
+
+                            _uiState.value = _uiState.value.copy(goToHome = true)
+                        }
+
                         else -> {
                             Log.d("App", "Raro que entre en el else del when")
                         }
@@ -170,6 +210,36 @@ class AppViewModel(
         msg.setTipo("ELIMINAR_ANUNCIO_GUARDADOS")
         msg.addParam(idAnuncio.toString())
         msg.addParam(nombreUsuario)
+
+        this.dos?.writeUTF(Serializador.codificarMensaje(msg))
+        this.dos?.flush()
+    }
+
+    fun getBytesFromUri(uri: Uri?): ByteArray?{
+        var imagen: ByteArray? = null
+        try {
+            if(uri != null){
+                this.context.contentResolver.openInputStream(uri)?.use { inputStream ->
+                    imagen = inputStream.readBytes()
+                }
+            }
+        } catch (e: Exception){
+            e.printStackTrace()
+        }
+
+        return  imagen
+    }
+
+    fun publicarAnuncio(anuncio: Anuncio, imagenes: List<ByteArray>){
+        anuncioPublicar = anuncio
+        imagenesPublicar = imagenes
+
+        var mapper = ObjectMapper()
+        var vcJSON = mapper.writeValueAsString(anuncio.valoresCaracteristicas)
+
+        var msg = Mensaje()
+        msg.setTipo("COMPROBAR_DATOS_VEHICULO")
+        msg.addParam(vcJSON)
 
         this.dos?.writeUTF(Serializador.codificarMensaje(msg))
         this.dos?.flush()

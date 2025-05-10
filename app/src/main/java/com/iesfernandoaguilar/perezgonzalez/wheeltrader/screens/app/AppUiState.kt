@@ -8,5 +8,6 @@ data class AppUiState (
     var anunciosEncontrados: List<Anuncio> = emptyList(),
     var imagenesAnuncios: List<ByteArray> = emptyList(),
     var cargando: Boolean = false,
-    val noHayMasAnuncios: Boolean = false
+    val noHayMasAnuncios: Boolean = false,
+    var goToHome: Boolean = false
 )
