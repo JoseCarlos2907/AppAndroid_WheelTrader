@@ -91,7 +91,6 @@ class AppViewModel(
 
                             var anuncios: List<Anuncio> = mapper.readValue(msgServidor.getParams().get(1), object: TypeReference<List<Anuncio>>(){})
                             aniadirAnuncios(anuncios, imagenesAnuncios)
-
                         }
 
                         "ANUNCIO_GUARDADO" -> {
@@ -139,6 +138,26 @@ class AppViewModel(
                             }
 
                             _uiState.value = _uiState.value.copy(goToHome = true)
+                        }
+
+                        "ENVIA_IMAGENES" -> {
+                            var imagenesAnuncioSeleccionado: ArrayList<ByteArray> = ArrayList()
+                            var cantAnuncios = Integer.parseInt(msgServidor.getParams().get(0))
+                            Log.d("App", "Cantidad de imagenes: " + cantAnuncios.toString())
+                            for (i in 0 until cantAnuncios){
+                                var longitudImg = this.dis?.readInt()?: 0
+                                // Log.d("App", longitudImg.toString())
+                                var bytesImg = ByteArray(longitudImg)
+                                this.dis?.readFully(bytesImg)
+                                imagenesAnuncioSeleccionado.add(bytesImg)
+                            }
+
+                            _uiState.value = _uiState.value.copy(imagenesAnuncioSeleccionado = imagenesAnuncioSeleccionado)
+                            _uiState.value = _uiState.value.copy(goToDetalle = true)
+                        }
+
+                        "" -> {
+
                         }
 
                         else -> {
@@ -243,6 +262,27 @@ class AppViewModel(
 
         this.dos?.writeUTF(Serializador.codificarMensaje(msg))
         this.dos?.flush()
+    }
+
+    fun obtenerImagenesAnuncioSel(idAnuncio: Long){
+        var msg = Mensaje()
+        msg.setTipo("OBTENER_IMAGENES")
+        msg.addParam(idAnuncio.toString())
+
+        this.dos?.writeUTF(Serializador.codificarMensaje(msg))
+        this.dos?.flush()
+    }
+
+    fun cambiarAnuncioSeleccionado(anuncio: Anuncio){
+        _uiState.value = _uiState.value.copy(anuncioSeleccionado = anuncio.copy())
+    }
+
+    fun salirDetalleAnuncio(){
+        _uiState.value = _uiState.value.copy(
+            anuncioSeleccionado = null,
+            imagenesAnuncioSeleccionado = emptyList(),
+            goToDetalle = false
+        )
     }
 }
 

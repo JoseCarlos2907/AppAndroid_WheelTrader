@@ -9,5 +9,8 @@ data class AppUiState (
     var imagenesAnuncios: List<ByteArray> = emptyList(),
     var cargando: Boolean = false,
     val noHayMasAnuncios: Boolean = false,
-    var goToHome: Boolean = false
+    var goToHome: Boolean = false,
+    var anuncioSeleccionado: Anuncio? = null,
+    var imagenesAnuncioSeleccionado: List<ByteArray> = emptyList(),
+    var goToDetalle: Boolean = false
 )

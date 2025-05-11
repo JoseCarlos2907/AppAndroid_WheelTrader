@@ -18,6 +18,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,16 +29,24 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.filtros.FiltroGuardados
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.filtros.FiltroPublicados
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.ConectionUiState
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.ConectionViewModel
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.app.AppScreens
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros.FiltrosViewModel
 
 @Composable
 fun ConfUsuario(
     conectionUiState: ConectionUiState,
-    conectionViewModel: ConectionViewModel,
+    filtrosViewModel: FiltrosViewModel,
+    appNavController: NavController,
     onClickCerrarSesion: () -> Unit,
     modifier: Modifier = Modifier
 ){
+    val filtrosUiState by filtrosViewModel.uiState.collectAsState()
+
     var acordeon1 by remember { mutableStateOf(false) }
     var acordeon2 by remember { mutableStateOf(false) }
     var acordeon3 by remember { mutableStateOf(false) }
@@ -171,12 +180,31 @@ fun ConfUsuario(
         }
 
         Column{
-            boton({}, "Mis Valoraciones")
-            boton({}, "Mis Anuncios")
-            boton({}, "Mis Guardados")
-            boton({}, "Mis Pagos")
-            boton({}, "Mis Compras")
-            boton({}, "Mis Reuniones")
+            boton({
+
+            }, "Mis Valoraciones")
+
+            boton({
+                filtrosViewModel.asignarFiltro(FiltroPublicados(conectionUiState.usuario!!.nombreUsuario))
+                appNavController.navigate(AppScreens.ListaAnuncios.screenName)
+            }, "Mis Anuncios")
+
+            boton({
+                filtrosViewModel.asignarFiltro(FiltroGuardados(conectionUiState.usuario!!.nombreUsuario))
+                appNavController.navigate(AppScreens.ListaAnuncios.screenName)
+            }, "Mis Guardados")
+
+            boton({
+
+            }, "Mis Pagos")
+
+            boton({
+
+            }, "Mis Compras")
+
+            boton({
+
+            }, "Mis Reuniones")
         }
 
         Row (

@@ -1,6 +1,7 @@
 package com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.anuncios
 
 import android.graphics.BitmapFactory
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -34,15 +35,22 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
+import coil.ImageLoader
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.R
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Anuncio
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.ConectionUiState
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.app.AppScreens
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.app.AppViewModel
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros.FiltrosUiState
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros.FiltrosViewModel
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.ui.theme.WheelTraderTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -53,6 +61,8 @@ fun ListaAnuncios(
     appViewModel: AppViewModel,
     filtrosUiState: FiltrosUiState,
     conectionUiState: ConectionUiState,
+    onClickAnuncio: (Anuncio) -> Unit,
+    onImagenesCargadas: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val appUiState by appViewModel.uiState.collectAsState()
@@ -77,6 +87,12 @@ fun ListaAnuncios(
         withContext(Dispatchers.IO){
             appViewModel.obtenerAnuncios(filtrosUiState.filtro, true)
             filtrosUiState.filtro!!.pagina++
+        }
+    }
+
+    LaunchedEffect(appUiState.goToDetalle) {
+        if (appUiState.goToDetalle){
+            onImagenesCargadas()
         }
     }
 
@@ -122,6 +138,7 @@ fun ListaAnuncios(
                             }
                         }
                     },
+                    onClickAnuncio = { onClickAnuncio(anuncio) },
                     bytesImagen = appUiState.imagenesAnuncios.get(appUiState.anunciosEncontrados.indexOf(anuncio))
                 )
             }
@@ -140,6 +157,7 @@ private fun CardAnuncio(
     anuncio: Anuncio,
     bytesImagen: ByteArray,
     onClickGuardar: () -> Unit,
+    onClickAnuncio: () -> Unit,
     modifier: Modifier = Modifier
 ){
     var isGuardado by remember { mutableStateOf(anuncio.guardado) }
@@ -165,8 +183,9 @@ private fun CardAnuncio(
         modifier = modifier.fillMaxWidth().padding(16.dp)
     ) {
         Card(
+            onClick = { onClickAnuncio() },
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
-            modifier = Modifier.fillMaxSize().height(320.dp),
+            modifier = Modifier.fillMaxSize().height(320.dp)
         ) {
             Column(
                 modifier = Modifier.fillMaxSize()

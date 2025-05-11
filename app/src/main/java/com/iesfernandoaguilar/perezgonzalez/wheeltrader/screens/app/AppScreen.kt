@@ -15,6 +15,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -24,10 +25,12 @@ import com.iesfernandoaguilar.perezgonzalez.wheeltrader.WheelTraderScreens
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.mainAppBar
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.mainBottomBar
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.ConectionViewModel
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.anuncios.DetalleAnuncio
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.anuncios.ListaAnuncios
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.confUsuario.ConfUsuario
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros.filtroTodo.FiltroTodo
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros.FiltrosViewModel
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros.FiltrosViewModelFactory
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros.TiposFiltros
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros.filtroCamion.FiltroCamion
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros.filtroCamioneta.FiltroCamioneta
@@ -42,6 +45,7 @@ import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.publicar.publica
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.publicar.publicarMaquinaria.PublicarMaquinaria
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.publicar.publicarMoto.PublicarMoto
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 enum class AppScreens(val screenName: String){
@@ -66,7 +70,8 @@ enum class AppScreens(val screenName: String){
     FiltroCamion(screenName = "filtro_camion"),
     FiltroMaquinaria(screenName = "filtro_maquinaria"),
 
-    ListaAnuncios(screenName = "lista_anuncios")
+    ListaAnuncios(screenName = "lista_anuncios"),
+    DetalleAnuncio(screenName = "detalle_anuncio")
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -80,7 +85,9 @@ fun AppScreen(
     appViewModel: AppViewModel = viewModel(
         factory = AppViewModelFactory(conectionViewModel),
     ),
-    filtrosViewModel: FiltrosViewModel = viewModel(),
+    filtrosViewModel: FiltrosViewModel = viewModel(
+        factory = FiltrosViewModelFactory()
+    ),
     modifier: Modifier = Modifier
 ){
     /*val scope = rememberCoroutineScope()
@@ -207,15 +214,31 @@ fun AppScreen(
             composable(route = AppScreens.ListaAnuncios.screenName){
                 ListaAnuncios(
                     appViewModel = appViewModel,
+                    conectionUiState = conectionUiState,
                     filtrosUiState = filtrosUiState,
-                    conectionUiState = conectionUiState
+                    onClickAnuncio = { anuncio ->
+                        // Log.d("App", anuncio.idAnuncio.toString())
+
+                        appViewModel.viewModelScope.launch(Dispatchers.IO) {
+                            appViewModel.cambiarAnuncioSeleccionado(anuncio)
+                            appViewModel.obtenerImagenesAnuncioSel(anuncio.idAnuncio)
+                        }
+                    },
+                    onImagenesCargadas = { appNavController.navigate(AppScreens.DetalleAnuncio.screenName) }
+                )
+            }
+
+            composable(route = AppScreens.DetalleAnuncio.screenName){
+                DetalleAnuncio(
+                    appViewModel  = appViewModel,
                 )
             }
 
             composable(route = AppScreens.ConfUsu.screenName){
                 ConfUsuario(
                     conectionUiState = conectionUiState,
-                    conectionViewModel = conectionViewModel,
+                    filtrosViewModel = filtrosViewModel,
+                    appNavController = appNavController,
                     onClickCerrarSesion = {
                         conectionViewModel.cerrarSesion()
                         navController.navigate(WheelTraderScreens.Login.screenName)
