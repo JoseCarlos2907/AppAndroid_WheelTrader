@@ -1,4 +1,4 @@
-package com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.publicar.publicarCoche
+package com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.publicar.publicarMoto
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -6,15 +6,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -23,19 +20,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -64,25 +56,25 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Anuncio
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.ValorCaracteristica
-import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.filtros.FiltroCoche
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.ConectionUiState
-import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.anuncios.imagenByteArray
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.app.AppScreens
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.app.AppViewModel
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.publicar.componenteImagen
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.publicar.publicarCoche.PublicarCocheUiState
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.publicar.publicarCoche.PublicarCocheViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Composable
-fun PublicarCoche(
+fun PublicarMoto(
     appNavController: NavController,
     appViewModel: AppViewModel,
     conectionUiState: ConectionUiState,
-    publicarCocheViewModel: PublicarCocheViewModel = viewModel(),
+    publicarMotoViewModel: PublicarMotoViewModel = viewModel(),
     modifier: Modifier = Modifier
-) {
+){
     val appUiState by appViewModel.uiState.collectAsState()
-    val publicarCocheUiState by publicarCocheViewModel.uiState.collectAsState()
+    val publicarMotoUiState by publicarMotoViewModel.uiState.collectAsState()
 
     LaunchedEffect(appUiState.goToHome) {
         if(appUiState.goToHome){
@@ -100,20 +92,20 @@ fun PublicarCoche(
         )
     ) {
         item{
-            formularioSuperiorCoche(
+            formularioSuperiorMoto(
                 appViewModel,
-                publicarCocheViewModel,
-                publicarCocheUiState
+                publicarMotoViewModel,
+                publicarMotoUiState
             )
         }
 
         items(
-            items = publicarCocheUiState.imagenes
+            items = publicarMotoUiState.imagenes
         ) { imagen ->
 
             componenteImagen(
                 imagen = imagen,
-                onClickBorrarImagen = { publicarCocheViewModel.eliminarImagen(imagen) }
+                onClickBorrarImagen = { publicarMotoViewModel.eliminarImagen(imagen) }
             )
         }
 
@@ -126,55 +118,31 @@ fun PublicarCoche(
                 Button(
                     onClick = {
                         var anuncio = Anuncio(
-                            numSerieBastidor = publicarCocheUiState.nBastidor,
-                            matricula = publicarCocheUiState.matricula,
-                            tipoVehiculo = "Coche",
-                            descripcion = publicarCocheUiState.descripcion,
-                            precio = publicarCocheUiState.precio.toDouble(),
-                            ciudad = publicarCocheUiState.ciudad,
-                            provincia = publicarCocheUiState.provincia
+                            numSerieBastidor = publicarMotoUiState.nBastidor,
+                            matricula = publicarMotoUiState.matricula,
+                            tipoVehiculo = "Moto",
+                            descripcion = publicarMotoUiState.descripcion,
+                            precio = publicarMotoUiState.precio.toDouble(),
+                            ciudad = publicarMotoUiState.ciudad,
+                            provincia = publicarMotoUiState.provincia
                         )
 
                         var vCaracteristicas = listOf(
-                            ValorCaracteristica(nombreCaracteristica = "Marca_Coche", valor = publicarCocheUiState.marca),
-                            ValorCaracteristica(nombreCaracteristica = "Modelo_Coche", valor = publicarCocheUiState.modelo),
-                            ValorCaracteristica(nombreCaracteristica = "Anio_Coche", valor = publicarCocheUiState.anio),
-                            ValorCaracteristica(nombreCaracteristica = "CV_Coche", valor = publicarCocheUiState.cv),
-                            ValorCaracteristica(nombreCaracteristica = "KM_Coche", valor = publicarCocheUiState.kilometaje),
-                            ValorCaracteristica(nombreCaracteristica = "Marchas_Coche", valor = publicarCocheUiState.cantMarchas),
-                            ValorCaracteristica(nombreCaracteristica = "Puertas_Coche", valor = publicarCocheUiState.nPuertas),
-                            ValorCaracteristica(nombreCaracteristica = "TipoCombustible_Coche", valor = publicarCocheUiState.tipoCombustible),
-                            ValorCaracteristica(nombreCaracteristica = "Transmision_Coche", valor = publicarCocheUiState.transmision),
+                            ValorCaracteristica(nombreCaracteristica = "Marca_Moto", valor = publicarMotoUiState.marca),
+                            ValorCaracteristica(nombreCaracteristica = "Modelo_Moto", valor = publicarMotoUiState.modelo),
+                            ValorCaracteristica(nombreCaracteristica = "Anio_Moto", valor = publicarMotoUiState.anio),
+                            ValorCaracteristica(nombreCaracteristica = "Cilindrada_Moto", valor = publicarMotoUiState.cv),
+                            ValorCaracteristica(nombreCaracteristica = "KM_Moto", valor = publicarMotoUiState.kilometaje),
+                            ValorCaracteristica(nombreCaracteristica = "Marchas_Moto", valor = publicarMotoUiState.cantMarchas),
+                            ValorCaracteristica(nombreCaracteristica = "TipoCombustible_Moto", valor = publicarMotoUiState.tipoCombustible),
                         )
-
-                        /*var anuncio = Anuncio(
-                            numSerieBastidor = "1234567890123",
-                            matricula = "1234DXD",
-                            tipoVehiculo = "Coche",
-                            descripcion = "Prueba desde android",
-                            precio = 4000.toDouble(),
-                            ciudad = "Medina",
-                            provincia = "Cadiz",
-                        )
-
-                        var vCaracteristicas = listOf(
-                            ValorCaracteristica(nombreCaracteristica = "Marca_Coche", valor = "prueba"),
-                            ValorCaracteristica(nombreCaracteristica = "Modelo_Coche", valor = "android"),
-                            ValorCaracteristica(nombreCaracteristica = "Anio_Coche", valor = "2000"),
-                            ValorCaracteristica(nombreCaracteristica = "CV_Coche", valor = "110"),
-                            ValorCaracteristica(nombreCaracteristica = "KM_Coche", valor = "170000"),
-                            ValorCaracteristica(nombreCaracteristica = "Marchas_Coche", valor = "5"),
-                            ValorCaracteristica(nombreCaracteristica = "Puertas_Coche", valor = "5"),
-                            ValorCaracteristica(nombreCaracteristica = "TipoCombustible_Coche", valor = "Diesel"),
-                            ValorCaracteristica(nombreCaracteristica = "Transmision_Coche", valor = "Manual"),
-                        )*/
 
                         anuncio.valoresCaracteristicas = vCaracteristicas
 
                         anuncio.vendedor = conectionUiState.usuario
 
                         appViewModel.viewModelScope.launch(Dispatchers.IO) {
-                            appViewModel.publicarAnuncio(anuncio, publicarCocheUiState.imagenes)
+                            appViewModel.publicarAnuncio(anuncio, publicarMotoUiState.imagenes)
                         }
 
                     },
@@ -195,20 +163,16 @@ fun PublicarCoche(
 }
 
 @Composable
-fun formularioSuperiorCoche(
+fun formularioSuperiorMoto(
     appViewModel: AppViewModel,
-    publicarCocheViewModel: PublicarCocheViewModel,
-    publicarCocheUiState: PublicarCocheUiState,
+    publicarMotoViewModel: PublicarMotoViewModel,
+    publicarMotoUiState: PublicarMotoUiState,
     modifier: Modifier = Modifier
 ) {
     var tiposCombustible = listOf("Gasolina", "Electrico", "Diesel", "Hibrido")
     var tiposCombustiblesDesplegado by remember { mutableStateOf(false) }
 
-    var transmision = listOf("Manual", "Automatica")
-    var transmisionDesplegado by remember { mutableStateOf(false) }
-
     var tamanioCombustible by remember { mutableStateOf(Size.Zero) }
-    var tamanioTransmision by remember { mutableStateOf(Size.Zero) }
 
     val photoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
@@ -217,7 +181,7 @@ fun formularioSuperiorCoche(
             // este me devuelve un array de bytes y si no es nulo significa que tengo la imagen en array de bytes para añadirla a la lista de imagenes
             var bytesImagen: ByteArray? = appViewModel.getBytesFromUri(it)
             if (bytesImagen != null) {
-                publicarCocheViewModel.aniadirImagen(bytesImagen)
+                publicarMotoViewModel.aniadirImagen(bytesImagen)
             }
         }
     )
@@ -233,7 +197,7 @@ fun formularioSuperiorCoche(
                 .padding(16.dp)
         ) {
             Text(
-                text = "Especificaciones\ndel Coche",
+                text = "Especificaciones\nde la Moto",
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.titleLarge,
                 color = Color.White
@@ -249,8 +213,8 @@ fun formularioSuperiorCoche(
                     .padding(4.dp)
             ) {
                 OutlinedTextField(
-                    value = publicarCocheUiState.marca,
-                    onValueChange = { publicarCocheViewModel.cambiarMarca_Coche(it) },
+                    value = publicarMotoUiState.marca,
+                    onValueChange = { publicarMotoViewModel.cambiarMarca_Moto(it) },
                     placeholder = {
                         Text(
                             text = "Marca",
@@ -280,8 +244,8 @@ fun formularioSuperiorCoche(
                     .padding(4.dp)
             ) {
                 OutlinedTextField(
-                    value = publicarCocheUiState.modelo,
-                    onValueChange = { publicarCocheViewModel.cambiarModelo_Coche(it) },
+                    value = publicarMotoUiState.modelo,
+                    onValueChange = { publicarMotoViewModel.cambiarModelo_Moto(it) },
                     placeholder = {
                         Text(
                             text = "Modelo",
@@ -315,8 +279,8 @@ fun formularioSuperiorCoche(
                     .padding(4.dp)
             ) {
                 OutlinedTextField(
-                    value = publicarCocheUiState.anio,
-                    onValueChange = { publicarCocheViewModel.cambiarAnio_Coche(it) },
+                    value = publicarMotoUiState.anio,
+                    onValueChange = { publicarMotoViewModel.cambiarAnio_Moto(it) },
                     placeholder = {
                         Text(
                             text = "Año",
@@ -347,8 +311,8 @@ fun formularioSuperiorCoche(
                     .padding(4.dp)
             ) {
                 OutlinedTextField(
-                    value = publicarCocheUiState.cv,
-                    onValueChange = { publicarCocheViewModel.cambiarCv_Coche(it) },
+                    value = publicarMotoUiState.cv,
+                    onValueChange = { publicarMotoViewModel.cambiarCv_Moto(it) },
                     placeholder = {
                         Text(
                             text = "CV",
@@ -383,8 +347,8 @@ fun formularioSuperiorCoche(
                     .padding(4.dp)
             ) {
                 OutlinedTextField(
-                    value = publicarCocheUiState.kilometaje,
-                    onValueChange = { publicarCocheViewModel.cambiarKm_Coche(it) },
+                    value = publicarMotoUiState.kilometaje,
+                    onValueChange = { publicarMotoViewModel.cambiarKm_Moto(it) },
                     placeholder = {
                         Text(
                             text = "Kilometraje",
@@ -415,8 +379,8 @@ fun formularioSuperiorCoche(
                     .padding(4.dp)
             ) {
                 OutlinedTextField(
-                    value = publicarCocheUiState.cantMarchas,
-                    onValueChange = { publicarCocheViewModel.cambiarCantMarchas_Coche(it) },
+                    value = publicarMotoUiState.cantMarchas,
+                    onValueChange = { publicarMotoViewModel.cambiarCantMarchas_Moto(it) },
                     placeholder = {
                         Text(
                             text = "Cant. de Marchas",
@@ -442,117 +406,6 @@ fun formularioSuperiorCoche(
             }
         }
 
-        Row(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Column(
-                modifier = Modifier
-                    .weight(0.5F)
-                    .padding(4.dp)
-            ) {
-                OutlinedTextField(
-                    value = publicarCocheUiState.nBastidor,
-                    onValueChange = { publicarCocheViewModel.cambiarNBastidor_Coche(it) },
-                    placeholder = {
-                        Text(
-                            text = "Nº de Bastidor",
-                            color = Color(0x00FF1c1c1c)
-                        )
-                    },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    enabled = true,
-                    singleLine = true,
-                    colors = TextFieldDefaults.colors(
-                        unfocusedContainerColor = Color.White,
-                        focusedContainerColor = Color.White,
-                        cursorColor = Color(0x00FF1c1c1c),
-                        focusedTextColor = Color(0x00FF1c1c1c),
-                        unfocusedTextColor = Color(0x00FF1c1c1c),
-                        focusedLabelColor = Color(0x00FF1c1c1c),
-                        unfocusedLabelColor = Color(0x00FF1c1c1c),
-                        unfocusedIndicatorColor = Color.Transparent,
-                        focusedIndicatorColor = Color.Transparent
-                    ),
-                    shape = RoundedCornerShape(22.dp)
-                )
-            }
-
-            Column(
-                modifier = Modifier
-                    .weight(0.5F)
-                    .padding(4.dp)
-            ) {
-                OutlinedTextField(
-                    value = publicarCocheUiState.matricula,
-                    onValueChange = { publicarCocheViewModel.cambiarMatricula_Coche(it) },
-                    placeholder = {
-                        Text(
-                            text = "Matrícula",
-                            color = Color(0x00FF1c1c1c)
-                        )
-                    },
-                    enabled = true,
-                    singleLine = true,
-                    colors = TextFieldDefaults.colors(
-                        unfocusedContainerColor = Color.White,
-                        focusedContainerColor = Color.White,
-                        cursorColor = Color(0x00FF1c1c1c),
-                        focusedTextColor = Color(0x00FF1c1c1c),
-                        unfocusedTextColor = Color(0x00FF1c1c1c),
-                        focusedLabelColor = Color(0x00FF1c1c1c),
-                        unfocusedLabelColor = Color(0x00FF1c1c1c),
-                        unfocusedIndicatorColor = Color.Transparent,
-                        focusedIndicatorColor = Color.Transparent
-                    ),
-                    shape = RoundedCornerShape(22.dp)
-                )
-            }
-        }
-
-        Row(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Column(
-                modifier = Modifier
-                    .weight(0.5F)
-                    .padding(4.dp)
-            ) {
-                OutlinedTextField(
-                    value = publicarCocheUiState.nPuertas,
-                    onValueChange = { publicarCocheViewModel.cambiarNPuertas_Coche(it) },
-                    placeholder = {
-                        Text(
-                            text = "Nº de Puertas",
-                            color = Color(0x00FF1c1c1c)
-                        )
-                    },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    enabled = true,
-                    singleLine = true,
-                    colors = TextFieldDefaults.colors(
-                        unfocusedContainerColor = Color.White,
-                        focusedContainerColor = Color.White,
-                        cursorColor = Color(0x00FF1c1c1c),
-                        focusedTextColor = Color(0x00FF1c1c1c),
-                        unfocusedTextColor = Color(0x00FF1c1c1c),
-                        focusedLabelColor = Color(0x00FF1c1c1c),
-                        unfocusedLabelColor = Color(0x00FF1c1c1c),
-                        unfocusedIndicatorColor = Color.Transparent,
-                        focusedIndicatorColor = Color.Transparent
-                    ),
-                    shape = RoundedCornerShape(22.dp)
-                )
-            }
-
-            Column(
-                modifier = Modifier
-                    .weight(0.5F)
-                    .padding(4.dp)
-            ) {
-                // Vacío por tema de diseño
-            }
-        }
-
         // Desplegables
         Row(
             modifier = Modifier.fillMaxWidth()
@@ -563,8 +416,8 @@ fun formularioSuperiorCoche(
                     .padding(4.dp)
             ) {
                 OutlinedTextField(
-                    value = publicarCocheUiState.tipoCombustible,
-                    onValueChange = { publicarCocheViewModel.cambiarTipoComb_Coche(it) },
+                    value = publicarMotoUiState.tipoCombustible,
+                    onValueChange = { publicarMotoViewModel.cambiarTipoComb_Moto(it) },
                     placeholder = {
                         Text(
                             text = "Combustible",
@@ -612,7 +465,7 @@ fun formularioSuperiorCoche(
                     tiposCombustible.forEach { tipo ->
                         DropdownMenuItem(
                             onClick = {
-                                publicarCocheViewModel.cambiarTipoComb_Coche(tipo)
+                                publicarMotoViewModel.cambiarTipoComb_Moto(tipo)
                                 tiposCombustiblesDesplegado = false
                             },
                             text = { Text(text = tipo) }
@@ -621,70 +474,12 @@ fun formularioSuperiorCoche(
                 }
             }
 
-
-
             Column(
                 modifier = Modifier
                     .weight(0.5F)
                     .padding(4.dp)
             ) {
-                OutlinedTextField(
-                    value = publicarCocheUiState.transmision,
-                    onValueChange = { publicarCocheViewModel.cambiarTransmision_Coche(it) },
-                    placeholder = {
-                        Text(
-                            text = "Transmisión",
-                            color = Color(0x00FF1c1c1c)
-                        )
-                    },
-                    readOnly = true,
-                    enabled = true,
-                    singleLine = true,
-                    colors = TextFieldDefaults.colors(
-                        unfocusedContainerColor = Color.White,
-                        focusedContainerColor = Color.White,
-                        cursorColor = Color(0x00FF1c1c1c),
-                        focusedTextColor = Color(0x00FF1c1c1c),
-                        unfocusedTextColor = Color(0x00FF1c1c1c),
-                        focusedLabelColor = Color(0x00FF1c1c1c),
-                        unfocusedLabelColor = Color(0x00FF1c1c1c),
-                        unfocusedIndicatorColor = Color.Transparent,
-                        focusedIndicatorColor = Color.Transparent
-                    ),
-                    shape = RoundedCornerShape(22.dp),
-                    trailingIcon = {
-                        Icon(
-                            imageVector = if (transmisionDesplegado) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-                            contentDescription = "",
-                            modifier = Modifier.clickable {
-                                transmisionDesplegado = !transmisionDesplegado
-                            }
-                        )
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .onGloballyPositioned { coords ->
-                            tamanioTransmision = coords.size.toSize()
-                        }
-                )
-
-                DropdownMenu(
-                    expanded = transmisionDesplegado,
-                    onDismissRequest = { transmisionDesplegado = false },
-                    modifier = Modifier.width(
-                        with(LocalDensity.current) { tamanioTransmision.width.toDp() }
-                    )
-                ) {
-                    transmision.forEach { tipo ->
-                        DropdownMenuItem(
-                            onClick = {
-                                publicarCocheViewModel.cambiarTransmision_Coche(tipo)
-                                transmisionDesplegado = false
-                            },
-                            text = { Text(text = tipo) }
-                        )
-                    }
-                }
+                // Vacío por tema de diseño
             }
         }
 
@@ -703,8 +498,8 @@ fun formularioSuperiorCoche(
                     .padding(4.dp)
             ) {
                 OutlinedTextField(
-                    value = publicarCocheUiState.ciudad,
-                    onValueChange = { publicarCocheViewModel.cambiarCiudad_Coche(it) },
+                    value = publicarMotoUiState.ciudad,
+                    onValueChange = { publicarMotoViewModel.cambiarCiudad_Moto(it) },
                     placeholder = {
                         Text(
                             text = "Ciudad",
@@ -734,8 +529,8 @@ fun formularioSuperiorCoche(
                     .padding(4.dp)
             ) {
                 OutlinedTextField(
-                    value = publicarCocheUiState.provincia,
-                    onValueChange = { publicarCocheViewModel.cambiarProvincia_Coche(it) },
+                    value = publicarMotoUiState.provincia,
+                    onValueChange = { publicarMotoViewModel.cambiarProvincia_Moto(it) },
                     placeholder = {
                         Text(
                             text = "Provincia",
@@ -769,8 +564,8 @@ fun formularioSuperiorCoche(
                     .padding(4.dp)
             ) {
                 OutlinedTextField(
-                    value = publicarCocheUiState.precio,
-                    onValueChange = { publicarCocheViewModel.cambiarPrecio_Coche(it) },
+                    value = publicarMotoUiState.precio,
+                    onValueChange = { publicarMotoViewModel.cambiarPrecio_Moto(it) },
                     placeholder = {
                         Text(
                             text = "Precio",
@@ -813,8 +608,8 @@ fun formularioSuperiorCoche(
                     .padding(4.dp)
             ) {
                 OutlinedTextField(
-                    value = publicarCocheUiState.descripcion,
-                    onValueChange = { publicarCocheViewModel.cambiarDescripcion_Coche(it) },
+                    value = publicarMotoUiState.descripcion,
+                    onValueChange = { publicarMotoViewModel.cambiarDescripcion_Moto(it) },
                     placeholder = {
                         Text(
                             text = "Descripción",

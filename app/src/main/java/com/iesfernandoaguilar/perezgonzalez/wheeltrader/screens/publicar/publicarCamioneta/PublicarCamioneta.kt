@@ -1,4 +1,4 @@
-package com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.publicar.publicarCoche
+package com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.publicar.publicarCamioneta
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -6,15 +6,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -23,19 +20,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -64,25 +56,26 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Anuncio
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.ValorCaracteristica
-import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.filtros.FiltroCoche
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.ConectionUiState
-import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.anuncios.imagenByteArray
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.app.AppScreens
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.app.AppViewModel
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.publicar.componenteImagen
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.publicar.publicarCoche.PublicarCocheUiState
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.publicar.publicarCoche.PublicarCocheViewModel
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.publicar.publicarCoche.formularioSuperiorCoche
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Composable
-fun PublicarCoche(
+fun PublicarCamioneta(
     appNavController: NavController,
     appViewModel: AppViewModel,
     conectionUiState: ConectionUiState,
-    publicarCocheViewModel: PublicarCocheViewModel = viewModel(),
+    publicarCamionetaViewModel: PublicarCamionetaViewModel = viewModel(),
     modifier: Modifier = Modifier
-) {
+){
     val appUiState by appViewModel.uiState.collectAsState()
-    val publicarCocheUiState by publicarCocheViewModel.uiState.collectAsState()
+    val publicarCamionetaUiState by publicarCamionetaViewModel.uiState.collectAsState()
 
     LaunchedEffect(appUiState.goToHome) {
         if(appUiState.goToHome){
@@ -100,20 +93,20 @@ fun PublicarCoche(
         )
     ) {
         item{
-            formularioSuperiorCoche(
+            formularioSuperiorCamioneta(
                 appViewModel,
-                publicarCocheViewModel,
-                publicarCocheUiState
+                publicarCamionetaViewModel,
+                publicarCamionetaUiState
             )
         }
 
         items(
-            items = publicarCocheUiState.imagenes
+            items = publicarCamionetaUiState.imagenes
         ) { imagen ->
 
             componenteImagen(
                 imagen = imagen,
-                onClickBorrarImagen = { publicarCocheViewModel.eliminarImagen(imagen) }
+                onClickBorrarImagen = { publicarCamionetaViewModel.eliminarImagen(imagen) }
             )
         }
 
@@ -126,55 +119,34 @@ fun PublicarCoche(
                 Button(
                     onClick = {
                         var anuncio = Anuncio(
-                            numSerieBastidor = publicarCocheUiState.nBastidor,
-                            matricula = publicarCocheUiState.matricula,
-                            tipoVehiculo = "Coche",
-                            descripcion = publicarCocheUiState.descripcion,
-                            precio = publicarCocheUiState.precio.toDouble(),
-                            ciudad = publicarCocheUiState.ciudad,
-                            provincia = publicarCocheUiState.provincia
+                            numSerieBastidor = publicarCamionetaUiState.nBastidor,
+                            matricula = publicarCamionetaUiState.matricula,
+                            tipoVehiculo = "Camioneta",
+                            descripcion = publicarCamionetaUiState.descripcion,
+                            precio = publicarCamionetaUiState.precio.toDouble(),
+                            ciudad = publicarCamionetaUiState.ciudad,
+                            provincia = publicarCamionetaUiState.provincia
                         )
 
                         var vCaracteristicas = listOf(
-                            ValorCaracteristica(nombreCaracteristica = "Marca_Coche", valor = publicarCocheUiState.marca),
-                            ValorCaracteristica(nombreCaracteristica = "Modelo_Coche", valor = publicarCocheUiState.modelo),
-                            ValorCaracteristica(nombreCaracteristica = "Anio_Coche", valor = publicarCocheUiState.anio),
-                            ValorCaracteristica(nombreCaracteristica = "CV_Coche", valor = publicarCocheUiState.cv),
-                            ValorCaracteristica(nombreCaracteristica = "KM_Coche", valor = publicarCocheUiState.kilometaje),
-                            ValorCaracteristica(nombreCaracteristica = "Marchas_Coche", valor = publicarCocheUiState.cantMarchas),
-                            ValorCaracteristica(nombreCaracteristica = "Puertas_Coche", valor = publicarCocheUiState.nPuertas),
-                            ValorCaracteristica(nombreCaracteristica = "TipoCombustible_Coche", valor = publicarCocheUiState.tipoCombustible),
-                            ValorCaracteristica(nombreCaracteristica = "Transmision_Coche", valor = publicarCocheUiState.transmision),
+                            ValorCaracteristica(nombreCaracteristica = "Marca_Camioneta", valor = publicarCamionetaUiState.marca),
+                            ValorCaracteristica(nombreCaracteristica = "Modelo_Camioneta", valor = publicarCamionetaUiState.modelo),
+                            ValorCaracteristica(nombreCaracteristica = "Anio_Camioneta", valor = publicarCamionetaUiState.anio),
+                            ValorCaracteristica(nombreCaracteristica = "CV_Camioneta", valor = publicarCamionetaUiState.cv),
+                            ValorCaracteristica(nombreCaracteristica = "KM_Camioneta", valor = publicarCamionetaUiState.kilometaje),
+                            ValorCaracteristica(nombreCaracteristica = "Marchas_Camioneta", valor = publicarCamionetaUiState.cantMarchas),
+                            ValorCaracteristica(nombreCaracteristica = "Puertas_Camioneta", valor = publicarCamionetaUiState.nPuertas),
+                            ValorCaracteristica(nombreCaracteristica = "CargaKg_Camioneta", valor = publicarCamionetaUiState.capacidadCarga),
+                            ValorCaracteristica(nombreCaracteristica = "TipoCombustible_Camioneta", valor = publicarCamionetaUiState.tipoCombustible),
+                            ValorCaracteristica(nombreCaracteristica = "TipoTraccion_Camioneta", valor = publicarCamionetaUiState.tipoTraccion),
                         )
-
-                        /*var anuncio = Anuncio(
-                            numSerieBastidor = "1234567890123",
-                            matricula = "1234DXD",
-                            tipoVehiculo = "Coche",
-                            descripcion = "Prueba desde android",
-                            precio = 4000.toDouble(),
-                            ciudad = "Medina",
-                            provincia = "Cadiz",
-                        )
-
-                        var vCaracteristicas = listOf(
-                            ValorCaracteristica(nombreCaracteristica = "Marca_Coche", valor = "prueba"),
-                            ValorCaracteristica(nombreCaracteristica = "Modelo_Coche", valor = "android"),
-                            ValorCaracteristica(nombreCaracteristica = "Anio_Coche", valor = "2000"),
-                            ValorCaracteristica(nombreCaracteristica = "CV_Coche", valor = "110"),
-                            ValorCaracteristica(nombreCaracteristica = "KM_Coche", valor = "170000"),
-                            ValorCaracteristica(nombreCaracteristica = "Marchas_Coche", valor = "5"),
-                            ValorCaracteristica(nombreCaracteristica = "Puertas_Coche", valor = "5"),
-                            ValorCaracteristica(nombreCaracteristica = "TipoCombustible_Coche", valor = "Diesel"),
-                            ValorCaracteristica(nombreCaracteristica = "Transmision_Coche", valor = "Manual"),
-                        )*/
 
                         anuncio.valoresCaracteristicas = vCaracteristicas
 
                         anuncio.vendedor = conectionUiState.usuario
 
                         appViewModel.viewModelScope.launch(Dispatchers.IO) {
-                            appViewModel.publicarAnuncio(anuncio, publicarCocheUiState.imagenes)
+                            appViewModel.publicarAnuncio(anuncio, publicarCamionetaUiState.imagenes)
                         }
 
                     },
@@ -195,20 +167,20 @@ fun PublicarCoche(
 }
 
 @Composable
-fun formularioSuperiorCoche(
+fun formularioSuperiorCamioneta(
     appViewModel: AppViewModel,
-    publicarCocheViewModel: PublicarCocheViewModel,
-    publicarCocheUiState: PublicarCocheUiState,
+    publicarCamionetaViewModel: PublicarCamionetaViewModel,
+    publicarCamionetaUiState: PublicarCamionetaUiState,
     modifier: Modifier = Modifier
 ) {
-    var tiposCombustible = listOf("Gasolina", "Electrico", "Diesel", "Hibrido")
+    var tiposCombustible = listOf("Gasoleo", "Electrico")
     var tiposCombustiblesDesplegado by remember { mutableStateOf(false) }
 
-    var transmision = listOf("Manual", "Automatica")
-    var transmisionDesplegado by remember { mutableStateOf(false) }
+    var tiposTraccion = listOf("4x2", "4x4")
+    var tiposTraccionDesplegado by remember { mutableStateOf(false) }
 
     var tamanioCombustible by remember { mutableStateOf(Size.Zero) }
-    var tamanioTransmision by remember { mutableStateOf(Size.Zero) }
+    var tamanioTiposTraccion by remember { mutableStateOf(Size.Zero) }
 
     val photoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
@@ -217,7 +189,7 @@ fun formularioSuperiorCoche(
             // este me devuelve un array de bytes y si no es nulo significa que tengo la imagen en array de bytes para añadirla a la lista de imagenes
             var bytesImagen: ByteArray? = appViewModel.getBytesFromUri(it)
             if (bytesImagen != null) {
-                publicarCocheViewModel.aniadirImagen(bytesImagen)
+                publicarCamionetaViewModel.aniadirImagen(bytesImagen)
             }
         }
     )
@@ -233,7 +205,7 @@ fun formularioSuperiorCoche(
                 .padding(16.dp)
         ) {
             Text(
-                text = "Especificaciones\ndel Coche",
+                text = "Especificaciones de\nla Camioneta",
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.titleLarge,
                 color = Color.White
@@ -249,8 +221,8 @@ fun formularioSuperiorCoche(
                     .padding(4.dp)
             ) {
                 OutlinedTextField(
-                    value = publicarCocheUiState.marca,
-                    onValueChange = { publicarCocheViewModel.cambiarMarca_Coche(it) },
+                    value = publicarCamionetaUiState.marca,
+                    onValueChange = { publicarCamionetaViewModel.cambiarMarca_Camioneta(it) },
                     placeholder = {
                         Text(
                             text = "Marca",
@@ -280,8 +252,8 @@ fun formularioSuperiorCoche(
                     .padding(4.dp)
             ) {
                 OutlinedTextField(
-                    value = publicarCocheUiState.modelo,
-                    onValueChange = { publicarCocheViewModel.cambiarModelo_Coche(it) },
+                    value = publicarCamionetaUiState.modelo,
+                    onValueChange = { publicarCamionetaViewModel.cambiarModelo_Camioneta(it) },
                     placeholder = {
                         Text(
                             text = "Modelo",
@@ -315,8 +287,8 @@ fun formularioSuperiorCoche(
                     .padding(4.dp)
             ) {
                 OutlinedTextField(
-                    value = publicarCocheUiState.anio,
-                    onValueChange = { publicarCocheViewModel.cambiarAnio_Coche(it) },
+                    value = publicarCamionetaUiState.anio,
+                    onValueChange = { publicarCamionetaViewModel.cambiarAnio_Camioneta(it) },
                     placeholder = {
                         Text(
                             text = "Año",
@@ -347,8 +319,8 @@ fun formularioSuperiorCoche(
                     .padding(4.dp)
             ) {
                 OutlinedTextField(
-                    value = publicarCocheUiState.cv,
-                    onValueChange = { publicarCocheViewModel.cambiarCv_Coche(it) },
+                    value = publicarCamionetaUiState.cv,
+                    onValueChange = { publicarCamionetaViewModel.cambiarCv_Camioneta(it) },
                     placeholder = {
                         Text(
                             text = "CV",
@@ -383,8 +355,8 @@ fun formularioSuperiorCoche(
                     .padding(4.dp)
             ) {
                 OutlinedTextField(
-                    value = publicarCocheUiState.kilometaje,
-                    onValueChange = { publicarCocheViewModel.cambiarKm_Coche(it) },
+                    value = publicarCamionetaUiState.kilometaje,
+                    onValueChange = { publicarCamionetaViewModel.cambiarKm_Camioneta(it) },
                     placeholder = {
                         Text(
                             text = "Kilometraje",
@@ -415,8 +387,8 @@ fun formularioSuperiorCoche(
                     .padding(4.dp)
             ) {
                 OutlinedTextField(
-                    value = publicarCocheUiState.cantMarchas,
-                    onValueChange = { publicarCocheViewModel.cambiarCantMarchas_Coche(it) },
+                    value = publicarCamionetaUiState.cantMarchas,
+                    onValueChange = { publicarCamionetaViewModel.cambiarCantMarchas_Camioneta(it) },
                     placeholder = {
                         Text(
                             text = "Cant. de Marchas",
@@ -451,8 +423,8 @@ fun formularioSuperiorCoche(
                     .padding(4.dp)
             ) {
                 OutlinedTextField(
-                    value = publicarCocheUiState.nBastidor,
-                    onValueChange = { publicarCocheViewModel.cambiarNBastidor_Coche(it) },
+                    value = publicarCamionetaUiState.nBastidor,
+                    onValueChange = { publicarCamionetaViewModel.cambiarNBastidor_Camioneta(it) },
                     placeholder = {
                         Text(
                             text = "Nº de Bastidor",
@@ -483,8 +455,8 @@ fun formularioSuperiorCoche(
                     .padding(4.dp)
             ) {
                 OutlinedTextField(
-                    value = publicarCocheUiState.matricula,
-                    onValueChange = { publicarCocheViewModel.cambiarMatricula_Coche(it) },
+                    value = publicarCamionetaUiState.matricula,
+                    onValueChange = { publicarCamionetaViewModel.cambiarMatricula_Camioneta(it) },
                     placeholder = {
                         Text(
                             text = "Matrícula",
@@ -518,8 +490,8 @@ fun formularioSuperiorCoche(
                     .padding(4.dp)
             ) {
                 OutlinedTextField(
-                    value = publicarCocheUiState.nPuertas,
-                    onValueChange = { publicarCocheViewModel.cambiarNPuertas_Coche(it) },
+                    value = publicarCamionetaUiState.nPuertas,
+                    onValueChange = { publicarCamionetaViewModel.cambiarNPuertas_Camioneta(it) },
                     placeholder = {
                         Text(
                             text = "Nº de Puertas",
@@ -549,7 +521,31 @@ fun formularioSuperiorCoche(
                     .weight(0.5F)
                     .padding(4.dp)
             ) {
-                // Vacío por tema de diseño
+                OutlinedTextField(
+                    value = publicarCamionetaUiState.capacidadCarga,
+                    onValueChange = { publicarCamionetaViewModel.cambiarCapacidadCarga_Camioneta(it) },
+                    placeholder = {
+                        Text(
+                            text = "Carga Máxima (Kg)",
+                            color = Color(0x00FF1c1c1c)
+                        )
+                    },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    enabled = true,
+                    singleLine = true,
+                    colors = TextFieldDefaults.colors(
+                        unfocusedContainerColor = Color.White,
+                        focusedContainerColor = Color.White,
+                        cursorColor = Color(0x00FF1c1c1c),
+                        focusedTextColor = Color(0x00FF1c1c1c),
+                        unfocusedTextColor = Color(0x00FF1c1c1c),
+                        focusedLabelColor = Color(0x00FF1c1c1c),
+                        unfocusedLabelColor = Color(0x00FF1c1c1c),
+                        unfocusedIndicatorColor = Color.Transparent,
+                        focusedIndicatorColor = Color.Transparent
+                    ),
+                    shape = RoundedCornerShape(22.dp)
+                )
             }
         }
 
@@ -563,8 +559,8 @@ fun formularioSuperiorCoche(
                     .padding(4.dp)
             ) {
                 OutlinedTextField(
-                    value = publicarCocheUiState.tipoCombustible,
-                    onValueChange = { publicarCocheViewModel.cambiarTipoComb_Coche(it) },
+                    value = publicarCamionetaUiState.tipoCombustible,
+                    onValueChange = { publicarCamionetaViewModel.cambiarTipoComb_Camioneta(it) },
                     placeholder = {
                         Text(
                             text = "Combustible",
@@ -612,7 +608,7 @@ fun formularioSuperiorCoche(
                     tiposCombustible.forEach { tipo ->
                         DropdownMenuItem(
                             onClick = {
-                                publicarCocheViewModel.cambiarTipoComb_Coche(tipo)
+                                publicarCamionetaViewModel.cambiarTipoComb_Camioneta(tipo)
                                 tiposCombustiblesDesplegado = false
                             },
                             text = { Text(text = tipo) }
@@ -629,8 +625,8 @@ fun formularioSuperiorCoche(
                     .padding(4.dp)
             ) {
                 OutlinedTextField(
-                    value = publicarCocheUiState.transmision,
-                    onValueChange = { publicarCocheViewModel.cambiarTransmision_Coche(it) },
+                    value = publicarCamionetaUiState.tipoTraccion,
+                    onValueChange = { publicarCamionetaViewModel.cambiarTipoTraccion_Camioneta(it) },
                     placeholder = {
                         Text(
                             text = "Transmisión",
@@ -654,32 +650,32 @@ fun formularioSuperiorCoche(
                     shape = RoundedCornerShape(22.dp),
                     trailingIcon = {
                         Icon(
-                            imageVector = if (transmisionDesplegado) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                            imageVector = if (tiposTraccionDesplegado) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
                             contentDescription = "",
                             modifier = Modifier.clickable {
-                                transmisionDesplegado = !transmisionDesplegado
+                                tiposTraccionDesplegado = !tiposTraccionDesplegado
                             }
                         )
                     },
                     modifier = Modifier
                         .fillMaxWidth()
                         .onGloballyPositioned { coords ->
-                            tamanioTransmision = coords.size.toSize()
+                            tamanioTiposTraccion = coords.size.toSize()
                         }
                 )
 
                 DropdownMenu(
-                    expanded = transmisionDesplegado,
-                    onDismissRequest = { transmisionDesplegado = false },
+                    expanded = tiposTraccionDesplegado,
+                    onDismissRequest = { tiposTraccionDesplegado = false },
                     modifier = Modifier.width(
-                        with(LocalDensity.current) { tamanioTransmision.width.toDp() }
+                        with(LocalDensity.current) { tamanioTiposTraccion.width.toDp() }
                     )
                 ) {
-                    transmision.forEach { tipo ->
+                    tiposTraccion.forEach { tipo ->
                         DropdownMenuItem(
                             onClick = {
-                                publicarCocheViewModel.cambiarTransmision_Coche(tipo)
-                                transmisionDesplegado = false
+                                publicarCamionetaViewModel.cambiarTipoTraccion_Camioneta(tipo)
+                                tiposTraccionDesplegado = false
                             },
                             text = { Text(text = tipo) }
                         )
@@ -703,8 +699,8 @@ fun formularioSuperiorCoche(
                     .padding(4.dp)
             ) {
                 OutlinedTextField(
-                    value = publicarCocheUiState.ciudad,
-                    onValueChange = { publicarCocheViewModel.cambiarCiudad_Coche(it) },
+                    value = publicarCamionetaUiState.ciudad,
+                    onValueChange = { publicarCamionetaViewModel.cambiarCiudad_Camioneta(it) },
                     placeholder = {
                         Text(
                             text = "Ciudad",
@@ -734,8 +730,8 @@ fun formularioSuperiorCoche(
                     .padding(4.dp)
             ) {
                 OutlinedTextField(
-                    value = publicarCocheUiState.provincia,
-                    onValueChange = { publicarCocheViewModel.cambiarProvincia_Coche(it) },
+                    value = publicarCamionetaUiState.provincia,
+                    onValueChange = { publicarCamionetaViewModel.cambiarProvincia_Camioneta(it) },
                     placeholder = {
                         Text(
                             text = "Provincia",
@@ -769,8 +765,8 @@ fun formularioSuperiorCoche(
                     .padding(4.dp)
             ) {
                 OutlinedTextField(
-                    value = publicarCocheUiState.precio,
-                    onValueChange = { publicarCocheViewModel.cambiarPrecio_Coche(it) },
+                    value = publicarCamionetaUiState.precio,
+                    onValueChange = { publicarCamionetaViewModel.cambiarPrecio_Camioneta(it) },
                     placeholder = {
                         Text(
                             text = "Precio",
@@ -813,8 +809,8 @@ fun formularioSuperiorCoche(
                     .padding(4.dp)
             ) {
                 OutlinedTextField(
-                    value = publicarCocheUiState.descripcion,
-                    onValueChange = { publicarCocheViewModel.cambiarDescripcion_Coche(it) },
+                    value = publicarCamionetaUiState.descripcion,
+                    onValueChange = { publicarCamionetaViewModel.cambiarDescripcion_Camioneta(it) },
                     placeholder = {
                         Text(
                             text = "Descripción",

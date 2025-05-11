@@ -36,7 +36,11 @@ import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros.filtroMa
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros.filtroMoto.FiltroMoto
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.home.HomeScreen
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.publicar.ListaTiposVehiculos
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.publicar.publicarCamion.PublicarCamion
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.publicar.publicarCamioneta.PublicarCamioneta
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.publicar.publicarCoche.PublicarCoche
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.publicar.publicarMaquinaria.PublicarMaquinaria
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.publicar.publicarMoto.PublicarMoto
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -47,6 +51,10 @@ enum class AppScreens(val screenName: String){
 
     ListaTiposPublicar(screenName = "lista_tipos_publicar"),
     PublicarCoche(screenName = "publicar_coche"),
+    PublicarMoto(screenName = "publicar_moto"),
+    PublicarCamioneta(screenName = "publicar_camioneta"),
+    PublicarCamion(screenName = "publicar_camion"),
+    PublicarMaquinaria(screenName = "publicar_maquinaria"),
 
     Notificaciones(screenName = "notificaciones"),
 
@@ -228,6 +236,38 @@ fun AppScreen(
 
             composable(route = AppScreens.PublicarCoche.screenName){
                 PublicarCoche(
+                    appNavController = appNavController,
+                    appViewModel = appViewModel,
+                    conectionUiState = conectionUiState
+                )
+            }
+
+            composable(route = AppScreens.PublicarMoto.screenName){
+                PublicarMoto(
+                    appNavController = appNavController,
+                    appViewModel = appViewModel,
+                    conectionUiState = conectionUiState
+                )
+            }
+
+            composable(route = AppScreens.PublicarCamioneta.screenName){
+                PublicarCamioneta(
+                    appNavController = appNavController,
+                    appViewModel = appViewModel,
+                    conectionUiState = conectionUiState
+                )
+            }
+
+            composable(route = AppScreens.PublicarCamion.screenName){
+                PublicarCamion(
+                    appNavController = appNavController,
+                    appViewModel = appViewModel,
+                    conectionUiState = conectionUiState
+                )
+            }
+
+            composable(route = AppScreens.PublicarMaquinaria.screenName){
+                PublicarMaquinaria(
                     appNavController = appNavController,
                     appViewModel = appViewModel,
                     conectionUiState = conectionUiState

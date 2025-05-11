@@ -1,20 +1,15 @@
-package com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.publicar.publicarCoche
+package com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.publicar.publicarMoto
 
-import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Anuncio
-import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Imagen
-
-data class PublicarCocheUiState(
+data class PublicarMotoUiState(
     var marca: String = "",
     var modelo: String = "",
-    var anio: String = "",
     var cv: String = "",
+    var anio: String = "",
     var kilometaje: String = "",
     var cantMarchas: String = "",
     var nBastidor: String = "",
     var matricula: String = "",
-    var nPuertas: String = "",
     var tipoCombustible: String = "",
-    var transmision: String = "",
 
     var ciudad: String = "",
     var provincia: String = "",
