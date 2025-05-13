@@ -46,12 +46,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.R
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.filtros.FiltroBarraBusqueda
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.filtros.FiltroTodo
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.ConectionViewModel
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros.FiltrosViewModel
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.ui.theme.WheelTraderTheme
 
 @Composable
 fun HomeScreen(
     filterButtonOnClick: () -> Unit,
+    buscarOnClick: () -> Unit,
+    filtrosViewModel: FiltrosViewModel,
     modifier: Modifier = Modifier
 ) {
     val opciones = listOf("Coches", "Motos", "Camionetas", "Camiones", "Maquinaria")
@@ -117,8 +122,8 @@ fun HomeScreen(
                                 unfocusedTextColor = Color(0x00FF1c1c1c),
                                 focusedLabelColor = Color(0x00FF1c1c1c),
                                 unfocusedLabelColor = Color(0x00FF1c1c1c),
-                                unfocusedIndicatorColor = Color.Transparent,
-                                focusedIndicatorColor = Color.Transparent
+                                unfocusedIndicatorColor = Color.Black,
+                                focusedIndicatorColor = Color.Black,
                             ),
                             modifier = Modifier.weight(1F).height(50.dp).fillMaxWidth().offset(x = 4.dp),
                         )
@@ -150,7 +155,27 @@ fun HomeScreen(
                         modifier = Modifier.fillMaxWidth().weight(0.4F).padding(bottom = 10.dp)
                     ) {
                         Button(
-                            onClick = { },
+                            onClick = {
+                                var filtroBarraBusqueda = FiltroBarraBusqueda()
+
+                                filtroBarraBusqueda.cadena = texto
+                                filtroBarraBusqueda.anioMinimo = 1950
+                                filtroBarraBusqueda.anioMaximo = 2025
+                                filtroBarraBusqueda.precioMinimo = 0.0
+                                filtroBarraBusqueda.precioMaximo = Double.MAX_VALUE
+                                filtroBarraBusqueda.ciudad = null
+                                filtroBarraBusqueda.provincia = null
+
+                                    filtroBarraBusqueda.tiposVehiculo.add("Coche")
+                                    filtroBarraBusqueda.tiposVehiculo.add("Moto")
+                                    filtroBarraBusqueda.tiposVehiculo.add("Camioneta")
+                                    filtroBarraBusqueda.tiposVehiculo.add("Camion")
+                                    filtroBarraBusqueda.tiposVehiculo.add("Maquinaria")
+
+                                filtrosViewModel.asignarFiltro(filtroBarraBusqueda)
+
+                                buscarOnClick()
+                            },
                             colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
                         ) {
                             Text(

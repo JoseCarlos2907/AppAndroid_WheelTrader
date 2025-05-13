@@ -143,7 +143,7 @@ fun AppScreen(
                 homeOnClick = {
                     appNavController.navigate(AppScreens.Home.screenName)
                 },
-                notificacionesOnClick = {},
+                notificacionesOnClick = { /* TODO: Navegación hacia la pantalla de notificaciones */ },
                 publicarAnuncioOnClick = {
                     appNavController.navigate(AppScreens.ListaTiposPublicar.screenName)
                 }
@@ -157,7 +157,9 @@ fun AppScreen(
         ){
             composable(route = AppScreens.Home.screenName){
                 HomeScreen(
-                    filterButtonOnClick = { appNavController.navigate(AppScreens.TipoFiltros.screenName) }
+                    filterButtonOnClick = { appNavController.navigate(AppScreens.TipoFiltros.screenName) },
+                    buscarOnClick = { appNavController.navigate(AppScreens.ListaAnuncios.screenName) },
+                    filtrosViewModel = filtrosViewModel
                 )
             }
 
