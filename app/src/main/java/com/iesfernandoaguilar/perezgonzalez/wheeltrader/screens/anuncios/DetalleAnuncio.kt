@@ -57,6 +57,7 @@ import kotlinx.coroutines.withContext
 @Composable
 fun DetalleAnuncio(
     appViewModel: AppViewModel,
+    onClickComprar: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val appUiState by appViewModel.uiState.collectAsState()
@@ -70,27 +71,37 @@ fun DetalleAnuncio(
 
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(20.dp),
-        modifier = Modifier.fillMaxSize().background(
-            brush = Brush.linearGradient(
-                colors = listOf(Color.Black, Color(0xFF525151)),
-                start = Offset(0f, 0f),
-                end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                brush = Brush.linearGradient(
+                    colors = listOf(Color.Black, Color(0xFF525151)),
+                    start = Offset(0f, 0f),
+                    end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
+                )
             )
-        )
     ) {
         item {
-            DetallesVehiculo(appUiState.anuncioSeleccionado!!, appUiState.imagenesAnuncioSeleccionado)
+            DetallesVehiculo(
+                anuncio =  appUiState.anuncioSeleccionado!!,
+                imagenes = appUiState.imagenesAnuncioSeleccionado,
+                onClickComprar = { onClickComprar() }
+            )
         }
 
         item{
             Row(
-                modifier.fillMaxWidth().padding(start = 12.dp, end = 12.dp, bottom = 12.dp)
+                modifier
+                    .fillMaxWidth()
+                    .padding(start = 12.dp, end = 12.dp, bottom = 12.dp)
             ) {
                 Card(
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
                 ) {
                     Column(
-                        modifier = Modifier.fillMaxSize().padding(6.dp)
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(6.dp)
                     ) {
                         appUiState.anuncioSeleccionado!!.valoresCaracteristicas!!.forEach { vCaracteristica ->
                             Text(
@@ -111,6 +122,7 @@ fun DetalleAnuncio(
 
 @Composable
 fun DetallesVehiculo(
+    onClickComprar: () -> Unit,
     anuncio: Anuncio,
     imagenes: List<ByteArray>,
     modifier: Modifier = Modifier
@@ -149,7 +161,9 @@ fun DetallesVehiculo(
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
-            modifier = Modifier.fillMaxWidth().padding(12.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp)
         ) {
             // TODO: Botones de imagenes del anuncio
             if (!imagenes.isEmpty()) {
@@ -165,7 +179,9 @@ fun DetallesVehiculo(
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxSize().padding(horizontal = 10.dp)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 10.dp)
         ) {
             Text(
                 text = anuncio.tipoVehiculo!!,
@@ -183,7 +199,10 @@ fun DetallesVehiculo(
         }
 
         Row(
-            modifier = Modifier.fillMaxWidth().height(120.dp).padding(12.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(120.dp)
+                .padding(12.dp)
         ) {
             Card(
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
@@ -194,7 +213,9 @@ fun DetallesVehiculo(
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center,
-                        modifier = Modifier.fillMaxSize().weight(0.5F)
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .weight(0.5F)
                     ) {
                         Text(
                             text = anuncio.precio.toString() + "€",
@@ -206,10 +227,12 @@ fun DetallesVehiculo(
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceEvenly,
-                        modifier = Modifier.fillMaxSize().weight(0.5F)
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .weight(0.5F)
                     ) {
                         Button(
-                            onClick = { /* TODO: Función de compra */ },
+                            onClick = { onClickComprar() },
                             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                         ) {
                             Text(
@@ -235,13 +258,17 @@ fun DetallesVehiculo(
         }
 
         Row(
-            modifier = Modifier.fillMaxWidth().padding(12.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp)
         ) {
             Card(
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
             ) {
                 Column(
-                    modifier = Modifier.fillMaxSize().padding(6.dp)
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(6.dp)
                 ) {
                     Text(
                         text = "Descripción:",

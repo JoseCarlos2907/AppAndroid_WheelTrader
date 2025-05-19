@@ -27,6 +27,7 @@ import com.iesfernandoaguilar.perezgonzalez.wheeltrader.mainBottomBar
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.ConectionViewModel
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.anuncios.DetalleAnuncio
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.anuncios.ListaAnuncios
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.compras.CompraCompradorScreen
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.confUsuario.ConfUsuario
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros.filtroTodo.FiltroTodo
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros.FiltrosViewModel
@@ -72,7 +73,9 @@ enum class AppScreens(val screenName: String){
     FiltroMaquinaria(screenName = "filtro_maquinaria"),
 
     ListaAnuncios(screenName = "lista_anuncios"),
-    DetalleAnuncio(screenName = "detalle_anuncio")
+    DetalleAnuncio(screenName = "detalle_anuncio"),
+
+    CompraComprador(screenName = "compra_comprador")
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -225,6 +228,9 @@ fun AppScreen(
             composable(route = AppScreens.DetalleAnuncio.screenName){
                 DetalleAnuncio(
                     appViewModel  = appViewModel,
+                    onClickComprar = {
+                        appNavController.navigate(AppScreens.CompraComprador.screenName)
+                    }
                 )
             }
 
@@ -291,6 +297,12 @@ fun AppScreen(
                     appNavController = appNavController,
                     appViewModel = appViewModel,
                     conectionUiState = conectionUiState
+                )
+            }
+
+            composable(route = AppScreens.CompraComprador.screenName) {
+                CompraCompradorScreen(
+
                 )
             }
         }
