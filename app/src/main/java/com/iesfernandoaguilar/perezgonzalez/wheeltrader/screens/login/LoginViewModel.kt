@@ -9,26 +9,30 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Mensaje
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Usuario
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.ConectionViewModel
-import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.app.AppViewModel
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.utils.SecureUtils
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.utils.Serializador
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.DataInputStream
 import java.io.DataOutputStream
 import java.io.EOFException
-import java.io.InputStream
-import java.io.OutputStream
 import java.util.Base64
 
 class LoginViewModel(
     private val conectionViewModel: ConectionViewModel
-): ViewModel() {
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(LoginUiState())
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
@@ -37,37 +41,35 @@ class LoginViewModel(
     private val dos: DataOutputStream? by lazy { conectionViewModel.getDataOutputStream() }
 
     lateinit var showMsg: ((Context, String) -> Unit)
+
     @SuppressLint("StaticFieldLeak")
     lateinit var context: Context
     lateinit var handler: Handler
-    var lectorLogin: Thread? = null
+    var lectorJob: Job? = null
 
-    fun confVM(context: Context){
+    fun confVM(context: Context) {
         this.context = context
+        this.handler = Handler(Looper.getMainLooper())
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun escucharDelServidor_Login() {
-        if(lectorLogin?.isAlive == true) return
-        _uiState.value = _uiState.value.copy(iniciaSesion = false)
 
-        lectorLogin = Thread(){
+        lectorJob = viewModelScope.launch(Dispatchers.IO) {
             Log.d("Login", "Arranca hilo")
             var usuarioJSON = ""
 
-            var msgRespuesta: Mensaje
-
-            this.handler = Handler(Looper.getMainLooper())
-            while (!uiState.value.iniciaSesion) {
-                try {
-                    // Log.d("Login", "Antes de leer")
-                    var linea: String = this.dis?.readUTF()?: ""
-                    // Log.d("Login", linea)
+            try {
+                var msgRespuesta: Mensaje
+                while (this.isActive && !uiState.value.iniciaSesion) {
+                    Log.d("Login", "Antes de leer: ")
+                    var linea: String = dis?.readUTF() ?: ""
+                    Log.d("Login", "Linea: " + linea)
                     var msgServidor: Mensaje = Serializador.decodificarMensaje(linea)
 
                     var tipo = msgServidor.getTipo()
-                    if("ENVIA_SALT".equals(tipo)){
-                        Log.d("Login","ENVIA_SALT")
+                    if ("ENVIA_SALT".equals(tipo)) {
+                        Log.d("Login", "ENVIA_SALT")
                         msgRespuesta = Mensaje()
                         msgRespuesta.setTipo("INICIAR_SESION")
                         msgRespuesta.addParam(_uiState.value.currentNombreUsuario)
@@ -77,54 +79,58 @@ class LoginViewModel(
                                 Base64.getDecoder().decode(msgServidor.getParams().get(0))
                             )
                         )
-                        this.dos?.writeUTF(Serializador.codificarMensaje(msgRespuesta))
-                        this.dos?.flush()
-                    }else if("INICIA_SESION".equals(tipo)){
-                        Log.d("Login","INICIA_SESION;"+msgServidor.getParams().get(0))
+                        dos?.writeUTF(Serializador.codificarMensaje(msgRespuesta))
+                        dos?.flush()
+                    } else if ("INICIA_SESION".equals(tipo)) {
+                        Log.d("Login", "INICIA_SESION;" + msgServidor.getParams().get(0))
                         if ("si".equals(msgServidor.getParams().get(0))) {
                             _uiState.value = _uiState.value.copy(iniciaSesion = true)
                             usuarioJSON = msgServidor.getParams().get(1)
                             break;
                         } else if ("no".equals(msgServidor.getParams().get(0))) {
-                            handler.post{
+                            withContext(Dispatchers.Main) {
                                 showMsg.invoke(context, "Credenciales incorrectas")
                             }
-                        }else if("baneado".equals(msgServidor.getParams().get(0))){
+                        } else if ("baneado".equals(msgServidor.getParams().get(0))) {
 
                         }
-                    }else if("DNI_EXISTE".equals(tipo)){
-                        if("si".equals(msgServidor.getParams().get(0))){
+                    } else if ("DNI_EXISTE".equals(tipo)) {
+                        if ("si".equals(msgServidor.getParams().get(0))) {
                             // Avisar a la interfaz que ya existe un usuario con ese dni
-                            handler.post{
+                            withContext(Dispatchers.Main) {
                                 showMsg.invoke(context, "El DNI ya ha sido registrado")
                             }
-                        }else if("no".equals(msgServidor.getParams().get(0))){
+                        } else if ("no".equals(msgServidor.getParams().get(0))) {
                             _uiState.value = _uiState.value.copy(goToPaso2 = true)
                         }
 
-                    }else if("USUARIO_EXISTE".equals(tipo)){
-                        if("si".equals(msgServidor.getParams().get(0))){
+                    } else if ("USUARIO_EXISTE".equals(tipo)) {
+                        if ("si".equals(msgServidor.getParams().get(0))) {
                             // Avisar a la interfaz que ya existe un usuario con ese nombre de usuario o correo
-                            handler.post{
-                                showMsg.invoke(context, "El nombre de usuario o el correo ya ha sido registrado")
+                            withContext(Dispatchers.Main) {
+                                showMsg.invoke(
+                                    context,
+                                    "El nombre de usuario o el correo ya ha sido registrado"
+                                )
                             }
-                        }else if("no".equals(msgServidor.getParams().get(0))){
+                        } else if ("no".equals(msgServidor.getParams().get(0))) {
                             _uiState.value = _uiState.value.copy(goToPaso3 = true)
                         }
 
-                    }else if("USUARIO_REGISTRADO".equals(tipo)){
+                    } else if ("USUARIO_REGISTRADO".equals(tipo)) {
                         // Avisar a la interfaz para cambiar de pantalla al paso 4
                         _uiState.value = _uiState.value.copy(goToPaso4 = true)
-                    }else{
+                    } else {
                         Log.d("Login", linea)
                     }
-                } catch (e: EOFException) {
-                    Log.d("Login", e.message ?: "Error")
-                    break;
                 }
+            } catch (e: CancellationException) {
+                Log.d("Login", "Cancelando corrutina de login")
+            } catch (e: EOFException) {
+                Log.d("Login", e.message ?: "Error")
             }
 
-            if(uiState.value.iniciaSesion){
+            if (uiState.value.iniciaSesion) {
                 Log.d("Login", usuarioJSON)
 
                 var cadena = String() + usuarioJSON.toString()
@@ -134,30 +140,37 @@ class LoginViewModel(
                 // Log.d("Login", "Logea")
             }
         }
-        lectorLogin?.start()
+        lectorJob?.start()
+        _uiState.value = _uiState.value.copy(iniciaSesion = false)
     }
 
-    fun pararEscuchaServidor_Login(){
-        lectorLogin?.interrupt()
-        lectorLogin = null
-        Log.d("Login", "Hilo parado")
+    fun pararEscuchaServidor_Login() {
+        if(!uiState.value.iniciaSesion) return
+
+        lectorJob?.let {
+            if (it.isActive) {
+                Log.d("Login", "Hilo parado")
+                it.cancel()
+            }
+        }
+        lectorJob = null
     }
 
-    fun iniciarSesion(nombre: String){
+    fun iniciarSesion(nombre: String) {
         var msg = Mensaje()
         msg.setTipo("OBTENER_SALT")
         msg.addParam(nombre)
         this.dos?.writeUTF(Serializador.codificarMensaje(msg))
     }
 
-    fun comprobarDNI(dni: String){
+    fun comprobarDNI(dni: String) {
         var msg = Mensaje()
         msg.setTipo("COMPROBAR_DNI")
         msg.addParam(dni)
         this.dos?.writeUTF(Serializador.codificarMensaje(msg))
     }
 
-    fun comprobarNombreUsuYCorreo(nombreUsuario: String, correo: String){
+    fun comprobarNombreUsuYCorreo(nombreUsuario: String, correo: String) {
         var msg = Mensaje()
         msg.setTipo("COMPROBAR_NOMUSU_CORREO")
         msg.addParam(nombreUsuario)
@@ -166,7 +179,7 @@ class LoginViewModel(
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun registrarUsuario(){
+    fun registrarUsuario() {
         var salt: ByteArray = SecureUtils.getSalt()
         var contraseniaHasheada: String = SecureUtils.generate512(_uiState.value.contrasenia, salt)
 
@@ -189,7 +202,7 @@ class LoginViewModel(
         this.dos?.writeUTF(Serializador.codificarMensaje(msg))
     }
 
-    fun limpiarRegistro(){
+    fun limpiarRegistro() {
         _uiState.value = _uiState.value.copy(
             nombre = "",
             apellidos = "",
@@ -206,67 +219,67 @@ class LoginViewModel(
     }
 
     // Login
-    fun onNombreUsuarioChange(nombreUsuario: String){
+    fun onNombreUsuarioChange(nombreUsuario: String) {
         _uiState.value = _uiState.value.copy(currentNombreUsuario = nombreUsuario)
     }
 
-    fun onContraseniaChange(contrasenia: String){
+    fun onContraseniaChange(contrasenia: String) {
         _uiState.value = _uiState.value.copy(currentContrasenia = contrasenia)
     }
 
     // Registro paso 1
-    fun onNombreChange(nombre: String){
+    fun onNombreChange(nombre: String) {
         _uiState.value = _uiState.value.copy(nombre = nombre)
     }
 
-    fun onApellidosChange(apellidos: String){
+    fun onApellidosChange(apellidos: String) {
         _uiState.value = _uiState.value.copy(apellidos = apellidos)
     }
 
-    fun onDniChange(dni: String){
+    fun onDniChange(dni: String) {
         _uiState.value = _uiState.value.copy(dni = dni)
     }
 
-    fun onDireccionChange(direccion: String){
+    fun onDireccionChange(direccion: String) {
         _uiState.value = _uiState.value.copy(direccion = direccion)
     }
 
-    fun reiniciarGoToPaso2(){
+    fun reiniciarGoToPaso2() {
         _uiState.value = _uiState.value.copy(goToPaso2 = false)
     }
 
     // Registro paso 2
-    fun onNombreUsuarioRegistroChange(nombreUsuario: String){
+    fun onNombreUsuarioRegistroChange(nombreUsuario: String) {
         _uiState.value = _uiState.value.copy(nombreUsuario = nombreUsuario)
     }
 
-    fun onCorreoChange(correo: String){
+    fun onCorreoChange(correo: String) {
         _uiState.value = _uiState.value.copy(correo = correo)
     }
 
-    fun onCorreoPPChange(correoPP: String){
+    fun onCorreoPPChange(correoPP: String) {
         _uiState.value = _uiState.value.copy(correoPP = correoPP)
     }
 
-    fun reiniciarGoToPaso3(){
+    fun reiniciarGoToPaso3() {
         _uiState.value = _uiState.value.copy(goToPaso3 = false)
     }
 
     // Registro paso 3
-    fun onContraseniaRegistroChange(contrasenia: String){
+    fun onContraseniaRegistroChange(contrasenia: String) {
         _uiState.value = _uiState.value.copy(contrasenia = contrasenia)
     }
 
-    fun onConfContraChange(confContra: String){
+    fun onConfContraChange(confContra: String) {
         _uiState.value = _uiState.value.copy(confContra = confContra)
     }
 
-    fun reiniciarGoToPaso4(){
+    fun reiniciarGoToPaso4() {
         _uiState.value = _uiState.value.copy(goToPaso4 = false)
     }
 
-    fun mostrarToast(msg:String){
-        handler.post{
+    fun mostrarToast(msg: String) {
+        handler.post {
             showMsg.invoke(context, msg)
         }
     }
@@ -274,7 +287,7 @@ class LoginViewModel(
 
 class LoginViewModelFactory(
     private val conectionViewModel: ConectionViewModel
-): ViewModelProvider.Factory {
+) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(LoginViewModel::class.java)) {
             return LoginViewModel(conectionViewModel) as T

@@ -3,36 +3,31 @@ package com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.app
 import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
-import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import androidx.annotation.RequiresApi
-import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.interfaces.IFiltro
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Anuncio
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Mensaje
-import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.filtros.FiltroTodo
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.ConectionViewModel
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.utils.Serializador
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import java.io.DataInputStream
 import java.io.DataOutputStream
 import java.io.EOFException
-import java.io.InputStream
-import java.io.OutputStream
 
 class AppViewModel(
     private val conectionViewModel: ConectionViewModel
@@ -48,26 +43,25 @@ class AppViewModel(
     @SuppressLint("StaticFieldLeak")
     lateinit var context: Context
     lateinit var handler: Handler
-    var lectorApp: Thread? = null
+    var lectorJob: Job? = null
 
     lateinit var anuncioPublicar: Anuncio
     lateinit var imagenesPublicar: List<ByteArray>
 
     fun confVM(context: Context){
         this.context = context
+        this.handler = Handler(Looper.getMainLooper())
     }
 
     fun escucharDelServidor_App(){
-        if(lectorApp?.isAlive == true) return
 
-        lectorApp = Thread() {
+        lectorJob = viewModelScope.launch(Dispatchers.IO) {
             var mapper = jacksonObjectMapper()
             var cierraSesion = false
 
-            this.handler = Handler(Looper.getMainLooper())
-            while (!cierraSesion){
-                try{
-                    var linea: String = this.dis?.readUTF()?: "NoInfo"
+            try{
+                while (this.isActive && !cierraSesion){
+                    var linea: String = dis?.readUTF()?: "NoInfo"
                     Log.d("App", linea)
                     var msgServidor: Mensaje = Serializador.decodificarMensaje(linea)
                     // Log.d("App", "Aqui no llega")
@@ -82,10 +76,10 @@ class AppViewModel(
                             var imagenesAnuncios: ArrayList<ByteArray> = ArrayList()
                             var cantAnuncios = Integer.parseInt(msgServidor.getParams().get(2))
                             for (i in 0 until cantAnuncios){
-                                var longitudImg = this.dis?.readInt()?: 0
+                                var longitudImg = dis?.readInt()?: 0
                                 // Log.d("App", longitudImg.toString())
                                 var bytesImg = ByteArray(longitudImg)
-                                this.dis?.readFully(bytesImg)
+                                dis?.readFully(bytesImg)
                                 imagenesAnuncios.add(bytesImg)
                             }
 
@@ -114,15 +108,15 @@ class AppViewModel(
                                 msgRespuesta.addParam(anuncioJSON)
                                 msgRespuesta.addParam(imagenesPublicar.size.toString())
 
-                                this.dos?.writeUTF(Serializador.codificarMensaje(msgRespuesta))
-                                this.dos?.flush()
+                                dos?.writeUTF(Serializador.codificarMensaje(msgRespuesta))
+                                dos?.flush()
 
                                 for (i in 0 until imagenesPublicar.size){
-                                    this.dos?.writeInt(imagenesPublicar.get(i).size)
-                                    this.dos?.flush()
+                                    dos?.writeInt(imagenesPublicar.get(i).size)
+                                    dos?.flush()
 
-                                    this.dos?.write(imagenesPublicar.get(i))
-                                    this.dos?.flush()
+                                    dos?.write(imagenesPublicar.get(i))
+                                    dos?.flush()
                                 }
 
                             }else if("no".equals(msgServidor.getParams().get(0))){
@@ -145,10 +139,10 @@ class AppViewModel(
                             var cantAnuncios = Integer.parseInt(msgServidor.getParams().get(0))
                             Log.d("App", "Cantidad de imagenes: " + cantAnuncios.toString())
                             for (i in 0 until cantAnuncios){
-                                var longitudImg = this.dis?.readInt()?: 0
+                                var longitudImg = dis?.readInt()?: 0
                                 // Log.d("App", longitudImg.toString())
                                 var bytesImg = ByteArray(longitudImg)
-                                this.dis?.readFully(bytesImg)
+                                dis?.readFully(bytesImg)
                                 imagenesAnuncioSeleccionado.add(bytesImg)
                             }
 
@@ -164,19 +158,24 @@ class AppViewModel(
                             Log.d("App", "Raro que entre en el else del when")
                         }
                     }
-                } catch (e: EOFException) {
-                    Log.d("App", e.message ?: "Error")
-                    break;
                 }
+            } catch (e: CancellationException) {
+                Log.d("Login", "Cancelando corrutina de app")
+            } catch (e: EOFException) {
+                Log.d("App", e.message ?: "Error")
             }
         }
-        lectorApp?.start()
+        lectorJob?.start()
     }
 
     fun pararEscuchaServidor_App(){
-        lectorApp?.interrupt()
-        lectorApp = null
-        Log.d("App", "Hilo parado")
+        lectorJob?.let {
+            if(it.isActive){
+                Log.d("App", "Hilo parado")
+                it.cancel()
+            }
+        }
+        lectorJob = null
     }
 
     fun obtenerAnuncios(filtro: IFiltro?, primeraCarga: Boolean){

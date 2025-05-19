@@ -90,26 +90,6 @@ fun AppScreen(
     ),
     modifier: Modifier = Modifier
 ){
-    /*val scope = rememberCoroutineScope()
-    val job = remember { mutableStateOf<Job?>(null) }
-
-    LaunchedEffect(Unit) {
-        job.value = scope.launch(Dispatchers.IO) {
-            while (isActive){
-                appViewModel.confVM(context)
-                appViewModel.showMsg = { context, msg ->
-                    Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
-                }
-                appViewModel.escucharDelServidor_App()
-            }
-        }
-    }
-
-    DisposableEffect(Unit) {
-        onDispose {
-            job.value?.cancel()
-        }
-    }*/
 
     val conectionUiState by conectionViewModel.uiState.collectAsState()
     val filtrosUiState by filtrosViewModel.uiState.collectAsState()
@@ -128,6 +108,14 @@ fun AppScreen(
         onDispose {
             Log.d("App", "Se cierra el hilo principal")
             appViewModel.pararEscuchaServidor_App()
+        }
+    }
+
+    LaunchedEffect (conectionUiState.usuario) {
+        if(conectionUiState.usuario == null){
+            navController.navigate(WheelTraderScreens.Login.screenName) {
+                popUpTo(WheelTraderScreens.App.screenName) { inclusive = true }
+            }
         }
     }
 

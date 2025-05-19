@@ -90,58 +90,38 @@ fun LoginScreen(
     ),
     modifier: Modifier = Modifier
 ) {
-    /*val scope = rememberCoroutineScope()
-    val job = remember { mutableStateOf<Job?>(null) }
+    val loginUiState by loginViewModel.uiState.collectAsState()
+    val conectionUiState by conectionViewModel.uiState.collectAsState()
 
     LaunchedEffect(Unit) {
-        job.value = scope.launch(Dispatchers.IO) {
-            while (isActive){
-                loginViewModel.confVM(context)
-                loginViewModel.showMsg = { context, msg ->
-                    Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
-                }
-                loginViewModel.escucharDelServidor_Login()
+        withContext(Dispatchers.IO) {
+            loginViewModel.confVM(context)
+            loginViewModel.showMsg = { context, msg ->
+                Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
             }
         }
+        loginViewModel.escucharDelServidor_Login()
     }
 
     DisposableEffect(Unit) {
         onDispose {
-            job.value?.cancel()
-        }
-    }*/
-
-    val loginUiState by loginViewModel.uiState.collectAsState()
-    val conectionUiState by conectionViewModel.uiState.collectAsState()
-
-    LaunchedEffect(conectionUiState.usuario) {
-        if(conectionUiState.usuario == null){
-            withContext(Dispatchers.IO) {
-                loginViewModel.confVM(context)
-                loginViewModel.showMsg = { context, msg ->
-                    Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
-                }
-            }
-            loginViewModel.escucharDelServidor_Login()
-        }else{
-            loginViewModel.pararEscuchaServidor_Login()
-            navController.navigate(WheelTraderScreens.App.screenName) {
-                popUpTo(WheelTraderScreens.Login.screenName) { inclusive = true }
+            if(loginUiState.iniciaSesion){
+                loginViewModel.pararEscuchaServidor_Login()
             }
         }
     }
 
-    /*DisposableEffect(Unit) {
-        onDispose {
-            loginViewModel.pararEscuchaServidor_Login()
+    // Controla que al iniciar sesión se cambie de ventana y se pare el hilo
+    LaunchedEffect (conectionUiState.usuario) {
+        if(conectionUiState.usuario != null){
+            conectionUiState.usuario?.let {
+                loginViewModel.pararEscuchaServidor_Login()
+                navController.navigate(WheelTraderScreens.App.screenName) {
+                    popUpTo(WheelTraderScreens.Login.screenName) { inclusive = true }
+                }
+            }
         }
-    }*/
-
-    // Controla que al iniciar sesión se cambie de ventana
-    /*LaunchedEffect (conectionUiState.usuario) {
-        if (conectionUiState.usuario != null) {
-        }
-    }*/
+    }
 
     Scaffold(
         topBar = {
