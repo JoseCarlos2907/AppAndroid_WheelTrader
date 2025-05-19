@@ -12,9 +12,11 @@ import androidx.lifecycle.viewModelScope
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.interfaces.IFiltro
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Anuncio
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Mensaje
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Notificacion
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.ConectionViewModel
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.utils.Serializador
 import kotlinx.coroutines.CancellationException
@@ -25,6 +27,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.DataInputStream
 import java.io.DataOutputStream
 import java.io.EOFException
@@ -88,13 +91,13 @@ class AppViewModel(
                         }
 
                         "ANUNCIO_GUARDADO" -> {
-                            handler.post{
+                            withContext(Dispatchers.Main){
                                 showMsg.invoke(context, "Anuncio guardado correctamente")
                             }
                         }
 
                         "ANUNCIO_ELIMINADO_GUARDADOS" -> {
-                            handler.post{
+                            withContext(Dispatchers.Main){
                                 showMsg.invoke(context, "Anuncio eliminado de guardados")
                             }
                         }
@@ -120,14 +123,14 @@ class AppViewModel(
                                 }
 
                             }else if("no".equals(msgServidor.getParams().get(0))){
-                                handler.post{
+                                withContext(Dispatchers.Main){
                                     showMsg.invoke(context, "Datos introducidos no válidos")
                                 }
                             }
                         }
 
                         "ANUNCIO_PUBLICADO" -> {
-                            handler.post{
+                            withContext(Dispatchers.Main){
                                 showMsg.invoke(context, "Anuncio publicado correctamente")
                             }
 
@@ -148,6 +151,11 @@ class AppViewModel(
 
                             _uiState.value = _uiState.value.copy(imagenesAnuncioSeleccionado = imagenesAnuncioSeleccionado)
                             _uiState.value = _uiState.value.copy(goToDetalle = true)
+                        }
+
+                        "ENVIA_NOTIFICACIONES" -> {
+                            var notificaciones = mapper.readValue(msgServidor.getParams().get(0), object: TypeReference<List<Notificacion>>(){});
+                            aniadirNotificaciones(notificaciones)
                         }
 
                         "" -> {
@@ -283,6 +291,36 @@ class AppViewModel(
             imagenesAnuncioSeleccionado = emptyList(),
             goToDetalle = false
         )
+    }
+
+    fun obtenerNotificaciones(filtro: IFiltro, primeraCarga: Boolean){
+        if (_uiState.value.cargando) return
+
+        var mapper = ObjectMapper()
+        var filtroJSON = mapper.writeValueAsString(filtro)
+        // Log.d("App", filtroJSON)
+
+        var msg = Mensaje()
+        msg.setTipo("OBTENER_NOTIFICACIONES")
+        msg.addParam(filtroJSON)
+        msg.addParam(if (primeraCarga) "si" else "no")
+
+        this.dos?.writeUTF(Serializador.codificarMensaje(msg))
+        this.dos?.flush()
+
+        _uiState.value = _uiState.value.copy( cargando = true )
+    }
+
+    fun aniadirNotificaciones(notificaciones: List<Notificacion>){
+        _uiState.value = _uiState.value.copy(
+            notificacionesEncontrados = _uiState.value.notificacionesEncontrados.toList() + notificaciones,
+            cargando = false,
+            noHayMasAnuncios = notificaciones.size < 3
+        )
+    }
+
+    fun vaciarNotificaciones(){
+        _uiState.value = _uiState.value.copy(notificacionesEncontrados = emptyList())
     }
 }
 

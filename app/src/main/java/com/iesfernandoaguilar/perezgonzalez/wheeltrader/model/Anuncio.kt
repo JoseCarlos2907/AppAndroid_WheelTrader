@@ -17,7 +17,7 @@ data class Anuncio (
     var numSerieBastidor: String?,
     var vendedor: Usuario? = null,
     var guardado: Boolean = false,
-    var tipoVehiculo: String,
+    var tipoVehiculo: String? = null,
     var imagenes: List<Imagen>? = null,
     var venta: Venta? = null,
     var reuniones: List<Reunion>? = null,

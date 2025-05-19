@@ -92,7 +92,9 @@ class LoginViewModel(
                                 showMsg.invoke(context, "Credenciales incorrectas")
                             }
                         } else if ("baneado".equals(msgServidor.getParams().get(0))) {
-
+                            withContext(Dispatchers.Main) {
+                                showMsg.invoke(context, "Ese usuario ha sido baneado")
+                            }
                         }
                     } else if ("DNI_EXISTE".equals(tipo)) {
                         if ("si".equals(msgServidor.getParams().get(0))) {

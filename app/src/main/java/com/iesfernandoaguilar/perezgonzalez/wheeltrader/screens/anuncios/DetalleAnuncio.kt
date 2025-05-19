@@ -168,7 +168,7 @@ fun DetallesVehiculo(
             modifier = Modifier.fillMaxSize().padding(horizontal = 10.dp)
         ) {
             Text(
-                text = anuncio.tipoVehiculo,
+                text = anuncio.tipoVehiculo!!,
                 style = MaterialTheme.typography.labelMedium,
                 color = Color.White
             )
@@ -219,7 +219,7 @@ fun DetallesVehiculo(
                             )
                         }
 
-                        Button(
+                        /*Button(
                             onClick = { /* TODO: Función de reunión */ },
                             colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
                         ) {
@@ -228,7 +228,7 @@ fun DetallesVehiculo(
                                 style = MaterialTheme.typography.labelMedium,
                                 color = Color.White
                             )
-                        }
+                        }*/
                     }
                 }
             }
@@ -249,7 +249,6 @@ fun DetallesVehiculo(
                         color = Color.Black,
                         modifier = Modifier.padding(bottom = 4.dp)
                     )
-
 
 
                     Text(

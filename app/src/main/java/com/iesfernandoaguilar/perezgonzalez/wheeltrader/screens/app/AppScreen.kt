@@ -38,6 +38,7 @@ import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros.filtroCo
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros.filtroMaquinaria.FiltroMaquinaria
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros.filtroMoto.FiltroMoto
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.home.HomeScreen
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.notificaciones.NotificacionesScreen
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.publicar.ListaTiposVehiculos
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.publicar.publicarCamion.PublicarCamion
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.publicar.publicarCamioneta.PublicarCamioneta
@@ -131,7 +132,9 @@ fun AppScreen(
                 homeOnClick = {
                     appNavController.navigate(AppScreens.Home.screenName)
                 },
-                notificacionesOnClick = { /* TODO: Navegación hacia la pantalla de notificaciones */ },
+                notificacionesOnClick = {
+                    appNavController.navigate(AppScreens.Notificaciones.screenName)
+                },
                 publicarAnuncioOnClick = {
                     appNavController.navigate(AppScreens.ListaTiposPublicar.screenName)
                 }
@@ -238,7 +241,10 @@ fun AppScreen(
             }
 
             composable(route = AppScreens.Notificaciones.screenName){
-                // TODO: Hacer la pantalla de Notificaciones
+                NotificacionesScreen(
+                    appViewModel = appViewModel,
+                    conectionUiState = conectionUiState
+                )
             }
 
             composable(route = AppScreens.ListaTiposPublicar.screenName){

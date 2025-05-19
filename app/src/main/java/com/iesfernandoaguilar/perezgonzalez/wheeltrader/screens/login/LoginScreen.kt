@@ -116,8 +116,12 @@ fun LoginScreen(
         if(conectionUiState.usuario != null){
             conectionUiState.usuario?.let {
                 loginViewModel.pararEscuchaServidor_Login()
-                navController.navigate(WheelTraderScreens.App.screenName) {
-                    popUpTo(WheelTraderScreens.Login.screenName) { inclusive = true }
+                if("USUARIO".equals(conectionUiState.usuario!!.rol)){
+                    navController.navigate(WheelTraderScreens.App.screenName) {
+                        popUpTo(WheelTraderScreens.Login.screenName) { inclusive = true }
+                    }
+                }else{
+
                 }
             }
         }

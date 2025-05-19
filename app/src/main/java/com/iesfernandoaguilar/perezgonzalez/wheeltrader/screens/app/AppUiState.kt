@@ -1,6 +1,7 @@
 package com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.app
 
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Anuncio
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Notificacion
 import java.time.LocalDateTime
 
 data class AppUiState (
@@ -12,5 +13,6 @@ data class AppUiState (
     var goToHome: Boolean = false,
     var anuncioSeleccionado: Anuncio? = null,
     var imagenesAnuncioSeleccionado: List<ByteArray> = emptyList(),
-    var goToDetalle: Boolean = false
+    var goToDetalle: Boolean = false,
+    var notificacionesEncontrados: List<Notificacion> = emptyList()
 )
