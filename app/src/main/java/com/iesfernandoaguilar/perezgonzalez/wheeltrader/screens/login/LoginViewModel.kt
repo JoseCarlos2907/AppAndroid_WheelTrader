@@ -49,6 +49,7 @@ class LoginViewModel(
     @RequiresApi(Build.VERSION_CODES.O)
     fun escucharDelServidor_Login() {
         if(lectorLogin?.isAlive == true) return
+        _uiState.value = _uiState.value.copy(iniciaSesion = false)
 
         lectorLogin = Thread(){
             Log.d("Login", "Arranca hilo")
@@ -66,7 +67,7 @@ class LoginViewModel(
 
                     var tipo = msgServidor.getTipo()
                     if("ENVIA_SALT".equals(tipo)){
-                        // Log.d("Login","ENVIA_SALT")
+                        Log.d("Login","ENVIA_SALT")
                         msgRespuesta = Mensaje()
                         msgRespuesta.setTipo("INICIAR_SESION")
                         msgRespuesta.addParam(_uiState.value.currentNombreUsuario)
@@ -79,7 +80,7 @@ class LoginViewModel(
                         this.dos?.writeUTF(Serializador.codificarMensaje(msgRespuesta))
                         this.dos?.flush()
                     }else if("INICIA_SESION".equals(tipo)){
-                        // Log.d("Login","INICIA_SESION;"+msgServidor.getParams().get(0))
+                        Log.d("Login","INICIA_SESION;"+msgServidor.getParams().get(0))
                         if ("si".equals(msgServidor.getParams().get(0))) {
                             _uiState.value = _uiState.value.copy(iniciaSesion = true)
                             usuarioJSON = msgServidor.getParams().get(1)
@@ -88,6 +89,8 @@ class LoginViewModel(
                             handler.post{
                                 showMsg.invoke(context, "Credenciales incorrectas")
                             }
+                        }else if("baneado".equals(msgServidor.getParams().get(0))){
+
                         }
                     }else if("DNI_EXISTE".equals(tipo)){
                         if("si".equals(msgServidor.getParams().get(0))){
@@ -137,6 +140,7 @@ class LoginViewModel(
     fun pararEscuchaServidor_Login(){
         lectorLogin?.interrupt()
         lectorLogin = null
+        Log.d("Login", "Hilo parado")
     }
 
     fun iniciarSesion(nombre: String){

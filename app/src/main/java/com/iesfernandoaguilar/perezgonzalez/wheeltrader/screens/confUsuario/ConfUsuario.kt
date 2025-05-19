@@ -180,9 +180,6 @@ fun ConfUsuario(
         }
 
         Column{
-            boton({
-
-            }, "Mis Valoraciones")
 
             boton({
                 filtrosViewModel.asignarFiltro(FiltroPublicados(conectionUiState.usuario!!.nombreUsuario))

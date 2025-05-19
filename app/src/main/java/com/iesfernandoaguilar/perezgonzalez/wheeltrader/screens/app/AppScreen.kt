@@ -159,7 +159,8 @@ fun AppScreen(
                 HomeScreen(
                     filterButtonOnClick = { appNavController.navigate(AppScreens.TipoFiltros.screenName) },
                     buscarOnClick = { appNavController.navigate(AppScreens.ListaAnuncios.screenName) },
-                    filtrosViewModel = filtrosViewModel
+                    filtrosViewModel = filtrosViewModel,
+                    conectionUiState = conectionUiState
                 )
             }
 

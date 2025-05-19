@@ -123,22 +123,25 @@ fun LoginScreen(
                 }
             }
             loginViewModel.escucharDelServidor_Login()
+        }else{
+            loginViewModel.pararEscuchaServidor_Login()
+            navController.navigate(WheelTraderScreens.App.screenName) {
+                popUpTo(WheelTraderScreens.Login.screenName) { inclusive = true }
+            }
         }
-        Log.d("Login", "Entra " + conectionUiState.usuario)
     }
 
-    DisposableEffect(Unit) {
+    /*DisposableEffect(Unit) {
         onDispose {
             loginViewModel.pararEscuchaServidor_Login()
         }
-    }
+    }*/
 
     // Controla que al iniciar sesión se cambie de ventana
-    LaunchedEffect (conectionUiState.usuario) {
+    /*LaunchedEffect (conectionUiState.usuario) {
         if (conectionUiState.usuario != null) {
-            navController.navigate(WheelTraderScreens.App.screenName)
         }
-    }
+    }*/
 
     Scaffold(
         topBar = {

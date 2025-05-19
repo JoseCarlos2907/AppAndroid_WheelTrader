@@ -45,43 +45,232 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.R
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.filtros.FiltroBarraBusqueda
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.filtros.FiltroCamion
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.filtros.FiltroCamioneta
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.filtros.FiltroCoche
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.filtros.FiltroMaquinaria
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.filtros.FiltroMoto
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.filtros.FiltroTodo
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.ConectionUiState
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.ConectionViewModel
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros.FiltrosViewModel
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros.filtroCamion.FiltroCamionViewModel
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros.filtroCamioneta.FiltroCamionetaViewModel
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros.filtroCoche.FiltroCocheViewModel
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros.filtroMaquinaria.FiltroMaquinariaViewModel
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros.filtroMoto.FiltroMotoViewModel
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.ui.theme.WheelTraderTheme
 
 @Composable
 fun HomeScreen(
     filterButtonOnClick: () -> Unit,
     buscarOnClick: () -> Unit,
+    conectionUiState: ConectionUiState,
     filtrosViewModel: FiltrosViewModel,
+    filtroCocheViewModel: FiltroCocheViewModel = viewModel(),
+    filtroMotoViewModel: FiltroMotoViewModel = viewModel(),
+    filtroCamionViewModel: FiltroCamionViewModel = viewModel(),
+    filtroCamionetaViewModel: FiltroCamionetaViewModel = viewModel(),
+    filtroMaquinariaViewModel: FiltroMaquinariaViewModel = viewModel(),
     modifier: Modifier = Modifier
 ) {
     val opciones = listOf("Coches", "Motos", "Camionetas", "Camiones", "Maquinaria")
     val imagenes = listOf(R.drawable.fotofiltrocoche, R.drawable.fotofiltromoto, R.drawable.fotofiltrocamioneta, R.drawable.fotofiltrocamion, R.drawable.fotofiltromaquinaria)
+    val funciones = listOf(
+        {
+            var filtroCoche = FiltroCoche()
 
-    var texto by remember { mutableStateOf("")}
+            filtroCoche.marca = null
+            filtroCoche.modelo = null
+            filtroCoche.anioMinimo = 1950
+            filtroCoche.anioMaximo = 2025
+            filtroCoche.cvMinimo = 40
+            filtroCoche.cvMaximo = 1500
+            filtroCoche.ciudad = null
+            filtroCoche.provincia = null
+            filtroCoche.kmMinimo = 0
+            filtroCoche.kmMaximo = 2000000
+            filtroCoche.cantMarchas = 0
+            filtroCoche.nPuertas = 0
+            filtroCoche.tipoCombustible = null
+            filtroCoche.transmision = null
 
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceAround,
+
+            filtrosViewModel.asignarFiltro(filtroCoche)
+
+            buscarOnClick()
+        },
+        {
+            var filtroMoto = FiltroMoto()
+
+            filtroMoto.marca = null
+            filtroMoto.modelo = null
+            filtroMoto.anioMinimo = 1950
+            filtroMoto.anioMaximo = 2025
+            filtroMoto.cvMinimo = 50
+            filtroMoto.cvMaximo = 2000
+            filtroMoto.ciudad = null
+            filtroMoto.provincia = null
+            filtroMoto.kmMinimo = 0
+            filtroMoto.kmMaximo = 1000000
+            filtroMoto.cantMarchas = 0
+            filtroMoto.tipoCombustible = null
+
+
+            filtrosViewModel.asignarFiltro(filtroMoto)
+
+            buscarOnClick()
+        },
+        {
+            var filtroCamion = FiltroCamion()
+
+            filtroCamion.marca = null
+            filtroCamion.modelo = null
+            filtroCamion.anioMinimo = 1950
+            filtroCamion.anioMaximo = 2025
+            filtroCamion.cvMinimo = 100
+            filtroCamion.cvMaximo = 800
+            filtroCamion.ciudad = null
+            filtroCamion.provincia = null
+            filtroCamion.kmMinimo = 0
+            filtroCamion.kmMaximo = 2000000
+            filtroCamion.tipoCombustible = null
+
+
+            filtrosViewModel.asignarFiltro(filtroCamion)
+
+            buscarOnClick()
+        },
+        {
+            var filtroCamioneta = FiltroCamioneta()
+
+            filtroCamioneta.marca = null
+            filtroCamioneta.modelo = null
+            filtroCamioneta.anioMinimo = 1950
+            filtroCamioneta.anioMaximo = 2025
+            filtroCamioneta.cvMinimo = 50
+            filtroCamioneta.cvMaximo = 2000
+            filtroCamioneta.ciudad = null
+            filtroCamioneta.provincia = null
+            filtroCamioneta.kmMinimo = 0
+            filtroCamioneta.kmMaximo = 2000000
+            filtroCamioneta.cantMarchas = 0
+            filtroCamioneta.nPuertas = 0
+            filtroCamioneta.tipoCombustible = null
+
+
+            filtrosViewModel.asignarFiltro(filtroCamioneta)
+
+            buscarOnClick()
+        },
+        {
+            var filtroMaquinaria = FiltroMaquinaria()
+
+            filtroMaquinaria.marca = null
+            filtroMaquinaria.modelo = null
+            filtroMaquinaria.anioMinimo = 1950
+            filtroMaquinaria.anioMaximo = 2025
+            filtroMaquinaria.ciudad = null
+            filtroMaquinaria.provincia = null
+            filtroMaquinaria.tipoCombustible = null
+
+
+            filtrosViewModel.asignarFiltro(filtroMaquinaria)
+
+            buscarOnClick()
+        },
+    )
+
+    LazyColumn(
+        verticalArrangement = Arrangement.spacedBy(20.dp),
         modifier = modifier.fillMaxSize().background(
             brush = Brush.linearGradient(
                 colors = listOf(Color.Black, Color(0xFF525151)),
                 start = Offset(0f, 0f),
                 end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
             )
-        ).padding(8.dp)
+        )
     ) {
+        item{
+            parteSuperiorHome(
+                filterButtonOnClick = filterButtonOnClick,
+                buscarOnClick = buscarOnClick,
+                filtrosViewModel = filtrosViewModel,
+                conectionUiState = conectionUiState
+            )
+        }
+
+        items(opciones) { opcion ->
+            tipoVehiculoCard(
+                { funciones.get(opciones.indexOf(opcion))() },
+                imagenes.get(opciones.indexOf(opcion)),
+                opcion
+            )
+        }
+    }
+
+}
+
+@Composable
+fun tipoVehiculoCard(
+    onClick: () -> Unit,
+    imagen: Int,
+    texto: String
+){
+    Row{
+        Card(
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
+            onClick = onClick,
+            modifier = Modifier.height(100.dp).padding(10.dp)
+        ) {
+            Row {
+                Column(
+                    modifier = Modifier.fillMaxHeight().weight(0.2F)
+                ) {
+                    Image(
+                        painter = painterResource(imagen),
+                        contentDescription = "",
+                        modifier = Modifier.fillMaxSize(),
+                    )
+                }
+
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxSize().weight(0.6F)
+                ) {
+                    Text(
+                        text = texto,
+                        style = MaterialTheme.typography.titleLarge,
+                        color = MaterialTheme.colorScheme.primaryContainer
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun parteSuperiorHome(
+    filterButtonOnClick: () -> Unit,
+    buscarOnClick: () -> Unit,
+    filtrosViewModel: FiltrosViewModel,
+    conectionUiState: ConectionUiState,
+    modifier: Modifier = Modifier
+){
+    var texto by remember { mutableStateOf("")}
+
         Row(
+            horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.weight(0.1F)
+            modifier = Modifier.height(60.dp).fillMaxWidth()
         ) {
             Text(
-                //text = "Hola,\n\n${conectionUiState.usuario?.nombreUsuario ?: "_NOMBRE_"}"
-                text = "Hola, prueba123",
+                text = "Hola,${conectionUiState.usuario?.nombreUsuario ?: "_NOMBRE_"}",
+                // text = "Hola, prueba123",
                 style = MaterialTheme.typography.labelMedium,
                 color = Color.White,
                 textAlign = TextAlign.Center,
@@ -89,7 +278,7 @@ fun HomeScreen(
         }
 
         Row(
-            modifier = Modifier.weight(0.4F).padding(top = 10.dp,bottom = 10.dp)
+            modifier = Modifier.padding(top = 10.dp,bottom = 10.dp)
         ){
             Card(
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
@@ -165,12 +354,11 @@ fun HomeScreen(
                                 filtroBarraBusqueda.precioMaximo = Double.MAX_VALUE
                                 filtroBarraBusqueda.ciudad = null
                                 filtroBarraBusqueda.provincia = null
-
-                                    filtroBarraBusqueda.tiposVehiculo.add("Coche")
-                                    filtroBarraBusqueda.tiposVehiculo.add("Moto")
-                                    filtroBarraBusqueda.tiposVehiculo.add("Camioneta")
-                                    filtroBarraBusqueda.tiposVehiculo.add("Camion")
-                                    filtroBarraBusqueda.tiposVehiculo.add("Maquinaria")
+                                filtroBarraBusqueda.tiposVehiculo.add("Coche")
+                                filtroBarraBusqueda.tiposVehiculo.add("Moto")
+                                filtroBarraBusqueda.tiposVehiculo.add("Camioneta")
+                                filtroBarraBusqueda.tiposVehiculo.add("Camion")
+                                filtroBarraBusqueda.tiposVehiculo.add("Maquinaria")
 
                                 filtrosViewModel.asignarFiltro(filtroBarraBusqueda)
 
@@ -189,59 +377,6 @@ fun HomeScreen(
 
             }
         }
-
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(20.dp),
-            modifier = Modifier.weight(0.6F)
-        ) {
-            items(opciones) { opcion ->
-                tipoVehiculoCard(
-                    {},
-                    imagenes.get(opciones.indexOf(opcion)),
-                    opcion
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun tipoVehiculoCard(
-    onClick: () -> Unit,
-    imagen: Int,
-    texto: String
-){
-    Row{
-        Card(
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
-            onClick = onClick,
-            modifier = Modifier.height(100.dp).padding(10.dp)
-        ) {
-            Row {
-                Column(
-                    modifier = Modifier.fillMaxHeight().weight(0.2F)
-                ) {
-                    Image(
-                        painter = painterResource(imagen),
-                        contentDescription = "",
-                        modifier = Modifier.fillMaxSize(),
-                    )
-                }
-
-                Column(
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.fillMaxSize().weight(0.6F)
-                ) {
-                    Text(
-                        text = texto,
-                        style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.primaryContainer
-                    )
-                }
-            }
-        }
-    }
 }
 
 @Preview(showBackground = true)

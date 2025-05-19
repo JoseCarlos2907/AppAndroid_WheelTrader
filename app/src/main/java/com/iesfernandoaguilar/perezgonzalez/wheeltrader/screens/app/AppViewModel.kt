@@ -176,6 +176,7 @@ class AppViewModel(
     fun pararEscuchaServidor_App(){
         lectorApp?.interrupt()
         lectorApp = null
+        Log.d("App", "Hilo parado")
     }
 
     fun obtenerAnuncios(filtro: IFiltro?, primeraCarga: Boolean){
