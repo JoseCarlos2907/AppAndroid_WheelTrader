@@ -46,6 +46,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.R
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Anuncio
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.ConectionUiState
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.app.AppScreens
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.app.AppViewModel
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros.FiltrosUiState
@@ -57,7 +58,9 @@ import kotlinx.coroutines.withContext
 @Composable
 fun DetalleAnuncio(
     appViewModel: AppViewModel,
-    onClickComprar: () -> Unit,
+    conectionUiState: ConectionUiState,
+    onClickComprar: (Long, Long, String) -> Unit,
+    goToCompraComprador: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val appUiState by appViewModel.uiState.collectAsState()
@@ -66,6 +69,12 @@ fun DetalleAnuncio(
     DisposableEffect(Unit) {
         onDispose {
             appViewModel.salirDetalleAnuncio()
+        }
+    }
+
+    LaunchedEffect(appUiState.goToCompraComprador) {
+        if(appUiState.goToCompraComprador){
+            goToCompraComprador()
         }
     }
 
@@ -83,9 +92,10 @@ fun DetalleAnuncio(
     ) {
         item {
             DetallesVehiculo(
+                conectionUiState = conectionUiState,
                 anuncio =  appUiState.anuncioSeleccionado!!,
                 imagenes = appUiState.imagenesAnuncioSeleccionado,
-                onClickComprar = { onClickComprar() }
+                onClickComprar = { onClickComprar(conectionUiState.usuario!!.idUsuario, appUiState.anuncioSeleccionado!!.idAnuncio, appUiState.anuncioSeleccionado!!.tipoVehiculo!!) }
             )
         }
 
@@ -122,6 +132,7 @@ fun DetalleAnuncio(
 
 @Composable
 fun DetallesVehiculo(
+    conectionUiState: ConectionUiState,
     onClickComprar: () -> Unit,
     anuncio: Anuncio,
     imagenes: List<ByteArray>,
@@ -233,6 +244,7 @@ fun DetallesVehiculo(
                     ) {
                         Button(
                             onClick = { onClickComprar() },
+                            enabled = if(conectionUiState.usuario!!.idUsuario == anuncio.vendedor?.idUsuario) false else true,
                             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                         ) {
                             Text(

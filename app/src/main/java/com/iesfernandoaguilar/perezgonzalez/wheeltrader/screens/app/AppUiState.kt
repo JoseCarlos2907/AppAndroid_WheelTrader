@@ -14,5 +14,6 @@ data class AppUiState (
     var anuncioSeleccionado: Anuncio? = null,
     var imagenesAnuncioSeleccionado: List<ByteArray> = emptyList(),
     var goToDetalle: Boolean = false,
-    var notificacionesEncontrados: List<Notificacion> = emptyList()
+    var notificacionesEncontrados: List<Notificacion> = emptyList(),
+    var goToCompraComprador: Boolean = false
 )

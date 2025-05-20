@@ -20,10 +20,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Button
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,22 +39,27 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.app.AppViewModel
 import java.io.File
 import java.io.FileOutputStream
 
 @Composable
 fun CompraCompradorScreen(
-    // pdfFile: File,
+    appViewModel: AppViewModel,
     modifier: Modifier = Modifier
 ){
     var bitmaps by remember { mutableStateOf<List<Bitmap>>(emptyList()) }
+    val appUiState by appViewModel.uiState.collectAsState()
+
+    var comision = (appUiState.anuncioSeleccionado!!.precio * 5) / 100
+    var total = appUiState.anuncioSeleccionado!!.precio + comision
 
     val context = LocalContext.current
-
+    
     LaunchedEffect(Unit) {
         // bitmaps = paginasPDF(pdfFile)
-        bitmaps = paginasPDF(File(context.filesDir, "prueba_Python_27_02_25.pdf"))
         // copyPdfFromAssets(context, "prueba_Python_27_02_25.pdf")
+        bitmaps = paginasPDF(File(context.cacheDir, "Temp_Aplanado.pdf"))
     }
 
     LazyColumn(
@@ -69,7 +76,7 @@ fun CompraCompradorScreen(
                 Row(
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth().height(60.dp)
+                    modifier = Modifier.fillMaxWidth().height(60.dp).padding(top = 20.dp)
                 ) {
                     Text(
                         text = "Documento de acuerdo",
@@ -80,7 +87,7 @@ fun CompraCompradorScreen(
                     )
                 }
                 Row(
-                    modifier = Modifier.horizontalScroll(rememberScrollState()).padding(12.dp).height(400.dp)
+                    modifier = Modifier.horizontalScroll(rememberScrollState()).padding(12.dp).height(480.dp)
                 ) {
                     bitmaps.forEach{ bitmap ->
                         Column(
@@ -113,7 +120,71 @@ fun CompraCompradorScreen(
                     modifier = Modifier.fillMaxSize()
                 )
             }
-            // TODO: Precios
+
+            Row(
+                modifier = Modifier.fillMaxWidth().height(200.dp).padding(top = 16.dp)
+            ) {
+                Column(
+                    modifier = Modifier.padding(horizontal = 20.dp)
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier.fillMaxWidth().weight(0.3F).padding(horizontal = 20.dp)
+                    ) {
+                        Text(
+                            text = "Precio vehículo",
+                            color = Color.White,
+                            style = MaterialTheme.typography.labelMedium
+                        )
+
+                        Text(
+                            text = appUiState.anuncioSeleccionado?.precio.toString(),
+                            color = Color.White,
+                            style = MaterialTheme.typography.labelMedium
+                        )
+                    }
+
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier.fillMaxWidth().weight(0.3F).padding(horizontal = 20.dp)
+                    ) {
+                        Text(
+                            text = "Comisión (5%)",
+                            color = Color.White,
+                            style = MaterialTheme.typography.labelMedium
+                        )
+
+                        Text(
+                            text = comision.toString(),
+                            color = Color.White,
+                            style = MaterialTheme.typography.labelMedium
+                        )
+                    }
+
+                    HorizontalDivider(
+                        color = MaterialTheme.colorScheme.primary,
+                        thickness = 4.dp,
+                        modifier = Modifier.padding(vertical = 12.dp, horizontal = 14.dp)
+                    )
+
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier.fillMaxWidth().weight(0.3F).padding(horizontal = 20.dp)
+                    ) {
+                        Text(
+                            text = "Precio total",
+                            color = Color.White,
+                            style = MaterialTheme.typography.labelMedium
+                        )
+
+                        Text(
+                            text = total.toString(),
+                            color = Color.White,
+                            style = MaterialTheme.typography.labelMedium
+                        )
+                    }
+                }
+            }
 
 
             Row(

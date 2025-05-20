@@ -228,9 +228,13 @@ fun AppScreen(
             composable(route = AppScreens.DetalleAnuncio.screenName){
                 DetalleAnuncio(
                     appViewModel  = appViewModel,
-                    onClickComprar = {
-                        appNavController.navigate(AppScreens.CompraComprador.screenName)
-                    }
+                    conectionUiState = conectionUiState,
+                    onClickComprar = { idComprador, idAnuncio, tipoAnuncio ->
+                        appViewModel.viewModelScope.launch(Dispatchers.IO) {
+                            appViewModel.obtenerPDFAcuerdo(idComprador, idAnuncio, tipoAnuncio)
+                        }
+                    },
+                    goToCompraComprador = { appNavController.navigate(AppScreens.CompraComprador.screenName) }
                 )
             }
 
@@ -302,7 +306,7 @@ fun AppScreen(
 
             composable(route = AppScreens.CompraComprador.screenName) {
                 CompraCompradorScreen(
-
+                    appViewModel = appViewModel,
                 )
             }
         }

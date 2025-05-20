@@ -12,13 +12,15 @@ import androidx.lifecycle.viewModelScope
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.interfaces.IFiltro
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Anuncio
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Mensaje
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Notificacion
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.ConectionViewModel
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.utils.Serializador
+import com.itextpdf.forms.PdfAcroForm
+import com.itextpdf.kernel.pdf.PdfReader
+import com.itextpdf.kernel.pdf.PdfWriter
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -28,9 +30,15 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
 import java.io.DataInputStream
 import java.io.DataOutputStream
 import java.io.EOFException
+import java.io.File
+import java.io.FileOutputStream
+import java.nio.file.Files
+import java.nio.file.Path
 
 class AppViewModel(
     private val conectionViewModel: ConectionViewModel
@@ -158,8 +166,21 @@ class AppViewModel(
                             aniadirNotificaciones(notificaciones)
                         }
 
-                        "" -> {
+                        "ENVIA_PDF_ACUERDO" -> {
+                            var longitudPDF = msgServidor.getParams().get(0).toInt()
+                            var bytesPDF = ByteArray(longitudPDF)
+                            dis?.readFully(bytesPDF)
 
+                            // Creo dos PDF, uno con los campos aplanados para mostrar y otro que es el que se va a modificar y enviar
+                            val archivoPDF = File(context.cacheDir, "Temp.pdf")
+                            aplanarPDF(bytesPDF)
+                            if(archivoPDF.exists()) archivoPDF.delete()
+                            archivoPDF.createNewFile()
+                            var os = FileOutputStream(archivoPDF)
+                            os.write(bytesPDF)
+                            os.close()
+
+                            _uiState.value = _uiState.value.copy(goToCompraComprador = true)
                         }
 
                         else -> {
@@ -287,9 +308,9 @@ class AppViewModel(
 
     fun salirDetalleAnuncio(){
         _uiState.value = _uiState.value.copy(
-            anuncioSeleccionado = null,
             imagenesAnuncioSeleccionado = emptyList(),
-            goToDetalle = false
+            goToDetalle = false,
+            goToCompraComprador = false
         )
     }
 
@@ -321,6 +342,33 @@ class AppViewModel(
 
     fun vaciarNotificaciones(){
         _uiState.value = _uiState.value.copy(notificacionesEncontrados = emptyList())
+    }
+
+    fun obtenerPDFAcuerdo(idComprador: Long, idAnuncio: Long, tipoAnuncio: String){
+        var msg = Mensaje()
+        msg.setTipo("OBTENER_PDF_ACUERDO")
+        msg.addParam(idComprador.toString())
+        msg.addParam(idAnuncio.toString())
+        msg.addParam(tipoAnuncio)
+
+        this.dos?.writeUTF(Serializador.codificarMensaje(msg))
+        this.dos?.flush()
+    }
+
+    fun aplanarPDF(bytesPdf: ByteArray){
+        val archivoPdfAplanado = File(context.cacheDir, "Temp_Aplanado.pdf")
+        if(archivoPdfAplanado.exists()) archivoPdfAplanado.delete()
+        archivoPdfAplanado.createNewFile()
+
+        val reader = PdfReader(ByteArrayInputStream(bytesPdf))
+        val writer = PdfWriter(archivoPdfAplanado)
+        val pdfDocument = com.itextpdf.kernel.pdf.PdfDocument(reader, writer)
+
+        val formulario = PdfAcroForm.getAcroForm(pdfDocument, true)
+        // Aplanar los campos para que se puedan ver en pantalla
+        formulario.flattenFields()
+
+        pdfDocument.close()
     }
 }
 
