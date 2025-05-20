@@ -16,6 +16,7 @@ import com.iesfernandoaguilar.perezgonzalez.wheeltrader.interfaces.IFiltro
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Anuncio
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Mensaje
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Notificacion
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Usuario
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.ConectionViewModel
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.utils.Serializador
 import com.itextpdf.forms.PdfAcroForm
@@ -369,6 +370,25 @@ class AppViewModel(
         formulario.flattenFields()
 
         pdfDocument.close()
+    }
+
+    fun compradorOfreceCompra(bytesPdf: ByteArray, idComprador: Long, idAnuncio: Long, idVendedor: Long){
+        var msg = Mensaje()
+        msg.setTipo("COMPRADOR_OFRECE_COMPRA")
+        msg.addParam(bytesPdf.size.toString())
+        msg.addParam(idComprador.toString())
+        msg.addParam(idAnuncio.toString())
+        msg.addParam(idVendedor.toString())
+
+        this.dos?.writeUTF(Serializador.codificarMensaje(msg))
+        this.dos?.flush()
+
+        this.dos?.write(bytesPdf)
+        this.dos?.flush()
+    }
+
+    fun reiniciarGoToCompraComprador(){
+        _uiState.value = _uiState.value.copy(goToCompraComprador = false)
     }
 }
 

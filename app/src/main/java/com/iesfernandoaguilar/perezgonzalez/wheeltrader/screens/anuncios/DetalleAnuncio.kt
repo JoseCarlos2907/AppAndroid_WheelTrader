@@ -75,6 +75,7 @@ fun DetalleAnuncio(
     LaunchedEffect(appUiState.goToCompraComprador) {
         if(appUiState.goToCompraComprador){
             goToCompraComprador()
+            appViewModel.reiniciarGoToCompraComprador()
         }
     }
 

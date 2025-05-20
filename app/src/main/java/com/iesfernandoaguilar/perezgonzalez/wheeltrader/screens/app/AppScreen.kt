@@ -307,6 +307,10 @@ fun AppScreen(
             composable(route = AppScreens.CompraComprador.screenName) {
                 CompraCompradorScreen(
                     appViewModel = appViewModel,
+                    conectionUiState = conectionUiState,
+                    onOfrecer = {
+                        appNavController.navigate(AppScreens.Home.screenName)
+                    }
                 )
             }
         }
