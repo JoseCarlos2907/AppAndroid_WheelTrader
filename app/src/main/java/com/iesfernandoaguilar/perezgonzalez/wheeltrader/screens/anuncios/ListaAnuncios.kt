@@ -85,6 +85,7 @@ fun ListaAnuncios(
 
     LaunchedEffect (Unit) {
         withContext(Dispatchers.IO){
+            appViewModel.vaciarAnuncios()
             appViewModel.obtenerAnuncios(filtrosUiState.filtro, true)
             filtrosUiState.filtro!!.pagina++
         }

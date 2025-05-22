@@ -51,6 +51,8 @@ import kotlinx.coroutines.withContext
 fun NotificacionesScreen(
     appViewModel: AppViewModel,
     conectionUiState: ConectionUiState,
+    goToCompraVendedor: () -> Unit,
+    goToPayPalScreen: () -> Unit,
     modifier: Modifier = Modifier
 ){
     val appUiState by appViewModel.uiState.collectAsState()
@@ -64,7 +66,7 @@ fun NotificacionesScreen(
             val notificacionesTotales = listState.layoutInfo.totalItemsCount
             ultimaNotificacionVisible to notificacionesTotales
         }.collect{ (ultimaNotificacionVisible, notificacionesTotales) ->
-            if(ultimaNotificacionVisible != null && ultimaNotificacionVisible >= notificacionesTotales-1 && !appUiState.cargando && !appUiState.noHayMasAnuncios){
+            if(ultimaNotificacionVisible != null && ultimaNotificacionVisible >= notificacionesTotales-1 && !appUiState.cargando && !appUiState.noHayMasNotificaciones){
                 withContext(Dispatchers.IO){
                     appViewModel.obtenerNotificaciones(filtroNotificaciones, false)
                     filtroNotificaciones.pagina++
@@ -73,10 +75,17 @@ fun NotificacionesScreen(
         }
     }
 
-    LaunchedEffect (Unit) {
-        withContext(Dispatchers.IO){
-            appViewModel.obtenerNotificaciones(filtroNotificaciones, true)
-            filtroNotificaciones.pagina++
+    LaunchedEffect(appUiState.goToCompraVendedor) {
+        if(appUiState.goToCompraVendedor){
+            goToCompraVendedor()
+            appViewModel.reiniciarGoToCompraVendedor()
+        }
+    }
+
+    LaunchedEffect(appUiState.goToPayPalScreen) {
+        if(appUiState.goToPayPalScreen){
+            goToPayPalScreen()
+            appViewModel.asignarGoToPayPalScreen(false)
         }
     }
 
@@ -120,7 +129,10 @@ fun NotificacionesScreen(
                 key = { notificacion -> notificacion.idNotificacion }
             ) { notificacion ->
                 CardNotificacion(
-                    notificacion = notificacion
+                    appViewModel = appViewModel,
+                    conectionUiState = conectionUiState,
+                    notificacion = notificacion,
+                    goToPayPalScreen = goToPayPalScreen
                 )
             }
 
@@ -135,6 +147,9 @@ fun NotificacionesScreen(
 
 @Composable
 fun CardNotificacion(
+    appViewModel: AppViewModel,
+    conectionUiState: ConectionUiState,
+    goToPayPalScreen: () -> Unit,
     notificacion: Notificacion,
     modifier: Modifier = Modifier
 ){
@@ -189,19 +204,37 @@ fun CardNotificacion(
                     horizontalArrangement = Arrangement.End,
                     modifier = Modifier.weight(0.3F).fillMaxWidth()
                 ) {
-                    Button(
-                        onClick = {
-                            // TODO: Según el tipo de botón que sea mandar a pagar, responder oferta o no mostrar
-                            // TODO: Con el texto igual
-                        },
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-                        enabled = if ("NO_LEIDO".equals(notificacion.estado)) true else false
-                    ) {
-                        Text(
-                            text = "Ver Oferta",
-                            style = MaterialTheme.typography.labelMedium,
-                            color = Color.Black
-                        )
+                    if(!"OFERTA_RECHAZADA".equals(notificacion.tipo)){
+                        Button(
+                            onClick = {
+                                appViewModel.seleccionarNotificacion(notificacion)
+                                appViewModel.viewModelScope.launch(Dispatchers.IO) {
+                                    var precioTotal = notificacion.anuncio!!.precio + (notificacion.anuncio!!.precio * 0.05)
+                                    if("OFERTA_ACEPTADA".equals(notificacion.tipo)){
+                                        appViewModel.usuarioPaga(
+                                            idComprador = conectionUiState.usuario!!.idUsuario,
+                                            idVendedor = notificacion.anuncio!!.idAnuncio,
+                                            precio = precioTotal
+                                        )
+                                        /*withContext(Dispatchers.Main){
+                                            goToPayPalScreen()
+                                        }*/
+                                    }else if("OFERTA_ANUNCIO".equals(notificacion.tipo)){
+                                        appViewModel.obtenerPDFAcuerdoVendedor(notificacion.usuarioEnvia!!.idUsuario, notificacion.anuncio!!.idAnuncio)
+                                    }
+
+                                }
+
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                            enabled = if ("RESPONDIDO".equals(notificacion.estado)) false else true
+                        ) {
+                            Text(
+                                text = if("OFERTA_ACEPTADA".equals(notificacion.tipo)) "Pagar" else "Ver Oferta",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = Color.Black
+                            )
+                        }
                     }
                 }
             }

@@ -184,6 +184,43 @@ class AppViewModel(
                             _uiState.value = _uiState.value.copy(goToCompraComprador = true)
                         }
 
+                        "ENVIA_PDF_ACUERDO_VENDEDOR" -> {
+                            var longitudPDF = msgServidor.getParams().get(0).toInt()
+                            var bytesPDF = ByteArray(longitudPDF)
+                            dis?.readFully(bytesPDF)
+
+                            val archivoPDF = File(context.cacheDir, "Temp.pdf")
+                            aplanarPDF(bytesPDF)
+                            if(archivoPDF.exists()) archivoPDF.delete()
+                            archivoPDF.createNewFile()
+
+                            var os = FileOutputStream(archivoPDF)
+                            os.write(bytesPDF)
+                            os.close()
+
+                            _uiState.value = _uiState.value.copy(goToCompraVendedor = true)
+                        }
+
+                        "ENVIA_ESTADO_PAGO" -> {
+                            Log.d("App", "Comprueba estado pago: " + msgServidor.getParams().get(0))
+                            if("si".equals(msgServidor.getParams().get(0))){
+                                _uiState.value = _uiState.value.copy(confirmaPago = true)
+                            }else if("error".equals(msgServidor.getParams().get(0))){
+                                handler.post {
+                                    showMsg.invoke(context, "Error al hacer el pago")
+                                }
+                            }
+                        }
+
+                        "ENVIA_URL_PAGO" -> {
+                            asignarUrlPayPal(msgServidor.getParams().get(0))
+                            asignarGoToPayPalScreen(true)
+                        }
+
+                        "" -> {
+
+                        }
+
                         else -> {
                             Log.d("App", "Raro que entre en el else del when")
                         }
@@ -337,12 +374,16 @@ class AppViewModel(
         _uiState.value = _uiState.value.copy(
             notificacionesEncontrados = _uiState.value.notificacionesEncontrados.toList() + notificaciones,
             cargando = false,
-            noHayMasAnuncios = notificaciones.size < 3
+            noHayMasNotificaciones = notificaciones.size < 4
         )
     }
 
     fun vaciarNotificaciones(){
-        _uiState.value = _uiState.value.copy(notificacionesEncontrados = emptyList())
+        _uiState.value = _uiState.value.copy(
+            notificacionesEncontrados = emptyList(),
+            cargando = false,
+            noHayMasNotificaciones = false
+        )
     }
 
     fun obtenerPDFAcuerdo(idComprador: Long, idAnuncio: Long, tipoAnuncio: String){
@@ -389,6 +430,95 @@ class AppViewModel(
 
     fun reiniciarGoToCompraComprador(){
         _uiState.value = _uiState.value.copy(goToCompraComprador = false)
+    }
+
+    fun obtenerPDFAcuerdoVendedor(idComprador: Long, idAnuncio: Long){
+        var msg = Mensaje()
+        msg.setTipo("OBTENER_PDF_ACUERDO_VENDEDOR")
+        msg.addParam(idComprador.toString())
+        msg.addParam(idAnuncio.toString())
+
+        this.dos?.writeUTF(Serializador.codificarMensaje(msg))
+        this.dos?.flush()
+    }
+
+    fun reiniciarGoToCompraVendedor(){
+        _uiState.value = _uiState.value.copy(goToCompraVendedor = false)
+    }
+
+    fun vendedorConfirmaCompra(bytesPdf: ByteArray, idComprador: Long, idAnuncio: Long, idVendedor: Long, idNotificacion: Long){
+        var msg = Mensaje()
+        msg.setTipo("VENDEDOR_CONFIRMA_COMPRA")
+        msg.addParam(bytesPdf.size.toString())
+        msg.addParam(idComprador.toString())
+        msg.addParam(idAnuncio.toString())
+        msg.addParam(idVendedor.toString())
+        msg.addParam(idNotificacion.toString())
+
+        this.dos?.writeUTF(Serializador.codificarMensaje(msg))
+        this.dos?.flush()
+
+        this.dos?.write(bytesPdf)
+        this.dos?.flush()
+    }
+
+    fun vendedorRechazaCompra(idComprador: Long, idAnuncio: Long, idVendedor: Long, idNotificacion: Long){
+        var msg = Mensaje()
+        msg.setTipo("VENDEDOR_RECHAZA_COMPRA")
+        msg.addParam(idComprador.toString())
+        msg.addParam(idAnuncio.toString())
+        msg.addParam(idVendedor.toString())
+        msg.addParam(idNotificacion.toString())
+
+        this.dos?.writeUTF(Serializador.codificarMensaje(msg))
+        this.dos?.flush()
+    }
+
+    fun seleccionarNotificacion(notificacion: Notificacion?){
+        _uiState.value = _uiState.value.copy(notificacionSeleccionada = notificacion)
+    }
+
+    fun usuarioPaga(idComprador: Long, idVendedor: Long, precio: Double){
+        var msg = Mensaje()
+        msg.setTipo("USUARIO_PAGA")
+        msg.addParam(idComprador.toString())
+        msg.addParam(idVendedor.toString())
+        msg.addParam(precio.toString())
+
+        this.dos?.writeUTF(Serializador.codificarMensaje(msg))
+        this.dos?.flush()
+    }
+
+    fun confirmarPago(){
+        _uiState.value = _uiState.value.copy(confirmaPago = true)
+    }
+
+    fun reiniciaConfirmaPago(){
+        _uiState.value = _uiState.value.copy(confirmaPago = false)
+    }
+
+    fun asignarUrlPayPal(url: String){
+        _uiState.value = _uiState.value.copy(urlPayPal = url)
+    }
+
+    fun asignarGoToPayPalScreen(goToPayPalScreen: Boolean){
+        _uiState.value = _uiState.value.copy(goToPayPalScreen = goToPayPalScreen)
+    }
+
+    fun preguntarEstadoPago(): Job{
+        return viewModelScope.launch(Dispatchers.IO){
+            while (!_uiState.value.confirmaPago){
+                var msg = Mensaje()
+                msg.setTipo("OBTENER_ESTADO_PAGO")
+                msg.addParam(_uiState.value.notificacionSeleccionada!!.idNotificacion.toString())
+                msg.addParam(_uiState.value.notificacionSeleccionada!!.anuncio!!.idAnuncio.toString())
+
+                dos?.writeUTF(Serializador.codificarMensaje(msg))
+                dos?.flush()
+
+                Thread.sleep(6000)
+            }
+        }
     }
 }
 

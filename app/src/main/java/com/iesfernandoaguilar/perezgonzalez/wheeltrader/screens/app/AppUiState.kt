@@ -15,5 +15,11 @@ data class AppUiState (
     var imagenesAnuncioSeleccionado: List<ByteArray> = emptyList(),
     var goToDetalle: Boolean = false,
     var notificacionesEncontrados: List<Notificacion> = emptyList(),
-    var goToCompraComprador: Boolean = false
+    var noHayMasNotificaciones: Boolean = false,
+    var goToCompraComprador: Boolean = false,
+    var goToCompraVendedor: Boolean = false,
+    var notificacionSeleccionada: Notificacion? = null,
+    var goToPayPalScreen: Boolean = false,
+    var confirmaPago: Boolean = false,
+    var urlPayPal: String? = "https://google.com"
 )

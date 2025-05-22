@@ -115,13 +115,12 @@ fun LoginScreen(
     LaunchedEffect (conectionUiState.usuario) {
         if(conectionUiState.usuario != null){
             conectionUiState.usuario?.let {
-                loginViewModel.pararEscuchaServidor_Login()
                 if("USUARIO".equals(conectionUiState.usuario!!.rol)){
                     navController.navigate(WheelTraderScreens.App.screenName) {
                         popUpTo(WheelTraderScreens.Login.screenName) { inclusive = true }
                     }
                 }else{
-
+                    // TODO: Mandar a la pantalla de aviso de que es admin
                 }
             }
         }

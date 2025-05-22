@@ -28,6 +28,8 @@ import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.ConectionViewMod
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.anuncios.DetalleAnuncio
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.anuncios.ListaAnuncios
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.compras.CompraCompradorScreen
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.compras.CompraVendedorScreen
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.compras.PagoPayPalScreen
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.confUsuario.ConfUsuario
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros.filtroTodo.FiltroTodo
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros.FiltrosViewModel
@@ -75,7 +77,9 @@ enum class AppScreens(val screenName: String){
     ListaAnuncios(screenName = "lista_anuncios"),
     DetalleAnuncio(screenName = "detalle_anuncio"),
 
-    CompraComprador(screenName = "compra_comprador")
+    CompraComprador(screenName = "compra_comprador"),
+    CompraVendedor(screenName = "compra_vendedor"),
+    ConfirmarPagoPayPal(screenName = "confirmar_pago_paypal")
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -253,7 +257,13 @@ fun AppScreen(
             composable(route = AppScreens.Notificaciones.screenName){
                 NotificacionesScreen(
                     appViewModel = appViewModel,
-                    conectionUiState = conectionUiState
+                    conectionUiState = conectionUiState,
+                    goToCompraVendedor = {
+                        appNavController.navigate(AppScreens.CompraVendedor.screenName)
+                    },
+                    goToPayPalScreen = {
+                        appNavController.navigate(AppScreens.ConfirmarPagoPayPal.screenName)
+                    }
                 )
             }
 
@@ -309,6 +319,25 @@ fun AppScreen(
                     appViewModel = appViewModel,
                     conectionUiState = conectionUiState,
                     onOfrecer = {
+                        appNavController.navigate(AppScreens.Home.screenName)
+                    }
+                )
+            }
+
+            composable(route = AppScreens.CompraVendedor.screenName){
+                CompraVendedorScreen(
+                    appViewModel = appViewModel,
+                    conectionUiState = conectionUiState,
+                    onButtonClicked = {
+                        appNavController.navigate(AppScreens.Home.screenName)
+                    }
+                )
+            }
+
+            composable(route = AppScreens.ConfirmarPagoPayPal.screenName){
+                PagoPayPalScreen(
+                    appViewModel = appViewModel,
+                    goToHome = {
                         appNavController.navigate(AppScreens.Home.screenName)
                     }
                 )
