@@ -46,11 +46,13 @@ fun PagoPayPalScreen(
     DisposableEffect(Unit) {
         onDispose {
             hiloPeticiones?.cancel()
+            appViewModel.reiniciarNotificacion()
         }
     }
 
     LaunchedEffect(appUiState.confirmaPago) {
         if(appUiState.confirmaPago){
+            appViewModel.reiniciaConfirmaPago()
             goToHome()
         }
     }

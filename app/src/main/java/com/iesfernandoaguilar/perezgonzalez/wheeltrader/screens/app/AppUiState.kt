@@ -18,7 +18,12 @@ data class AppUiState (
     var noHayMasNotificaciones: Boolean = false,
     var goToCompraComprador: Boolean = false,
     var goToCompraVendedor: Boolean = false,
-    var notificacionSeleccionada: Notificacion? = null,
+
+    var idNotificacionSeleccionada: Long? = null,
+    var idAnuncioNotificacionSeleccionada: Long? = null,
+    var idCompradorNotificacionSeleccionada: Long? = null,
+    var precioAnuncioNotificacionSeleccionada: Double? = null,
+
     var goToPayPalScreen: Boolean = false,
     var confirmaPago: Boolean = false,
     var urlPayPal: String? = "https://google.com"

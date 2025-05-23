@@ -207,18 +207,15 @@ fun CardNotificacion(
                     if(!"OFERTA_RECHAZADA".equals(notificacion.tipo)){
                         Button(
                             onClick = {
-                                appViewModel.seleccionarNotificacion(notificacion)
+                                appViewModel.seleccionarNotificacion(notificacion.idNotificacion, notificacion.anuncio!!.idAnuncio, notificacion.usuarioEnvia!!.idUsuario, notificacion.anuncio!!.precio)
                                 appViewModel.viewModelScope.launch(Dispatchers.IO) {
                                     var precioTotal = notificacion.anuncio!!.precio + (notificacion.anuncio!!.precio * 0.05)
                                     if("OFERTA_ACEPTADA".equals(notificacion.tipo)){
                                         appViewModel.usuarioPaga(
                                             idComprador = conectionUiState.usuario!!.idUsuario,
-                                            idVendedor = notificacion.anuncio!!.idAnuncio,
+                                            idVendedor = notificacion.usuarioEnvia!!.idUsuario,
                                             precio = precioTotal
                                         )
-                                        /*withContext(Dispatchers.Main){
-                                            goToPayPalScreen()
-                                        }*/
                                     }else if("OFERTA_ANUNCIO".equals(notificacion.tipo)){
                                         appViewModel.obtenerPDFAcuerdoVendedor(notificacion.usuarioEnvia!!.idUsuario, notificacion.anuncio!!.idAnuncio)
                                     }

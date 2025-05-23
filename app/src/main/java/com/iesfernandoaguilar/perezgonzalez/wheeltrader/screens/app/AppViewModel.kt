@@ -201,20 +201,23 @@ class AppViewModel(
                             _uiState.value = _uiState.value.copy(goToCompraVendedor = true)
                         }
 
+                        "ENVIA_URL_PAGO" -> {
+                            asignarUrlPayPal(msgServidor.getParams().get(0))
+                            asignarGoToPayPalScreen(true)
+                        }
+
                         "ENVIA_ESTADO_PAGO" -> {
                             Log.d("App", "Comprueba estado pago: " + msgServidor.getParams().get(0))
                             if("si".equals(msgServidor.getParams().get(0))){
                                 _uiState.value = _uiState.value.copy(confirmaPago = true)
+                                handler.post {
+                                    showMsg.invoke(context, "Pago efectuado correctamente")
+                                }
                             }else if("error".equals(msgServidor.getParams().get(0))){
                                 handler.post {
                                     showMsg.invoke(context, "Error al hacer el pago")
                                 }
                             }
-                        }
-
-                        "ENVIA_URL_PAGO" -> {
-                            asignarUrlPayPal(msgServidor.getParams().get(0))
-                            asignarGoToPayPalScreen(true)
                         }
 
                         "" -> {
@@ -474,8 +477,22 @@ class AppViewModel(
         this.dos?.flush()
     }
 
-    fun seleccionarNotificacion(notificacion: Notificacion?){
-        _uiState.value = _uiState.value.copy(notificacionSeleccionada = notificacion)
+    fun seleccionarNotificacion(idNotificacion: Long, idAnuncio: Long, idVendedor: Long, precio: Double){
+        _uiState.value = _uiState.value.copy(
+            idNotificacionSeleccionada = idNotificacion,
+            idAnuncioNotificacionSeleccionada = idAnuncio,
+            idCompradorNotificacionSeleccionada = idVendedor,
+            precioAnuncioNotificacionSeleccionada = precio
+        )
+    }
+
+    fun reiniciarNotificacion(){
+        _uiState.value = _uiState.value.copy(
+            idNotificacionSeleccionada = null,
+            idAnuncioNotificacionSeleccionada = null,
+            idCompradorNotificacionSeleccionada = null,
+            precioAnuncioNotificacionSeleccionada = null
+        )
     }
 
     fun usuarioPaga(idComprador: Long, idVendedor: Long, precio: Double){
@@ -487,10 +504,6 @@ class AppViewModel(
 
         this.dos?.writeUTF(Serializador.codificarMensaje(msg))
         this.dos?.flush()
-    }
-
-    fun confirmarPago(){
-        _uiState.value = _uiState.value.copy(confirmaPago = true)
     }
 
     fun reiniciaConfirmaPago(){
@@ -510,13 +523,13 @@ class AppViewModel(
             while (!_uiState.value.confirmaPago){
                 var msg = Mensaje()
                 msg.setTipo("OBTENER_ESTADO_PAGO")
-                msg.addParam(_uiState.value.notificacionSeleccionada!!.idNotificacion.toString())
-                msg.addParam(_uiState.value.notificacionSeleccionada!!.anuncio!!.idAnuncio.toString())
+                msg.addParam(_uiState.value.idNotificacionSeleccionada.toString())
+                msg.addParam(_uiState.value.precioAnuncioNotificacionSeleccionada.toString())
 
                 dos?.writeUTF(Serializador.codificarMensaje(msg))
                 dos?.flush()
 
-                Thread.sleep(6000)
+                Thread.sleep(5000)
             }
         }
     }

@@ -70,11 +70,6 @@ fun HomeScreen(
     buscarOnClick: () -> Unit,
     conectionUiState: ConectionUiState,
     filtrosViewModel: FiltrosViewModel,
-    filtroCocheViewModel: FiltroCocheViewModel = viewModel(),
-    filtroMotoViewModel: FiltroMotoViewModel = viewModel(),
-    filtroCamionViewModel: FiltroCamionViewModel = viewModel(),
-    filtroCamionetaViewModel: FiltroCamionetaViewModel = viewModel(),
-    filtroMaquinariaViewModel: FiltroMaquinariaViewModel = viewModel(),
     modifier: Modifier = Modifier
 ) {
     val opciones = listOf("Coches", "Motos", "Camionetas", "Camiones", "Maquinaria")

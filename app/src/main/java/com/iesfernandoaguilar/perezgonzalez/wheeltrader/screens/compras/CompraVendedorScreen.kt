@@ -232,10 +232,10 @@ fun CompraVendedorScreen(
                         appViewModel.viewModelScope.launch(Dispatchers.IO) {
                             appViewModel.vendedorConfirmaCompra(
                                 bytesPdf = bytesPDF,
-                                idAnuncio = appUiState.notificacionSeleccionada!!.anuncio!!.idAnuncio,
-                                idComprador = appUiState.notificacionSeleccionada!!.usuarioEnvia!!.idUsuario,
+                                idAnuncio = appUiState.idAnuncioNotificacionSeleccionada!!,
+                                idComprador = appUiState.idCompradorNotificacionSeleccionada!!,
                                 idVendedor = conectionUiState.usuario!!.idUsuario,
-                                idNotificacion = appUiState.notificacionSeleccionada!!.idNotificacion
+                                idNotificacion = appUiState.idNotificacionSeleccionada!!
                             )
                         }
 
@@ -270,10 +270,10 @@ fun CompraVendedorScreen(
 
                         appViewModel.viewModelScope.launch(Dispatchers.IO) {
                             appViewModel.vendedorRechazaCompra(
-                                idAnuncio = appUiState.notificacionSeleccionada!!.anuncio!!.idAnuncio,
-                                idComprador = appUiState.notificacionSeleccionada!!.usuarioEnvia!!.idUsuario,
-                                idVendedor = conectionUiState.usuario!!.idUsuario,
-                                idNotificacion = appUiState.notificacionSeleccionada!!.idNotificacion
+                                idAnuncio = appUiState.idAnuncioNotificacionSeleccionada!!,
+                                idVendedor = appUiState.idCompradorNotificacionSeleccionada!!,
+                                idComprador = conectionUiState.usuario!!.idUsuario,
+                                idNotificacion = appUiState.idNotificacionSeleccionada!!
                             )
                         }
 
