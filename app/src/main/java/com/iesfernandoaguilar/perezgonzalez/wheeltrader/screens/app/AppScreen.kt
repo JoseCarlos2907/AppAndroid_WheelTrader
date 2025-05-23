@@ -27,6 +27,7 @@ import com.iesfernandoaguilar.perezgonzalez.wheeltrader.mainBottomBar
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.ConectionViewModel
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.anuncios.DetalleAnuncio
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.anuncios.ListaAnuncios
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.reporte.ReporteScreen
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.compras.CompraCompradorScreen
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.compras.CompraVendedorScreen
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.compras.PagoPayPalScreen
@@ -76,6 +77,7 @@ enum class AppScreens(val screenName: String){
 
     ListaAnuncios(screenName = "lista_anuncios"),
     DetalleAnuncio(screenName = "detalle_anuncio"),
+    ReportarUsuario(screenName = "reportar_usuario"),
 
     CompraComprador(screenName = "compra_comprador"),
     CompraVendedor(screenName = "compra_vendedor"),
@@ -238,7 +240,18 @@ fun AppScreen(
                             appViewModel.obtenerPDFAcuerdo(idComprador, idAnuncio, tipoAnuncio)
                         }
                     },
-                    goToCompraComprador = { appNavController.navigate(AppScreens.CompraComprador.screenName) }
+                    goToCompraComprador = { appNavController.navigate(AppScreens.CompraComprador.screenName) },
+                    goToReporte = { appNavController.navigate(AppScreens.ReportarUsuario.screenName) }
+                )
+            }
+
+            composable(route = AppScreens.ReportarUsuario.screenName){
+                ReporteScreen(
+                    appViewModel = appViewModel,
+                    conectionUiState = conectionUiState,
+                    goToHome = {
+                        appNavController.navigate(AppScreens.Home.screenName)
+                    }
                 )
             }
 

@@ -147,28 +147,6 @@ fun PublicarCoche(
                             ValorCaracteristica(nombreCaracteristica = "Transmision_Coche", valor = publicarCocheUiState.transmision),
                         )
 
-                        /*var anuncio = Anuncio(
-                            numSerieBastidor = "1234567890123",
-                            matricula = "1234DXD",
-                            tipoVehiculo = "Coche",
-                            descripcion = "Prueba desde android",
-                            precio = 4000.toDouble(),
-                            ciudad = "Medina",
-                            provincia = "Cadiz",
-                        )
-
-                        var vCaracteristicas = listOf(
-                            ValorCaracteristica(nombreCaracteristica = "Marca_Coche", valor = "prueba"),
-                            ValorCaracteristica(nombreCaracteristica = "Modelo_Coche", valor = "android"),
-                            ValorCaracteristica(nombreCaracteristica = "Anio_Coche", valor = "2000"),
-                            ValorCaracteristica(nombreCaracteristica = "CV_Coche", valor = "110"),
-                            ValorCaracteristica(nombreCaracteristica = "KM_Coche", valor = "170000"),
-                            ValorCaracteristica(nombreCaracteristica = "Marchas_Coche", valor = "5"),
-                            ValorCaracteristica(nombreCaracteristica = "Puertas_Coche", valor = "5"),
-                            ValorCaracteristica(nombreCaracteristica = "TipoCombustible_Coche", valor = "Diesel"),
-                            ValorCaracteristica(nombreCaracteristica = "Transmision_Coche", valor = "Manual"),
-                        )*/
-
                         anuncio.valoresCaracteristicas = vCaracteristicas
 
                         anuncio.vendedor = conectionUiState.usuario

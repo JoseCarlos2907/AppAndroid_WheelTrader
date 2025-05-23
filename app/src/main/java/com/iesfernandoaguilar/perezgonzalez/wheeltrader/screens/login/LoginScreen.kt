@@ -71,10 +71,13 @@ import kotlinx.coroutines.withContext
 
 enum class LoginScreens(val screenName: String){
     Login(screenName = "login"),
+
     Reg1(screenName = "reg1"),
     Reg2(screenName = "reg2"),
     Reg3(screenName = "reg3"),
-    Reg4(screenName = "reg4")
+    Reg4(screenName = "reg4"),
+
+    Admin(screenName = "admin")
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -120,7 +123,7 @@ fun LoginScreen(
                         popUpTo(WheelTraderScreens.Login.screenName) { inclusive = true }
                     }
                 }else{
-                    // TODO: Mandar a la pantalla de aviso de que es admin
+                    loginNavController.navigate(LoginScreens.Admin.screenName)
                 }
             }
         }
@@ -174,6 +177,15 @@ fun LoginScreen(
             composable(route = LoginScreens.Reg4.screenName){
                 Reg4Screen(
                     loginNavController = loginNavController
+                )
+            }
+
+            composable(route = LoginScreens.Admin.screenName){
+                AdminFailScreen(
+                    onClickCerrarSesion = {
+                        conectionViewModel.cerrarSesion()
+                        navController.navigate(LoginScreens.Login.screenName)
+                    }
                 )
             }
 

@@ -5,14 +5,19 @@ import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -20,6 +25,8 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -46,6 +53,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.R
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Anuncio
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Reporte
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.ConectionUiState
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.app.AppScreens
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.app.AppViewModel
@@ -60,6 +68,7 @@ fun DetalleAnuncio(
     appViewModel: AppViewModel,
     conectionUiState: ConectionUiState,
     onClickComprar: (Long, Long, String) -> Unit,
+    goToReporte: () -> Unit,
     goToCompraComprador: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -93,10 +102,12 @@ fun DetalleAnuncio(
     ) {
         item {
             DetallesVehiculo(
+                appViewModel = appViewModel,
                 conectionUiState = conectionUiState,
                 anuncio =  appUiState.anuncioSeleccionado!!,
                 imagenes = appUiState.imagenesAnuncioSeleccionado,
-                onClickComprar = { onClickComprar(conectionUiState.usuario!!.idUsuario, appUiState.anuncioSeleccionado!!.idAnuncio, appUiState.anuncioSeleccionado!!.tipoVehiculo!!) }
+                onClickComprar = { onClickComprar(conectionUiState.usuario!!.idUsuario, appUiState.anuncioSeleccionado!!.idAnuncio, appUiState.anuncioSeleccionado!!.tipoVehiculo!!) },
+                goToReporte = { goToReporte() }
             )
         }
 
@@ -133,8 +144,10 @@ fun DetalleAnuncio(
 
 @Composable
 fun DetallesVehiculo(
+    appViewModel: AppViewModel,
     conectionUiState: ConectionUiState,
     onClickComprar: () -> Unit,
+    goToReporte: () -> Unit,
     anuncio: Anuncio,
     imagenes: List<ByteArray>,
     modifier: Modifier = Modifier
@@ -162,12 +175,39 @@ fun DetallesVehiculo(
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            Text(
-                text = "${marca} | ${modelo}",
-                style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.primary,
-                textAlign = TextAlign.Center
-            )
+            Box(
+                modifier = Modifier.fillMaxSize()
+            ){
+                Text(
+                    text = "${marca} | ${modelo}",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.primary,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.Center)
+                )
+
+                IconButton (
+                    onClick = {
+                        var reporte = Reporte(
+                            usuarioEnvia = conectionUiState.usuario!!,
+                            usuarioRecibe = anuncio.vendedor!!
+                        )
+
+                        appViewModel.asignarReporte(reporte)
+                        goToReporte()
+                    },
+                    enabled = if(conectionUiState.usuario!!.idUsuario == anuncio.vendedor!!.idUsuario) false else true,
+                    modifier = Modifier.align(Alignment.CenterEnd)
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.iconoreporte),
+                        contentDescription = "",
+                        tint = if(conectionUiState.usuario!!.idUsuario == anuncio.vendedor!!.idUsuario) Color.Gray else Color.Red
+                    )
+                }
+            }
         }
 
         Row(

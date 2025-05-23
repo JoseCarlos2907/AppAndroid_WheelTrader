@@ -16,6 +16,7 @@ import com.iesfernandoaguilar.perezgonzalez.wheeltrader.interfaces.IFiltro
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Anuncio
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Mensaje
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Notificacion
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Reporte
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Usuario
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.ConectionViewModel
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.utils.Serializador
@@ -216,6 +217,18 @@ class AppViewModel(
                             }else if("error".equals(msgServidor.getParams().get(0))){
                                 handler.post {
                                     showMsg.invoke(context, "Error al hacer el pago")
+                                }
+                            }
+                        }
+
+                        "REPORTE_REALIZADO" -> {
+                            if("si".equals(msgServidor.getParams().get(0))){
+                                handler.post {
+                                    showMsg.invoke(context, "Usuario reportado correctamente")
+                                }
+                            }else if("no".equals(msgServidor.getParams().get(0))){
+                                handler.post {
+                                    showMsg.invoke(context, "Ya has reportado a este usuario")
                                 }
                             }
                         }
@@ -532,6 +545,26 @@ class AppViewModel(
                 Thread.sleep(5000)
             }
         }
+    }
+
+    fun asignarReporte(reporte: Reporte){
+        _uiState.value = _uiState.value.copy(reporteUsuario = reporte)
+    }
+
+    fun reiniciarReporte(){
+        _uiState.value = _uiState.value.copy(reporteUsuario = null)
+    }
+
+    fun reportarUsuario(reporte: Reporte){
+        var mapper = jacksonObjectMapper()
+        var reporteJSON = mapper.writeValueAsString(reporte)
+
+        var msg = Mensaje()
+        msg.setTipo("REPORTAR_USUARIO")
+        msg.addParam(reporteJSON)
+
+        dos?.writeUTF(Serializador.codificarMensaje(msg))
+        dos?.flush()
     }
 }
 

@@ -154,7 +154,7 @@ fun ListaAnuncios(
 }
 
 @Composable
-private fun CardAnuncio(
+fun CardAnuncio(
     anuncio: Anuncio,
     bytesImagen: ByteArray,
     onClickGuardar: () -> Unit,
@@ -234,7 +234,8 @@ private fun CardAnuncio(
                         modifier = Modifier.height(60.dp).clickable(onClick = {
                             isGuardado = !isGuardado
                             onClickGuardar()
-                        })
+                        }),
+                        tint = Color.White
                     )
                 }
             }

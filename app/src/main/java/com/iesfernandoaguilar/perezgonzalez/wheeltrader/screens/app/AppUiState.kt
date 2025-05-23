@@ -2,6 +2,7 @@ package com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.app
 
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Anuncio
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Notificacion
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Reporte
 import java.time.LocalDateTime
 
 data class AppUiState (
@@ -26,5 +27,7 @@ data class AppUiState (
 
     var goToPayPalScreen: Boolean = false,
     var confirmaPago: Boolean = false,
-    var urlPayPal: String? = "https://google.com"
+    var urlPayPal: String? = "https://google.com",
+
+    var reporteUsuario: Reporte? = null
 )
