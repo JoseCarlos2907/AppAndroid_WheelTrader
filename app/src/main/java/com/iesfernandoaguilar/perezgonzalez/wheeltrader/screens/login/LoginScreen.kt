@@ -58,6 +58,11 @@ import com.iesfernandoaguilar.perezgonzalez.wheeltrader.mainBottomBar
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Usuario
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.ConectionUiState
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.ConectionViewModel
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.recuperarContrasenia.RecuperarContrasenia1
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.recuperarContrasenia.RecuperarContrasenia2
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.recuperarContrasenia.RecuperarContrasenia3
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.recuperarContrasenia.RecuperarContraseniaViewModel
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.recuperarContrasenia.RecuperarContraseniaViewModelFactory
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.registro.Reg1Screen
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.registro.Reg2Screen
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.registro.Reg3Screen
@@ -77,7 +82,11 @@ enum class LoginScreens(val screenName: String){
     Reg3(screenName = "reg3"),
     Reg4(screenName = "reg4"),
 
-    Admin(screenName = "admin")
+    Admin(screenName = "admin"),
+
+    RecuperarContrasenia1(screenName = "recuperar_contrasenia1"),
+    RecuperarContrasenia2(screenName = "recuperar_contrasenia2"),
+    RecuperarContrasenia3(screenName = "recuperar_contrasenia3")
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -91,10 +100,14 @@ fun LoginScreen(
     loginViewModel: LoginViewModel = viewModel(
         factory = LoginViewModelFactory(conectionViewModel = conectionViewModel)
     ),
+    recuperarContraseniaViewModel: RecuperarContraseniaViewModel = viewModel(
+        factory = RecuperarContraseniaViewModelFactory(conectionViewModel = conectionViewModel)
+    ),
     modifier: Modifier = Modifier
 ) {
     val loginUiState by loginViewModel.uiState.collectAsState()
     val conectionUiState by conectionViewModel.uiState.collectAsState()
+    val recuperarContraseniaUiState by recuperarContraseniaViewModel.uiState.collectAsState()
 
     LaunchedEffect(Unit) {
         withContext(Dispatchers.IO) {
@@ -189,7 +202,40 @@ fun LoginScreen(
                 )
             }
 
-            // TODO: Hacer la funcionalidad de Recuperar Contraseña
+            composable(route = LoginScreens.RecuperarContrasenia1.screenName){
+                RecuperarContrasenia1(
+                    loginViewModel = loginViewModel,
+                    loginUiState = loginUiState,
+                    recuperarContraseniaUiState = recuperarContraseniaUiState,
+                    recuperarContraseniaViewModel = recuperarContraseniaViewModel,
+                    goToCodigo = {
+                        loginNavController.navigate(LoginScreens.RecuperarContrasenia2.screenName)
+                    }
+                )
+            }
+
+            composable(route = LoginScreens.RecuperarContrasenia2.screenName){
+                RecuperarContrasenia2(
+                    loginViewModel = loginViewModel,
+                    loginUiState = loginUiState,
+                    recuperarContraseniaUiState = recuperarContraseniaUiState,
+                    recuperarContraseniaViewModel = recuperarContraseniaViewModel,
+                    goToReiniciarContrasenia = {
+                        loginNavController.navigate(LoginScreens.RecuperarContrasenia3.screenName)
+                    }
+                )
+            }
+
+            composable(route = LoginScreens.RecuperarContrasenia3.screenName){
+                RecuperarContrasenia3(
+                    loginViewModel = loginViewModel,
+                    recuperarContraseniaUiState = recuperarContraseniaUiState,
+                    recuperarContraseniaViewModel = recuperarContraseniaViewModel,
+                    goToLogin = {
+                        loginNavController.navigate(LoginScreens.Login.screenName)
+                    }
+                )
+            }
         }
     }
 }
@@ -348,7 +394,9 @@ fun LoginForm(
                 text = "Recuperar contraseña",
                 style = MaterialTheme.typography.labelMedium,
                 textDecoration = TextDecoration.Underline,
-                modifier = Modifier.clickable { Log.d("Login", "Recuperar Contraseña: Sin función") },
+                modifier = Modifier.clickable {
+                    loginNavController.navigate(LoginScreens.RecuperarContrasenia1.screenName)
+                },
                 color = Color.White
             )
         }

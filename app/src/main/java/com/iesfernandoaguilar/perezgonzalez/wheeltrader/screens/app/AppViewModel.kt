@@ -3,9 +3,11 @@ package com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.app
 import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -19,6 +21,7 @@ import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Notificacion
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Reporte
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Usuario
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.ConectionViewModel
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.utils.SecureUtils
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.utils.Serializador
 import com.itextpdf.forms.PdfAcroForm
 import com.itextpdf.kernel.pdf.PdfReader
@@ -41,6 +44,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.nio.file.Files
 import java.nio.file.Path
+import java.util.Base64
 
 class AppViewModel(
     private val conectionViewModel: ConectionViewModel
@@ -66,6 +70,7 @@ class AppViewModel(
         this.handler = Handler(Looper.getMainLooper())
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun escucharDelServidor_App(){
 
         lectorJob = viewModelScope.launch(Dispatchers.IO) {
@@ -230,6 +235,16 @@ class AppViewModel(
                                 handler.post {
                                     showMsg.invoke(context, "Ya has reportado a este usuario")
                                 }
+                            }
+                        }
+
+                        "ENVIA_SALT_REINICIO" -> {
+                            _uiState.value = _uiState.value.copy(saltUsuarioReinicio = Base64.getDecoder().decode(msgServidor.getParams().get(0)))
+                        }
+
+                        "CONTRASENIA_REINICIADA" -> {
+                            handler.post {
+                                showMsg.invoke(context, "Contraseña reiniciada correctamente")
                             }
                         }
 
@@ -565,6 +580,43 @@ class AppViewModel(
 
         dos?.writeUTF(Serializador.codificarMensaje(msg))
         dos?.flush()
+    }
+
+    fun onContraseniaConfUsuarioChange(contrasenia: String){
+        _uiState.value = _uiState.value.copy(contraseniaReiniciarContrasenia = contrasenia)
+    }
+
+    fun onRepetirContraseniaConfUsuarioChange(contrasenia: String){
+        _uiState.value = _uiState.value.copy(repetirContraseniaReiniciarContrasenia = contrasenia)
+    }
+
+    fun obtenerSaltReinicio(nombreUsuario: String){
+        var msg = Mensaje()
+        msg.setTipo("OBTENER_SALT_REINICIO")
+        msg.addParam(nombreUsuario)
+
+        dos?.writeUTF(Serializador.codificarMensaje(msg))
+        dos?.flush()
+    }
+
+    fun vaciarSaltReinicio(){
+        _uiState.value = _uiState.value.copy(saltUsuarioReinicio = null)
+    }
+
+    fun reiniciarContrasenia(nombreUsuario: String, contrasenia: String){
+        var msg = Mensaje()
+        msg.setTipo("REINICIAR_CONTRASENIA")
+        msg.addParam(nombreUsuario)
+        msg.addParam(SecureUtils.generate512(contrasenia, _uiState.value.saltUsuarioReinicio!!))
+
+        dos?.writeUTF(Serializador.codificarMensaje(msg))
+        dos?.flush()
+    }
+
+    fun mostrarToast(msg: String) {
+        handler.post {
+            showMsg.invoke(context, msg)
+        }
     }
 }
 

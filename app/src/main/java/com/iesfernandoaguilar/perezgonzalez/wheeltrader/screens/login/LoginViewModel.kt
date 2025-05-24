@@ -122,6 +122,27 @@ class LoginViewModel(
                     } else if ("USUARIO_REGISTRADO".equals(tipo)) {
                         // Avisar a la interfaz para cambiar de pantalla al paso 4
                         _uiState.value = _uiState.value.copy(goToPaso4 = true)
+                    } else if ("CODIGO_ENVIADO".equals(tipo)) {
+                        _uiState.value = _uiState.value.copy(goToCodigo = true)
+                    } else if ("CORREO_NO_EXISTE".equals(tipo)) {
+                        withContext(Dispatchers.Main) {
+                            showMsg.invoke(
+                                context,
+                                "No existe ningún usuario con ese correo"
+                            )
+                        }
+                    } else if ("CODIGO_CORRECTO".equals(tipo)) {
+                        _uiState.value = _uiState.value.copy(
+                            goToReiniciarContrasenia = true,
+                            saltUsuario = msgServidor.getParams().get(0)
+                        )
+                    } else if ("CODIGO_INCORRECTO".equals(tipo)) {
+                        withContext(Dispatchers.Main) {
+                            showMsg.invoke(
+                                context,
+                                "El código no es el correcto"
+                            )
+                        }
                     } else {
                         Log.d("Login", linea)
                     }
@@ -220,6 +241,26 @@ class LoginViewModel(
         )
     }
 
+    fun recuperarContrasenia_Correo(correo: String){
+        var msg = Mensaje()
+        msg.setTipo("RECUPERAR_CONTRASENIA")
+        msg.addParam(correo)
+        this.dos?.writeUTF(Serializador.codificarMensaje(msg))
+        this.dos?.flush()
+    }
+
+    fun recuperarContrasenia_Codigo(codigo: String){
+        var msg = Mensaje()
+        msg.setTipo("INTENTA_CODIGO")
+        msg.addParam(codigo)
+        this.dos?.writeUTF(Serializador.codificarMensaje(msg))
+        this.dos?.flush()
+    }
+
+    fun recuperarContrasenia_Contrasenias(contrasenia: String){
+
+    }
+
     // Login
     fun onNombreUsuarioChange(nombreUsuario: String) {
         _uiState.value = _uiState.value.copy(currentNombreUsuario = nombreUsuario)
@@ -278,6 +319,15 @@ class LoginViewModel(
 
     fun reiniciarGoToPaso4() {
         _uiState.value = _uiState.value.copy(goToPaso4 = false)
+    }
+
+    // Recuperar Contraseña
+    fun asignarGoToCodigo(goToCodigo: Boolean){
+        _uiState.value = _uiState.value.copy(goToCodigo = goToCodigo)
+    }
+
+    fun asignarGoToReiniciarContrasenia(goToReiniciarContrasenia: Boolean){
+        _uiState.value = _uiState.value.copy(goToReiniciarContrasenia = goToReiniciarContrasenia)
     }
 
     fun mostrarToast(msg: String) {

@@ -49,6 +49,7 @@ import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.publicar.publica
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.publicar.publicarCoche.PublicarCoche
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.publicar.publicarMaquinaria.PublicarMaquinaria
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.publicar.publicarMoto.PublicarMoto
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.recuperarContrasenia.RecuperarContraseniaViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -257,6 +258,7 @@ fun AppScreen(
 
             composable(route = AppScreens.ConfUsu.screenName){
                 ConfUsuario(
+                    appViewModel = appViewModel,
                     conectionUiState = conectionUiState,
                     filtrosViewModel = filtrosViewModel,
                     appNavController = appNavController,

@@ -13,10 +13,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -27,23 +32,31 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
@@ -155,6 +168,8 @@ fun DetallesVehiculo(
     var marca = ""
     var modelo = ""
 
+    var posImagen by remember { mutableStateOf(0) }
+
     if(anuncio.valoresCaracteristicas != null){
         anuncio.valoresCaracteristicas!!.forEach { vc ->
             if(vc.nombreCaracteristica.contains("Marca")){
@@ -204,7 +219,8 @@ fun DetallesVehiculo(
                     Icon(
                         painter = painterResource(R.drawable.iconoreporte),
                         contentDescription = "",
-                        tint = if(conectionUiState.usuario!!.idUsuario == anuncio.vendedor!!.idUsuario) Color.Gray else Color.Red
+                        tint = if(conectionUiState.usuario!!.idUsuario == anuncio.vendedor!!.idUsuario) Color.Gray else Color.Red,
+                        modifier = Modifier.size(24.dp)
                     )
                 }
             }
@@ -217,14 +233,59 @@ fun DetallesVehiculo(
                 .fillMaxWidth()
                 .padding(12.dp)
         ) {
-            // TODO: Botones de imagenes del anuncio
-            if (!imagenes.isEmpty()) {
-                ImagenAsync(
-                    bytes = imagenes.get(0),
-                    modifier = Modifier.height(200.dp)
-                )
-            } else {
-                CircularProgressIndicator()
+            Box(
+                modifier = Modifier.fillMaxSize()
+            ){
+                if (!imagenes.isEmpty()) {
+                    ImagenAsync(
+                        bytes = imagenes.get(posImagen),
+                        modifier = Modifier.height(200.dp).align(Alignment.Center)
+                    )
+                } else {
+                    CircularProgressIndicator()
+                }
+
+                Surface(
+                    onClick = {
+                        if(posImagen > 0) posImagen--
+                    },
+                    enabled = if(posImagen < 1) false else true,
+                    shape = RoundedCornerShape(
+                        topStart = 0.dp,
+                        bottomStart = 0.dp,
+                        topEnd = 16.dp,
+                        bottomEnd = 16.dp
+                    ),
+                    color = if(posImagen < 1) Color.LightGray else MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(width = 36.dp, height = 60.dp).align(Alignment.CenterStart)
+                ) {
+                    Image(
+                        painter = painterResource(R.drawable.iconoflechaizqgris),
+                        contentDescription = "",
+                        modifier = Modifier.padding(4.dp)
+                    )
+                }
+
+                Surface(
+                    onClick = {
+                        if(posImagen < imagenes.size-1) posImagen++
+                    },
+                    shape = RoundedCornerShape(
+                        topStart = 16.dp,
+                        bottomStart = 16.dp,
+                        topEnd = 0.dp,
+                        bottomEnd = 0.dp
+                    ),
+                    enabled = if(posImagen > imagenes.size-2) false else true,
+                    color = if(posImagen > imagenes.size-2) Color.LightGray else MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(width = 36.dp, height = 60.dp).align(Alignment.CenterEnd)
+                ) {
+                    Image(
+                        painter = painterResource(R.drawable.iconoflechadrcgris),
+                        contentDescription = "",
+                        modifier = Modifier.padding(4.dp)
+                    )
+                }
             }
         }
 

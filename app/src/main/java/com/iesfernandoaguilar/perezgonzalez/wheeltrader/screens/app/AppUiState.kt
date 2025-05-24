@@ -29,5 +29,9 @@ data class AppUiState (
     var confirmaPago: Boolean = false,
     var urlPayPal: String? = "https://google.com",
 
-    var reporteUsuario: Reporte? = null
+    var reporteUsuario: Reporte? = null,
+
+    var contraseniaReiniciarContrasenia: String = "",
+    var repetirContraseniaReiniciarContrasenia: String = "",
+    var saltUsuarioReinicio: ByteArray? = null
 )

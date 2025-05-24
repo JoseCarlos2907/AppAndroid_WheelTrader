@@ -24,5 +24,10 @@ data class LoginUiState (
     // Registro paso 3
     var contrasenia: String = "",
     var confContra: String = "",
-    var goToPaso4: Boolean = false
+    var goToPaso4: Boolean = false,
+
+    // Recuperar Contraseña
+    var goToCodigo: Boolean = false,
+    var goToReiniciarContrasenia: Boolean = false,
+    var saltUsuario: String = ""
 )
