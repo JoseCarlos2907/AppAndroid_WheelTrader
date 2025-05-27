@@ -20,6 +20,7 @@ import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Mensaje
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Notificacion
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Reporte
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Usuario
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Venta
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.ConectionViewModel
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.utils.SecureUtils
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.utils.Serializador
@@ -246,6 +247,11 @@ class AppViewModel(
                             handler.post {
                                 showMsg.invoke(context, "Contraseña reiniciada correctamente")
                             }
+                        }
+
+                        "ENVIA_VENTAS" -> {
+                            var ventas = mapper.readValue(msgServidor.getParams().get(0), object: TypeReference<List<Venta>>(){});
+                            aniadirCompras(ventas)
                         }
 
                         "" -> {
@@ -611,6 +617,39 @@ class AppViewModel(
 
         dos?.writeUTF(Serializador.codificarMensaje(msg))
         dos?.flush()
+    }
+
+    fun obtenerCompras(filtro: IFiltro, primeraCarga: Boolean){
+        if (_uiState.value.cargando) return
+
+        var mapper = ObjectMapper()
+        var filtroJSON = mapper.writeValueAsString(filtro)
+
+        var msg = Mensaje()
+        msg.setTipo("OBTENER_VENTAS")
+        msg.addParam(filtroJSON)
+        msg.addParam(if (primeraCarga) "si" else "no")
+
+        this.dos?.writeUTF(Serializador.codificarMensaje(msg))
+        this.dos?.flush()
+
+        _uiState.value = _uiState.value.copy( cargando = true )
+    }
+
+    fun aniadirCompras(compras: List<Venta>){
+        _uiState.value = _uiState.value.copy(
+            comprasEncontradas = _uiState.value.comprasEncontradas.toList() + compras,
+            cargando = false,
+            noHayMasCompras = compras.size < 4
+        )
+    }
+
+    fun vaciarCompras(){
+        _uiState.value = _uiState.value.copy(
+            comprasEncontradas = emptyList(),
+            cargando = false,
+            noHayMasCompras = false
+        )
     }
 
     fun mostrarToast(msg: String) {

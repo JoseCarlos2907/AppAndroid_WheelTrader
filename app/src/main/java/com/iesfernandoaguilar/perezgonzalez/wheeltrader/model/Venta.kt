@@ -4,9 +4,9 @@ import java.time.LocalDateTime
 
 data class Venta(
     var idVenta: Long = -1,
-    var fechaFinGarantia: LocalDateTime,
-    var anuncio: Anuncio,
-    var vendedor: Usuario,
-    var comprador: Usuario,
+    var fechaFinGarantia: String,
+    var anuncio: Anuncio? = null,
+    var vendedor: Usuario? = null,
+    var comprador: Usuario? = null,
     var pagos: List<Pago>? = null
 )

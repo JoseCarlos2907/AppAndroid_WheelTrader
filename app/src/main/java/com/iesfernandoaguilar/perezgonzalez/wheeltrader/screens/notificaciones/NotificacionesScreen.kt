@@ -138,7 +138,12 @@ fun NotificacionesScreen(
 
             if(appUiState.cargando){
                 item{
-                    CircularProgressIndicator()
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
                 }
             }
         }

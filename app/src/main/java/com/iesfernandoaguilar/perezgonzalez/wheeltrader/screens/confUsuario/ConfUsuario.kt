@@ -37,6 +37,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.filtros.FiltroCompras
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.filtros.FiltroGuardados
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.filtros.FiltroPublicados
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.ConectionUiState
@@ -273,12 +274,13 @@ fun ConfUsuario(
                 appNavController.navigate(AppScreens.ListaAnuncios.screenName)
             }, "Mis Guardados")
 
+            /*boton({
+
+            }, "Mis Pagos")*/
+
             boton({
-
-            }, "Mis Pagos")
-
-            boton({
-
+                filtrosViewModel.asignarFiltro(FiltroCompras(conectionUiState.usuario!!.nombreUsuario))
+                appNavController.navigate(AppScreens.MisCompras.screenName)
             }, "Mis Compras")
 
             /*boton({

@@ -3,6 +3,7 @@ package com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.app
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Anuncio
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Notificacion
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Reporte
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Venta
 import java.time.LocalDateTime
 
 data class AppUiState (
@@ -33,5 +34,8 @@ data class AppUiState (
 
     var contraseniaReiniciarContrasenia: String = "",
     var repetirContraseniaReiniciarContrasenia: String = "",
-    var saltUsuarioReinicio: ByteArray? = null
+    var saltUsuarioReinicio: ByteArray? = null,
+
+    var comprasEncontradas: List<Venta> = emptyList(),
+    var noHayMasCompras: Boolean = false
 )

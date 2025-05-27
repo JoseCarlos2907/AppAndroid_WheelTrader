@@ -30,6 +30,7 @@ import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.anuncios.ListaAn
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.reporte.ReporteScreen
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.compras.CompraCompradorScreen
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.compras.CompraVendedorScreen
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.compras.MisComprasScreen
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.compras.PagoPayPalScreen
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.confUsuario.ConfUsuario
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros.filtroTodo.FiltroTodo
@@ -82,7 +83,8 @@ enum class AppScreens(val screenName: String){
 
     CompraComprador(screenName = "compra_comprador"),
     CompraVendedor(screenName = "compra_vendedor"),
-    ConfirmarPagoPayPal(screenName = "confirmar_pago_paypal")
+    ConfirmarPagoPayPal(screenName = "confirmar_pago_paypal"),
+    MisCompras(screenName = "mis_compras")
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -355,6 +357,14 @@ fun AppScreen(
                     goToHome = {
                         appNavController.navigate(AppScreens.Home.screenName)
                     }
+                )
+            }
+
+            composable(route = AppScreens.MisCompras.screenName){
+                MisComprasScreen(
+                    appViewModel = appViewModel,
+                    conectionUiState = conectionUiState,
+                    filtrosUiState = filtrosUiState
                 )
             }
         }
