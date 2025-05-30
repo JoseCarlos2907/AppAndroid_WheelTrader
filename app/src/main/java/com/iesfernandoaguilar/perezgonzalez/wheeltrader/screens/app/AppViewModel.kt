@@ -73,6 +73,7 @@ class AppViewModel(
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun escucharDelServidor_App(){
+        if(lectorJob != null) return
 
         lectorJob = viewModelScope.launch(Dispatchers.IO) {
             var mapper = jacksonObjectMapper()
@@ -252,6 +253,12 @@ class AppViewModel(
                         "ENVIA_VENTAS" -> {
                             var ventas = mapper.readValue(msgServidor.getParams().get(0), object: TypeReference<List<Venta>>(){});
                             aniadirCompras(ventas)
+                        }
+
+                        "SESION_CERRADA" -> {
+                            Log.d("App", "Sesión cerrada")
+                            cierraSesion = true
+                            break;
                         }
 
                         "" -> {
@@ -650,6 +657,15 @@ class AppViewModel(
             cargando = false,
             noHayMasCompras = false
         )
+    }
+
+    fun cerrarSesion(idUsuario: Long){
+        var msg = Mensaje()
+        msg.setTipo("CERRAR_SESION")
+        msg.addParam(idUsuario.toString())
+
+        this.dos?.writeUTF(Serializador.codificarMensaje(msg))
+        this.dos?.flush()
     }
 
     fun mostrarToast(msg: String) {

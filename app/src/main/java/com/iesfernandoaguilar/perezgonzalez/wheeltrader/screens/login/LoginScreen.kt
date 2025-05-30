@@ -97,9 +97,7 @@ fun LoginScreen(
     navController: NavHostController,
     loginNavController: NavHostController = rememberNavController(),
     conectionViewModel: ConectionViewModel,
-    loginViewModel: LoginViewModel = viewModel(
-        factory = LoginViewModelFactory(conectionViewModel = conectionViewModel)
-    ),
+    loginViewModel: LoginViewModel,
     recuperarContraseniaViewModel: RecuperarContraseniaViewModel = viewModel(
         factory = RecuperarContraseniaViewModelFactory(conectionViewModel = conectionViewModel)
     ),
@@ -119,11 +117,10 @@ fun LoginScreen(
         loginViewModel.escucharDelServidor_Login()
     }
 
+
     DisposableEffect(Unit) {
         onDispose {
-            if(loginUiState.iniciaSesion){
-                loginViewModel.pararEscuchaServidor_Login()
-            }
+            loginViewModel.pararEscuchaServidor_Login()
         }
     }
 
@@ -138,6 +135,7 @@ fun LoginScreen(
                 }else{
                     loginNavController.navigate(LoginScreens.Admin.screenName)
                 }
+                loginViewModel.limpiarInicioSesion()
             }
         }
     }

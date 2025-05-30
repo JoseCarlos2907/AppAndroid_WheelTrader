@@ -54,6 +54,7 @@ class LoginViewModel(
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun escucharDelServidor_Login() {
+        if(lectorJob?.isActive == true) return
 
         lectorJob = viewModelScope.launch(Dispatchers.IO) {
             Log.d("Login", "Arranca hilo")
@@ -61,15 +62,15 @@ class LoginViewModel(
 
             try {
                 var msgRespuesta: Mensaje
-                while (this.isActive && !uiState.value.iniciaSesion) {
-                    Log.d("Login", "Antes de leer: ")
+                while (this.isActive && !_uiState.value.iniciaSesion) {
+                    Log.d("Login", "Antes de leer: " + _uiState.value.iniciaSesion)
                     var linea: String = dis?.readUTF() ?: ""
                     Log.d("Login", "Linea: " + linea)
                     var msgServidor: Mensaje = Serializador.decodificarMensaje(linea)
 
                     var tipo = msgServidor.getTipo()
                     if ("ENVIA_SALT".equals(tipo)) {
-                        Log.d("Login", "ENVIA_SALT")
+                        // Log.d("Login", "ENVIA_SALT")
                         msgRespuesta = Mensaje()
                         msgRespuesta.setTipo("INICIAR_SESION")
                         msgRespuesta.addParam(_uiState.value.currentNombreUsuario)
@@ -144,7 +145,7 @@ class LoginViewModel(
                             )
                         }
                     } else {
-                        Log.d("Login", linea)
+                        Log.d("Login", "Else del when" + linea)
                     }
                 }
             } catch (e: CancellationException) {
@@ -184,6 +185,13 @@ class LoginViewModel(
         msg.setTipo("OBTENER_SALT")
         msg.addParam(nombre)
         this.dos?.writeUTF(Serializador.codificarMensaje(msg))
+    }
+
+    fun limpiarInicioSesion(){
+        _uiState.value = _uiState.value.copy(
+            currentNombreUsuario = "",
+            currentContrasenia = ""
+        )
     }
 
     fun comprobarDNI(dni: String) {
@@ -258,7 +266,7 @@ class LoginViewModel(
     }
 
     fun recuperarContrasenia_Contrasenias(contrasenia: String){
-
+        // TODO: Reiniciar las contraseñas
     }
 
     // Login

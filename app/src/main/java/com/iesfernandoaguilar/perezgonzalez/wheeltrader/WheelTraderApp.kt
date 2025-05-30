@@ -52,8 +52,12 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.ConectionViewModel
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.app.AppScreen
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.app.AppViewModel
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.app.AppViewModelFactory
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.home.HomeScreen
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.login.LoginScreen
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.login.LoginViewModel
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.login.LoginViewModelFactory
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.ui.theme.WheelTraderTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -88,7 +92,16 @@ fun wheeltraderApp(
         }
     }*/
 
+    val loginViewModel: LoginViewModel = viewModel(
+        factory = LoginViewModelFactory(conectionViewModel = conectionViewModel)
+    )
+
+    val appViewModel: AppViewModel = viewModel(
+        factory = AppViewModelFactory(conectionViewModel),
+    )
+
     conectionViewModel.viewModelScope.launch(Dispatchers.IO) {
+        Log.d("WTApp", "Conecta")
         conectionViewModel.conectar(properties.getProperty("ADDRESS"), Integer.parseInt(properties.getProperty("PORT")))
     }
 
@@ -101,7 +114,8 @@ fun wheeltraderApp(
             LoginScreen(
                 context = context,
                 conectionViewModel = conectionViewModel,
-                navController = navController
+                navController = navController,
+                loginViewModel = loginViewModel
             )
         }
 
@@ -109,7 +123,8 @@ fun wheeltraderApp(
             AppScreen(
                 context = context,
                 conectionViewModel = conectionViewModel,
-                navController = navController
+                navController = navController,
+                appViewModel = appViewModel
             )
         }
     }

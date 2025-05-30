@@ -95,9 +95,7 @@ fun AppScreen(
     navController: NavHostController,
     appNavController: NavHostController = rememberNavController(),
     conectionViewModel: ConectionViewModel,
-    appViewModel: AppViewModel = viewModel(
-        factory = AppViewModelFactory(conectionViewModel),
-    ),
+    appViewModel: AppViewModel,
     filtrosViewModel: FiltrosViewModel = viewModel(
         factory = FiltrosViewModelFactory()
     ),
@@ -265,8 +263,12 @@ fun AppScreen(
                     filtrosViewModel = filtrosViewModel,
                     appNavController = appNavController,
                     onClickCerrarSesion = {
+                        appViewModel.viewModelScope.launch(Dispatchers.IO) {
+                            appViewModel.cerrarSesion(conectionUiState.usuario!!.idUsuario)
+                        }
                         conectionViewModel.cerrarSesion()
                         navController.navigate(WheelTraderScreens.Login.screenName)
+
                     }
                 )
             }
