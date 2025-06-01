@@ -66,4 +66,8 @@ class ConectionViewModel : ViewModel() {
         return uiState.value.usuario != null
     }
 
+    fun setConfConexionExistente(valor: Boolean){
+        _uiState.value = _uiState.value.copy(confConexionExistente = valor)
+    }
+
 }

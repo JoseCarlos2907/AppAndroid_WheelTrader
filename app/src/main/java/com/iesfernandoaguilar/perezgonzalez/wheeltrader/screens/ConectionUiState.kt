@@ -9,5 +9,6 @@ data class ConectionUiState (
     var socket: Socket? = null,
     var input: InputStream? = null,
     var output: OutputStream? = null,
-    var usuario: Usuario? = null
+    var usuario: Usuario? = null,
+    var confConexionExistente: Boolean = false
 )

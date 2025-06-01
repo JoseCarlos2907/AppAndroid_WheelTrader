@@ -1,67 +1,62 @@
 package com.iesfernandoaguilar.perezgonzalez.wheeltrader
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemColors
-import androidx.compose.material3.NavigationBarItemDefaults
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.ConectionViewModel
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.app.AppScreen
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.app.AppViewModel
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.app.AppViewModelFactory
-import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.home.HomeScreen
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.login.LoginScreen
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.login.LoginViewModel
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.login.LoginViewModelFactory
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.ui.theme.WheelTraderTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileNotFoundException
+import java.io.FileOutputStream
 import java.io.InputStreamReader
 import java.util.Properties
 
@@ -81,16 +76,17 @@ fun wheeltraderApp(
     context: Context = LocalContext.current,
     modifier: Modifier = Modifier
 ){
+    val conectionUiState by conectionViewModel.uiState.collectAsState()
+
     val properties = Properties()
-    val assetManager = context.assets
 
-    properties.load(InputStreamReader(assetManager.open("conf.properties")))
+    val archivoConfConexion = File(context.filesDir, "wheel_trader_config.properties")
 
-    /*LaunchedEffect(Unit) {
-        withContext(Dispatchers.IO){
-            conectionViewModel.conectar(properties.getProperty("ADDRESS"), Integer.parseInt(properties.getProperty("PORT")))
-        }
-    }*/
+    if(!archivoConfConexion.exists()){
+        archivoConfConexion.createNewFile()
+    }
+
+    properties.load(InputStreamReader(FileInputStream(archivoConfConexion)))
 
     val loginViewModel: LoginViewModel = viewModel(
         factory = LoginViewModelFactory(conectionViewModel = conectionViewModel)
@@ -100,10 +96,32 @@ fun wheeltraderApp(
         factory = AppViewModelFactory(conectionViewModel),
     )
 
-    conectionViewModel.viewModelScope.launch(Dispatchers.IO) {
-        Log.d("WTApp", "Conecta")
-        conectionViewModel.conectar(properties.getProperty("ADDRESS"), Integer.parseInt(properties.getProperty("PORT")))
+    if(properties.containsKey("ADDRESS") && properties.containsKey("PORT")){
+        conectionViewModel.setConfConexionExistente(true)
     }
+
+    if(!conectionUiState.confConexionExistente){
+        AlertConexion(
+            onConnect = { direccion, puerto ->
+                properties.setProperty("ADDRESS", direccion)
+                properties.setProperty("PORT", puerto.toString())
+
+                properties.store(FileOutputStream(archivoConfConexion.absolutePath), null)
+
+                conectionViewModel.setConfConexionExistente(true)
+            },
+            onCancel = {
+                (context as? Activity)?.finishAffinity()
+            }
+        )
+        Log.d("WTApp", "Conexion no existente")
+    }else{
+        conectionViewModel.viewModelScope.launch(Dispatchers.IO) {
+            Log.d("WTApp", "Conecta")
+            conectionViewModel.conectar(properties.getProperty("ADDRESS"), Integer.parseInt(properties.getProperty("PORT")))
+        }
+    }
+
 
     NavHost(
         navController = navController,
@@ -133,7 +151,6 @@ fun wheeltraderApp(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun mainAppBar(
-    onBackButtonClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ){
     CenterAlignedTopAppBar(
@@ -191,6 +208,50 @@ fun mainBottomBar(
             }
         }
     }
+}
+
+@Composable
+fun AlertConexion(
+    onConnect: (String, Int) -> Unit,
+    onCancel: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var direccion by remember { mutableStateOf("") }
+    var puerto by remember { mutableStateOf("") }
+
+    AlertDialog(
+        onDismissRequest = onCancel,
+        title = { Text("Configuración del servidor") },
+        text = {
+            Column {
+                TextField(
+                    value = direccion,
+                    onValueChange = { direccion = it },
+                    label = { Text("Dirección") }
+                )
+                TextField(
+                    value = puerto,
+                    onValueChange = { puerto = it },
+                    label = { Text("Puerto") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                )
+            }
+        },
+        confirmButton = {
+            Button (onClick = {
+                if (!direccion.isEmpty() && !puerto.isEmpty()) {
+                    onConnect(direccion, puerto.toInt())
+                }
+            }) {
+                Text("Conectar")
+            }
+        },
+        dismissButton = {
+            Button(onClick = onCancel) {
+                Text("Cancelar")
+            }
+        }
+    )
 }
 
 @Preview(showBackground = true)
