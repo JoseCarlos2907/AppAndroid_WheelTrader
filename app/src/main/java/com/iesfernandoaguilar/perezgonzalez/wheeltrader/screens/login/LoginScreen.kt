@@ -70,6 +70,7 @@ import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.registro.Reg4Scr
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.ui.theme.customColorLight
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -114,7 +115,13 @@ fun LoginScreen(
                 Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
             }
         }
-        loginViewModel.escucharDelServidor_Login()
+
+        if(conectionUiState.socket != null && !conectionUiState.socket!!.isClosed){
+            loginViewModel.escucharDelServidor_Login()
+        }else{
+            loginViewModel.mostrarToast("El servidor no está disponible ahora mismo, vuelva más tarde.")
+            Log.d("Login", "El servidor no está disponible ahora mismo, vuelva más tarde.")
+        }
     }
 
 

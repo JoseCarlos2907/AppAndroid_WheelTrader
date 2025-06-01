@@ -31,18 +31,22 @@ class ConectionViewModel : ViewModel() {
     }
 
     fun conectar(address: String, port: Int) {
-        if(_uiState.value.socket == null){
+        if(_uiState.value.socket == null || _uiState.value.socket!!.isClosed){
             val socket = Socket(address, port)
             _uiState.value = _uiState.value.copy(
                 socket = socket,
                 input = socket.getInputStream(),
-                output = socket.getOutputStream(),
-                usuario = null
+                output = socket.getOutputStream()
             )
         }
     }
 
     fun cerrarConexion() {
+        _uiState.value.socket?.close()
+
+        this.dis = null
+        this.dos = null
+
         _uiState.value = _uiState.value.copy(
             socket = null,
             input = null,

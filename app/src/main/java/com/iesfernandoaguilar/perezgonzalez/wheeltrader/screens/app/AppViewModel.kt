@@ -43,21 +43,25 @@ import java.io.DataOutputStream
 import java.io.EOFException
 import java.io.File
 import java.io.FileOutputStream
+import java.io.IOException
+import java.io.InputStreamReader
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.Base64
+import java.util.Properties
 
 class AppViewModel(
     private val conectionViewModel: ConectionViewModel
-): ViewModel() {
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AppUiState())
     val uiState: StateFlow<AppUiState> = _uiState.asStateFlow()
 
-    private val dis: DataInputStream? by lazy { conectionViewModel.getDataInputStream() }
-    private val dos: DataOutputStream? by lazy { conectionViewModel.getDataOutputStream() }
+    private var dis: DataInputStream? = null
+    private var dos: DataOutputStream? = null
 
     lateinit var showMsg: ((Context, String) -> Unit)
+
     @SuppressLint("StaticFieldLeak")
     lateinit var context: Context
     lateinit var handler: Handler
@@ -66,22 +70,25 @@ class AppViewModel(
     lateinit var anuncioPublicar: Anuncio
     lateinit var imagenesPublicar: List<ByteArray>
 
-    fun confVM(context: Context){
+    fun confVM(context: Context) {
         this.context = context
         this.handler = Handler(Looper.getMainLooper())
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun escucharDelServidor_App(){
-        if(lectorJob != null) return
+    fun escucharDelServidor_App() {
+        if (lectorJob != null) return
 
         lectorJob = viewModelScope.launch(Dispatchers.IO) {
+            dis = conectionViewModel.getDataInputStream()
+            dos = conectionViewModel.getDataOutputStream()
+
             var mapper = jacksonObjectMapper()
             var cierraSesion = false
 
-            try{
-                while (this.isActive && !cierraSesion){
-                    var linea: String = dis?.readUTF()?: "NoInfo"
+            while (this.isActive && !cierraSesion) {
+                try {
+                    var linea: String = dis?.readUTF() ?: "NoInfo"
                     Log.d("App", linea)
                     var msgServidor: Mensaje = Serializador.decodificarMensaje(linea)
                     // Log.d("App", "Aqui no llega")
@@ -89,38 +96,40 @@ class AppViewModel(
                     var tipo = msgServidor.getTipo()
                     var msgRespuesta: Mensaje
                     // Log.d("App", tipo)
-                    when(tipo){
+                    when (tipo) {
                         "ENVIA_ANUNCIOS" -> {
                             // Log.d("App", msgServidor.getParams().get(1))
 
                             var imagenesAnuncios: ArrayList<ByteArray> = ArrayList()
                             var cantAnuncios = Integer.parseInt(msgServidor.getParams().get(2))
-                            for (i in 0 until cantAnuncios){
-                                var longitudImg = dis?.readInt()?: 0
+                            for (i in 0 until cantAnuncios) {
+                                var longitudImg = dis?.readInt() ?: 0
                                 // Log.d("App", longitudImg.toString())
                                 var bytesImg = ByteArray(longitudImg)
                                 dis?.readFully(bytesImg)
                                 imagenesAnuncios.add(bytesImg)
                             }
 
-                            var anuncios: List<Anuncio> = mapper.readValue(msgServidor.getParams().get(1), object: TypeReference<List<Anuncio>>(){})
+                            var anuncios: List<Anuncio> = mapper.readValue(
+                                msgServidor.getParams().get(1),
+                                object : TypeReference<List<Anuncio>>() {})
                             aniadirAnuncios(anuncios, imagenesAnuncios)
                         }
 
                         "ANUNCIO_GUARDADO" -> {
-                            withContext(Dispatchers.Main){
+                            withContext(Dispatchers.Main) {
                                 showMsg.invoke(context, "Anuncio guardado correctamente")
                             }
                         }
 
                         "ANUNCIO_ELIMINADO_GUARDADOS" -> {
-                            withContext(Dispatchers.Main){
+                            withContext(Dispatchers.Main) {
                                 showMsg.invoke(context, "Anuncio eliminado de guardados")
                             }
                         }
 
                         "DATOS_VALIDOS" -> {
-                            if("si".equals(msgServidor.getParams().get(0))){
+                            if ("si".equals(msgServidor.getParams().get(0))) {
                                 msgRespuesta = Mensaje()
                                 msgRespuesta.setTipo("PUBLICAR_ANUNCIO")
 
@@ -131,7 +140,7 @@ class AppViewModel(
                                 dos?.writeUTF(Serializador.codificarMensaje(msgRespuesta))
                                 dos?.flush()
 
-                                for (i in 0 until imagenesPublicar.size){
+                                for (i in 0 until imagenesPublicar.size) {
                                     dos?.writeInt(imagenesPublicar.get(i).size)
                                     dos?.flush()
 
@@ -139,15 +148,15 @@ class AppViewModel(
                                     dos?.flush()
                                 }
 
-                            }else if("no".equals(msgServidor.getParams().get(0))){
-                                withContext(Dispatchers.Main){
+                            } else if ("no".equals(msgServidor.getParams().get(0))) {
+                                withContext(Dispatchers.Main) {
                                     showMsg.invoke(context, "Datos introducidos no válidos")
                                 }
                             }
                         }
 
                         "ANUNCIO_PUBLICADO" -> {
-                            withContext(Dispatchers.Main){
+                            withContext(Dispatchers.Main) {
                                 showMsg.invoke(context, "Anuncio publicado correctamente")
                             }
 
@@ -158,20 +167,23 @@ class AppViewModel(
                             var imagenesAnuncioSeleccionado: ArrayList<ByteArray> = ArrayList()
                             var cantAnuncios = Integer.parseInt(msgServidor.getParams().get(0))
                             Log.d("App", "Cantidad de imagenes: " + cantAnuncios.toString())
-                            for (i in 0 until cantAnuncios){
-                                var longitudImg = dis?.readInt()?: 0
+                            for (i in 0 until cantAnuncios) {
+                                var longitudImg = dis?.readInt() ?: 0
                                 // Log.d("App", longitudImg.toString())
                                 var bytesImg = ByteArray(longitudImg)
                                 dis?.readFully(bytesImg)
                                 imagenesAnuncioSeleccionado.add(bytesImg)
                             }
 
-                            _uiState.value = _uiState.value.copy(imagenesAnuncioSeleccionado = imagenesAnuncioSeleccionado)
+                            _uiState.value =
+                                _uiState.value.copy(imagenesAnuncioSeleccionado = imagenesAnuncioSeleccionado)
                             _uiState.value = _uiState.value.copy(goToDetalle = true)
                         }
 
                         "ENVIA_NOTIFICACIONES" -> {
-                            var notificaciones = mapper.readValue(msgServidor.getParams().get(0), object: TypeReference<List<Notificacion>>(){});
+                            var notificaciones = mapper.readValue(
+                                msgServidor.getParams().get(0),
+                                object : TypeReference<List<Notificacion>>() {});
                             aniadirNotificaciones(notificaciones)
                         }
 
@@ -183,7 +195,7 @@ class AppViewModel(
                             // Creo dos PDF, uno con los campos aplanados para mostrar y otro que es el que se va a modificar y enviar
                             val archivoPDF = File(context.cacheDir, "Temp.pdf")
                             aplanarPDF(bytesPDF)
-                            if(archivoPDF.exists()) archivoPDF.delete()
+                            if (archivoPDF.exists()) archivoPDF.delete()
                             archivoPDF.createNewFile()
                             var os = FileOutputStream(archivoPDF)
                             os.write(bytesPDF)
@@ -199,7 +211,7 @@ class AppViewModel(
 
                             val archivoPDF = File(context.cacheDir, "Temp.pdf")
                             aplanarPDF(bytesPDF)
-                            if(archivoPDF.exists()) archivoPDF.delete()
+                            if (archivoPDF.exists()) archivoPDF.delete()
                             archivoPDF.createNewFile()
 
                             var os = FileOutputStream(archivoPDF)
@@ -216,12 +228,12 @@ class AppViewModel(
 
                         "ENVIA_ESTADO_PAGO" -> {
                             Log.d("App", "Comprueba estado pago: " + msgServidor.getParams().get(0))
-                            if("si".equals(msgServidor.getParams().get(0))){
+                            if ("si".equals(msgServidor.getParams().get(0))) {
                                 _uiState.value = _uiState.value.copy(confirmaPago = true)
                                 handler.post {
                                     showMsg.invoke(context, "Pago efectuado correctamente")
                                 }
-                            }else if("error".equals(msgServidor.getParams().get(0))){
+                            } else if ("error".equals(msgServidor.getParams().get(0))) {
                                 handler.post {
                                     showMsg.invoke(context, "Error al hacer el pago")
                                 }
@@ -229,11 +241,11 @@ class AppViewModel(
                         }
 
                         "REPORTE_REALIZADO" -> {
-                            if("si".equals(msgServidor.getParams().get(0))){
+                            if ("si".equals(msgServidor.getParams().get(0))) {
                                 handler.post {
                                     showMsg.invoke(context, "Usuario reportado correctamente")
                                 }
-                            }else if("no".equals(msgServidor.getParams().get(0))){
+                            } else if ("no".equals(msgServidor.getParams().get(0))) {
                                 handler.post {
                                     showMsg.invoke(context, "Ya has reportado a este usuario")
                                 }
@@ -241,7 +253,10 @@ class AppViewModel(
                         }
 
                         "ENVIA_SALT_REINICIO" -> {
-                            _uiState.value = _uiState.value.copy(saltUsuarioReinicio = Base64.getDecoder().decode(msgServidor.getParams().get(0)))
+                            _uiState.value = _uiState.value.copy(
+                                saltUsuarioReinicio = Base64.getDecoder()
+                                    .decode(msgServidor.getParams().get(0))
+                            )
                         }
 
                         "CONTRASENIA_REINICIADA" -> {
@@ -251,7 +266,9 @@ class AppViewModel(
                         }
 
                         "ENVIA_VENTAS" -> {
-                            var ventas = mapper.readValue(msgServidor.getParams().get(0), object: TypeReference<List<Venta>>(){});
+                            var ventas = mapper.readValue(
+                                msgServidor.getParams().get(0),
+                                object : TypeReference<List<Venta>>() {});
                             aniadirCompras(ventas)
                         }
 
@@ -269,19 +286,24 @@ class AppViewModel(
                             Log.d("App", "Raro que entre en el else del when")
                         }
                     }
+                } catch (e: CancellationException) {
+                    Log.d("App", "Cancelando corrutina de app")
+                } catch (e: EOFException) {
+                    Log.d("App", "Se ha cerrado el flujo del socket")
+                    reconectar()
+                } catch (e: IOException) {
+                    Log.d("App", "Error de conexión: " + e.message)
+                    reconectar()
                 }
-            } catch (e: CancellationException) {
-                Log.d("Login", "Cancelando corrutina de app")
-            } catch (e: EOFException) {
-                Log.d("App", e.message ?: "Error")
             }
+
         }
         lectorJob?.start()
     }
 
-    fun pararEscuchaServidor_App(){
+    fun pararEscuchaServidor_App() {
         lectorJob?.let {
-            if(it.isActive){
+            if (it.isActive) {
                 Log.d("App", "Hilo parado")
                 it.cancel()
             }
@@ -289,7 +311,7 @@ class AppViewModel(
         lectorJob = null
     }
 
-    fun obtenerAnuncios(filtro: IFiltro?, primeraCarga: Boolean){
+    fun obtenerAnuncios(filtro: IFiltro?, primeraCarga: Boolean) {
         if (_uiState.value.cargando) return
 
         var mapper = ObjectMapper()
@@ -299,17 +321,16 @@ class AppViewModel(
         var msg = Mensaje()
         msg.setTipo("OBTENER_ANUNCIOS")
         msg.addParam(filtroJSON)
-        msg.addParam(filtro?.tipoFiltro?: "Todo")
+        msg.addParam(filtro?.tipoFiltro ?: "Todo")
         msg.addParam(if (primeraCarga) "si" else "no")
-        msg.addParam((conectionViewModel.uiState.value.usuario?.idUsuario?: 2).toString())
+        msg.addParam((conectionViewModel.uiState.value.usuario?.idUsuario ?: 2).toString())
 
-        this.dos?.writeUTF(Serializador.codificarMensaje(msg))
-        this.dos?.flush()
+        enviarMensaje(msg)
 
-        _uiState.value = _uiState.value.copy( cargando = true )
+        _uiState.value = _uiState.value.copy(cargando = true)
     }
 
-    fun aniadirAnuncios(anunciosNuevos: List<Anuncio>, imagenes: List<ByteArray>){
+    fun aniadirAnuncios(anunciosNuevos: List<Anuncio>, imagenes: List<ByteArray>) {
         _uiState.value = _uiState.value.copy(
             anunciosEncontrados = _uiState.value.anunciosEncontrados.toList() + anunciosNuevos,
             imagenesAnuncios = _uiState.value.imagenesAnuncios.toList() + imagenes,
@@ -318,49 +339,47 @@ class AppViewModel(
         )
     }
 
-    fun vaciarAnuncios(){
+    fun vaciarAnuncios() {
         _uiState.value = _uiState.value.copy(
             anunciosEncontrados = emptyList(),
             imagenesAnuncios = emptyList()
         )
     }
 
-    fun guardarAnuncio(nombreUsuario: String, idAnuncio: Long){
+    fun guardarAnuncio(nombreUsuario: String, idAnuncio: Long) {
         var msg = Mensaje()
         msg.setTipo("GUARDAR_ANUNCIO")
         msg.addParam(idAnuncio.toString())
         msg.addParam(nombreUsuario)
 
-        this.dos?.writeUTF(Serializador.codificarMensaje(msg))
-        this.dos?.flush()
+        enviarMensaje(msg)
     }
 
-    fun eliminarGuardado(nombreUsuario: String, idAnuncio: Long){
+    fun eliminarGuardado(nombreUsuario: String, idAnuncio: Long) {
         var msg = Mensaje()
         msg.setTipo("ELIMINAR_ANUNCIO_GUARDADOS")
         msg.addParam(idAnuncio.toString())
         msg.addParam(nombreUsuario)
 
-        this.dos?.writeUTF(Serializador.codificarMensaje(msg))
-        this.dos?.flush()
+        enviarMensaje(msg)
     }
 
-    fun getBytesFromUri(uri: Uri?): ByteArray?{
+    fun getBytesFromUri(uri: Uri?): ByteArray? {
         var imagen: ByteArray? = null
         try {
-            if(uri != null){
+            if (uri != null) {
                 this.context.contentResolver.openInputStream(uri)?.use { inputStream ->
                     imagen = inputStream.readBytes()
                 }
             }
-        } catch (e: Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
         }
 
-        return  imagen
+        return imagen
     }
 
-    fun publicarAnuncio(anuncio: Anuncio, imagenes: List<ByteArray>){
+    fun publicarAnuncio(anuncio: Anuncio, imagenes: List<ByteArray>) {
         anuncioPublicar = anuncio
         imagenesPublicar = imagenes
 
@@ -371,24 +390,22 @@ class AppViewModel(
         msg.setTipo("COMPROBAR_DATOS_VEHICULO")
         msg.addParam(vcJSON)
 
-        this.dos?.writeUTF(Serializador.codificarMensaje(msg))
-        this.dos?.flush()
+        enviarMensaje(msg)
     }
 
-    fun obtenerImagenesAnuncioSel(idAnuncio: Long){
+    fun obtenerImagenesAnuncioSel(idAnuncio: Long) {
         var msg = Mensaje()
         msg.setTipo("OBTENER_IMAGENES")
         msg.addParam(idAnuncio.toString())
 
-        this.dos?.writeUTF(Serializador.codificarMensaje(msg))
-        this.dos?.flush()
+        enviarMensaje(msg)
     }
 
-    fun cambiarAnuncioSeleccionado(anuncio: Anuncio){
+    fun cambiarAnuncioSeleccionado(anuncio: Anuncio) {
         _uiState.value = _uiState.value.copy(anuncioSeleccionado = anuncio.copy())
     }
 
-    fun salirDetalleAnuncio(){
+    fun salirDetalleAnuncio() {
         _uiState.value = _uiState.value.copy(
             imagenesAnuncioSeleccionado = emptyList(),
             goToDetalle = false,
@@ -396,7 +413,7 @@ class AppViewModel(
         )
     }
 
-    fun obtenerNotificaciones(filtro: IFiltro, primeraCarga: Boolean){
+    fun obtenerNotificaciones(filtro: IFiltro, primeraCarga: Boolean) {
         if (_uiState.value.cargando) return
 
         var mapper = ObjectMapper()
@@ -408,13 +425,12 @@ class AppViewModel(
         msg.addParam(filtroJSON)
         msg.addParam(if (primeraCarga) "si" else "no")
 
-        this.dos?.writeUTF(Serializador.codificarMensaje(msg))
-        this.dos?.flush()
+        enviarMensaje(msg)
 
-        _uiState.value = _uiState.value.copy( cargando = true )
+        _uiState.value = _uiState.value.copy(cargando = true)
     }
 
-    fun aniadirNotificaciones(notificaciones: List<Notificacion>){
+    fun aniadirNotificaciones(notificaciones: List<Notificacion>) {
         _uiState.value = _uiState.value.copy(
             notificacionesEncontrados = _uiState.value.notificacionesEncontrados.toList() + notificaciones,
             cargando = false,
@@ -422,7 +438,7 @@ class AppViewModel(
         )
     }
 
-    fun vaciarNotificaciones(){
+    fun vaciarNotificaciones() {
         _uiState.value = _uiState.value.copy(
             notificacionesEncontrados = emptyList(),
             cargando = false,
@@ -430,20 +446,19 @@ class AppViewModel(
         )
     }
 
-    fun obtenerPDFAcuerdo(idComprador: Long, idAnuncio: Long, tipoAnuncio: String){
+    fun obtenerPDFAcuerdo(idComprador: Long, idAnuncio: Long, tipoAnuncio: String) {
         var msg = Mensaje()
         msg.setTipo("OBTENER_PDF_ACUERDO")
         msg.addParam(idComprador.toString())
         msg.addParam(idAnuncio.toString())
         msg.addParam(tipoAnuncio)
 
-        this.dos?.writeUTF(Serializador.codificarMensaje(msg))
-        this.dos?.flush()
+        enviarMensaje(msg)
     }
 
-    fun aplanarPDF(bytesPdf: ByteArray){
+    fun aplanarPDF(bytesPdf: ByteArray) {
         val archivoPdfAplanado = File(context.cacheDir, "Temp_Aplanado.pdf")
-        if(archivoPdfAplanado.exists()) archivoPdfAplanado.delete()
+        if (archivoPdfAplanado.exists()) archivoPdfAplanado.delete()
         archivoPdfAplanado.createNewFile()
 
         val reader = PdfReader(ByteArrayInputStream(bytesPdf))
@@ -457,7 +472,12 @@ class AppViewModel(
         pdfDocument.close()
     }
 
-    fun compradorOfreceCompra(bytesPdf: ByteArray, idComprador: Long, idAnuncio: Long, idVendedor: Long){
+    fun compradorOfreceCompra(
+        bytesPdf: ByteArray,
+        idComprador: Long,
+        idAnuncio: Long,
+        idVendedor: Long
+    ) {
         var msg = Mensaje()
         msg.setTipo("COMPRADOR_OFRECE_COMPRA")
         msg.addParam(bytesPdf.size.toString())
@@ -465,32 +485,36 @@ class AppViewModel(
         msg.addParam(idAnuncio.toString())
         msg.addParam(idVendedor.toString())
 
-        this.dos?.writeUTF(Serializador.codificarMensaje(msg))
-        this.dos?.flush()
+        enviarMensaje(msg)
 
         this.dos?.write(bytesPdf)
         this.dos?.flush()
     }
 
-    fun reiniciarGoToCompraComprador(){
+    fun reiniciarGoToCompraComprador() {
         _uiState.value = _uiState.value.copy(goToCompraComprador = false)
     }
 
-    fun obtenerPDFAcuerdoVendedor(idComprador: Long, idAnuncio: Long){
+    fun obtenerPDFAcuerdoVendedor(idComprador: Long, idAnuncio: Long) {
         var msg = Mensaje()
         msg.setTipo("OBTENER_PDF_ACUERDO_VENDEDOR")
         msg.addParam(idComprador.toString())
         msg.addParam(idAnuncio.toString())
 
-        this.dos?.writeUTF(Serializador.codificarMensaje(msg))
-        this.dos?.flush()
+        enviarMensaje(msg)
     }
 
-    fun reiniciarGoToCompraVendedor(){
+    fun reiniciarGoToCompraVendedor() {
         _uiState.value = _uiState.value.copy(goToCompraVendedor = false)
     }
 
-    fun vendedorConfirmaCompra(bytesPdf: ByteArray, idComprador: Long, idAnuncio: Long, idVendedor: Long, idNotificacion: Long){
+    fun vendedorConfirmaCompra(
+        bytesPdf: ByteArray,
+        idComprador: Long,
+        idAnuncio: Long,
+        idVendedor: Long,
+        idNotificacion: Long
+    ) {
         var msg = Mensaje()
         msg.setTipo("VENDEDOR_CONFIRMA_COMPRA")
         msg.addParam(bytesPdf.size.toString())
@@ -499,14 +523,18 @@ class AppViewModel(
         msg.addParam(idVendedor.toString())
         msg.addParam(idNotificacion.toString())
 
-        this.dos?.writeUTF(Serializador.codificarMensaje(msg))
-        this.dos?.flush()
+        enviarMensaje(msg)
 
         this.dos?.write(bytesPdf)
         this.dos?.flush()
     }
 
-    fun vendedorRechazaCompra(idComprador: Long, idAnuncio: Long, idVendedor: Long, idNotificacion: Long){
+    fun vendedorRechazaCompra(
+        idComprador: Long,
+        idAnuncio: Long,
+        idVendedor: Long,
+        idNotificacion: Long
+    ) {
         var msg = Mensaje()
         msg.setTipo("VENDEDOR_RECHAZA_COMPRA")
         msg.addParam(idComprador.toString())
@@ -514,11 +542,15 @@ class AppViewModel(
         msg.addParam(idVendedor.toString())
         msg.addParam(idNotificacion.toString())
 
-        this.dos?.writeUTF(Serializador.codificarMensaje(msg))
-        this.dos?.flush()
+        enviarMensaje(msg)
     }
 
-    fun seleccionarNotificacion(idNotificacion: Long, idAnuncio: Long, idVendedor: Long, precio: Double){
+    fun seleccionarNotificacion(
+        idNotificacion: Long,
+        idAnuncio: Long,
+        idVendedor: Long,
+        precio: Double
+    ) {
         _uiState.value = _uiState.value.copy(
             idNotificacionSeleccionada = idNotificacion,
             idAnuncioNotificacionSeleccionada = idAnuncio,
@@ -527,7 +559,7 @@ class AppViewModel(
         )
     }
 
-    fun reiniciarNotificacion(){
+    fun reiniciarNotificacion() {
         _uiState.value = _uiState.value.copy(
             idNotificacionSeleccionada = null,
             idAnuncioNotificacionSeleccionada = null,
@@ -536,32 +568,31 @@ class AppViewModel(
         )
     }
 
-    fun usuarioPaga(idComprador: Long, idVendedor: Long, precio: Double){
+    fun usuarioPaga(idComprador: Long, idVendedor: Long, precio: Double) {
         var msg = Mensaje()
         msg.setTipo("USUARIO_PAGA")
         msg.addParam(idComprador.toString())
         msg.addParam(idVendedor.toString())
         msg.addParam(precio.toString())
 
-        this.dos?.writeUTF(Serializador.codificarMensaje(msg))
-        this.dos?.flush()
+        enviarMensaje(msg)
     }
 
-    fun reiniciaConfirmaPago(){
+    fun reiniciaConfirmaPago() {
         _uiState.value = _uiState.value.copy(confirmaPago = false)
     }
 
-    fun asignarUrlPayPal(url: String){
+    fun asignarUrlPayPal(url: String) {
         _uiState.value = _uiState.value.copy(urlPayPal = url)
     }
 
-    fun asignarGoToPayPalScreen(goToPayPalScreen: Boolean){
+    fun asignarGoToPayPalScreen(goToPayPalScreen: Boolean) {
         _uiState.value = _uiState.value.copy(goToPayPalScreen = goToPayPalScreen)
     }
 
-    fun preguntarEstadoPago(): Job{
-        return viewModelScope.launch(Dispatchers.IO){
-            while (!_uiState.value.confirmaPago){
+    fun preguntarEstadoPago(): Job {
+        return viewModelScope.launch(Dispatchers.IO) {
+            while (!_uiState.value.confirmaPago) {
                 var msg = Mensaje()
                 msg.setTipo("OBTENER_ESTADO_PAGO")
                 msg.addParam(_uiState.value.idNotificacionSeleccionada.toString())
@@ -575,15 +606,15 @@ class AppViewModel(
         }
     }
 
-    fun asignarReporte(reporte: Reporte){
+    fun asignarReporte(reporte: Reporte) {
         _uiState.value = _uiState.value.copy(reporteUsuario = reporte)
     }
 
-    fun reiniciarReporte(){
+    fun reiniciarReporte() {
         _uiState.value = _uiState.value.copy(reporteUsuario = null)
     }
 
-    fun reportarUsuario(reporte: Reporte){
+    fun reportarUsuario(reporte: Reporte) {
         var mapper = jacksonObjectMapper()
         var reporteJSON = mapper.writeValueAsString(reporte)
 
@@ -591,42 +622,39 @@ class AppViewModel(
         msg.setTipo("REPORTAR_USUARIO")
         msg.addParam(reporteJSON)
 
-        dos?.writeUTF(Serializador.codificarMensaje(msg))
-        dos?.flush()
+        enviarMensaje(msg)
     }
 
-    fun onContraseniaConfUsuarioChange(contrasenia: String){
+    fun onContraseniaConfUsuarioChange(contrasenia: String) {
         _uiState.value = _uiState.value.copy(contraseniaReiniciarContrasenia = contrasenia)
     }
 
-    fun onRepetirContraseniaConfUsuarioChange(contrasenia: String){
+    fun onRepetirContraseniaConfUsuarioChange(contrasenia: String) {
         _uiState.value = _uiState.value.copy(repetirContraseniaReiniciarContrasenia = contrasenia)
     }
 
-    fun obtenerSaltReinicio(nombreUsuario: String){
+    fun obtenerSaltReinicio(nombreUsuario: String) {
         var msg = Mensaje()
         msg.setTipo("OBTENER_SALT_REINICIO")
         msg.addParam(nombreUsuario)
 
-        dos?.writeUTF(Serializador.codificarMensaje(msg))
-        dos?.flush()
+        enviarMensaje(msg)
     }
 
-    fun vaciarSaltReinicio(){
+    fun vaciarSaltReinicio() {
         _uiState.value = _uiState.value.copy(saltUsuarioReinicio = null)
     }
 
-    fun reiniciarContrasenia(nombreUsuario: String, contrasenia: String){
+    fun reiniciarContrasenia(nombreUsuario: String, contrasenia: String) {
         var msg = Mensaje()
         msg.setTipo("REINICIAR_CONTRASENIA")
         msg.addParam(nombreUsuario)
         msg.addParam(SecureUtils.generate512(contrasenia, _uiState.value.saltUsuarioReinicio!!))
 
-        dos?.writeUTF(Serializador.codificarMensaje(msg))
-        dos?.flush()
+        enviarMensaje(msg)
     }
 
-    fun obtenerCompras(filtro: IFiltro, primeraCarga: Boolean){
+    fun obtenerCompras(filtro: IFiltro, primeraCarga: Boolean) {
         if (_uiState.value.cargando) return
 
         var mapper = ObjectMapper()
@@ -637,13 +665,12 @@ class AppViewModel(
         msg.addParam(filtroJSON)
         msg.addParam(if (primeraCarga) "si" else "no")
 
-        this.dos?.writeUTF(Serializador.codificarMensaje(msg))
-        this.dos?.flush()
+        enviarMensaje(msg)
 
-        _uiState.value = _uiState.value.copy( cargando = true )
+        _uiState.value = _uiState.value.copy(cargando = true)
     }
 
-    fun aniadirCompras(compras: List<Venta>){
+    fun aniadirCompras(compras: List<Venta>) {
         _uiState.value = _uiState.value.copy(
             comprasEncontradas = _uiState.value.comprasEncontradas.toList() + compras,
             cargando = false,
@@ -651,7 +678,7 @@ class AppViewModel(
         )
     }
 
-    fun vaciarCompras(){
+    fun vaciarCompras() {
         _uiState.value = _uiState.value.copy(
             comprasEncontradas = emptyList(),
             cargando = false,
@@ -659,13 +686,40 @@ class AppViewModel(
         )
     }
 
-    fun cerrarSesion(idUsuario: Long){
+    fun cerrarSesion(idUsuario: Long) {
         var msg = Mensaje()
         msg.setTipo("CERRAR_SESION")
         msg.addParam(idUsuario.toString())
 
-        this.dos?.writeUTF(Serializador.codificarMensaje(msg))
-        this.dos?.flush()
+        enviarMensaje(msg)
+    }
+
+    fun reconectar() {
+        val properties = Properties()
+        val assetManager = context.assets
+
+        properties.load(InputStreamReader(assetManager.open("conf.properties")))
+
+        conectionViewModel.cerrarConexion()
+
+        conectionViewModel.conectar(
+            properties.getProperty("ADDRESS"),
+            Integer.parseInt(properties.getProperty("PORT"))
+        )
+
+        this.dis = conectionViewModel.getDataInputStream()
+        this.dos = conectionViewModel.getDataOutputStream()
+
+        Log.d("App", "Se te ha vuelto a conectar a la aplicación.")
+    }
+
+    fun enviarMensaje(msg: Mensaje) {
+        if (conectionViewModel.uiState.value.socket != null && !conectionViewModel.uiState.value.socket!!.isClosed) {
+            this.dos?.writeUTF(Serializador.codificarMensaje(msg))
+            this.dos?.flush()
+        } else {
+            Log.d("Login", "No se puede realizar esa acción por un error en la conexión")
+        }
     }
 
     fun mostrarToast(msg: String) {
@@ -677,7 +731,7 @@ class AppViewModel(
 
 class AppViewModelFactory(
     private val conectionViewModel: ConectionViewModel
-): ViewModelProvider.Factory {
+) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(AppViewModel::class.java)) {
             return AppViewModel(conectionViewModel) as T

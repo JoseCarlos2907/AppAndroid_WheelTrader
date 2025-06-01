@@ -28,7 +28,10 @@ import kotlinx.coroutines.withContext
 import java.io.DataInputStream
 import java.io.DataOutputStream
 import java.io.EOFException
+import java.io.IOException
+import java.io.InputStreamReader
 import java.util.Base64
+import java.util.Properties
 
 class LoginViewModel(
     private val conectionViewModel: ConectionViewModel
@@ -37,8 +40,8 @@ class LoginViewModel(
     private val _uiState = MutableStateFlow(LoginUiState())
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
 
-    private val dis: DataInputStream? by lazy { conectionViewModel.getDataInputStream() }
-    private val dos: DataOutputStream? by lazy { conectionViewModel.getDataOutputStream() }
+    private var dis: DataInputStream? = null
+    private var dos: DataOutputStream? = null
 
     lateinit var showMsg: ((Context, String) -> Unit)
 
@@ -54,15 +57,18 @@ class LoginViewModel(
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun escucharDelServidor_Login() {
-        if(lectorJob?.isActive == true) return
+        if (lectorJob?.isActive == true) return
 
         lectorJob = viewModelScope.launch(Dispatchers.IO) {
+            dis = conectionViewModel.getDataInputStream()
+            dos = conectionViewModel.getDataOutputStream()
+
             Log.d("Login", "Arranca hilo")
             var usuarioJSON = ""
 
-            try {
-                var msgRespuesta: Mensaje
-                while (this.isActive && !_uiState.value.iniciaSesion) {
+            while (this.isActive && !_uiState.value.iniciaSesion) {
+                try {
+                    var msgRespuesta: Mensaje
                     Log.d("Login", "Antes de leer: " + _uiState.value.iniciaSesion)
                     var linea: String = dis?.readUTF() ?: ""
                     Log.d("Login", "Linea: " + linea)
@@ -147,12 +153,17 @@ class LoginViewModel(
                     } else {
                         Log.d("Login", "Else del when" + linea)
                     }
+                } catch (e: CancellationException) {
+                    Log.d("Login", "Cancelando corrutina de login")
+                } catch (e: EOFException) {
+                    Log.d("Login", "Se ha cerrado el flujo del socket")
+                    reconectar()
+                } catch (e: IOException) {
+                    Log.d("Login", "Error de conexión: " + e.message)
+                    reconectar()
                 }
-            } catch (e: CancellationException) {
-                Log.d("Login", "Cancelando corrutina de login")
-            } catch (e: EOFException) {
-                Log.d("Login", e.message ?: "Error")
             }
+
 
             if (uiState.value.iniciaSesion) {
                 Log.d("Login", usuarioJSON)
@@ -169,7 +180,7 @@ class LoginViewModel(
     }
 
     fun pararEscuchaServidor_Login() {
-        if(!uiState.value.iniciaSesion) return
+        if (!uiState.value.iniciaSesion) return
 
         lectorJob?.let {
             if (it.isActive) {
@@ -184,10 +195,10 @@ class LoginViewModel(
         var msg = Mensaje()
         msg.setTipo("OBTENER_SALT")
         msg.addParam(nombre)
-        this.dos?.writeUTF(Serializador.codificarMensaje(msg))
+        enviarMensaje(msg)
     }
 
-    fun limpiarInicioSesion(){
+    fun limpiarInicioSesion() {
         _uiState.value = _uiState.value.copy(
             currentNombreUsuario = "",
             currentContrasenia = ""
@@ -198,7 +209,7 @@ class LoginViewModel(
         var msg = Mensaje()
         msg.setTipo("COMPROBAR_DNI")
         msg.addParam(dni)
-        this.dos?.writeUTF(Serializador.codificarMensaje(msg))
+        enviarMensaje(msg)
     }
 
     fun comprobarNombreUsuYCorreo(nombreUsuario: String, correo: String) {
@@ -206,7 +217,7 @@ class LoginViewModel(
         msg.setTipo("COMPROBAR_NOMUSU_CORREO")
         msg.addParam(nombreUsuario)
         msg.addParam(correo)
-        this.dos?.writeUTF(Serializador.codificarMensaje(msg))
+        enviarMensaje(msg)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -230,7 +241,7 @@ class LoginViewModel(
         var msg = Mensaje()
         msg.setTipo("REGISTRAR_USUARIO")
         msg.addParam(mapper.writeValueAsString(usuario))
-        this.dos?.writeUTF(Serializador.codificarMensaje(msg))
+        enviarMensaje(msg)
     }
 
     fun limpiarRegistro() {
@@ -249,23 +260,21 @@ class LoginViewModel(
         )
     }
 
-    fun recuperarContrasenia_Correo(correo: String){
+    fun recuperarContrasenia_Correo(correo: String) {
         var msg = Mensaje()
         msg.setTipo("RECUPERAR_CONTRASENIA")
         msg.addParam(correo)
-        this.dos?.writeUTF(Serializador.codificarMensaje(msg))
-        this.dos?.flush()
+        enviarMensaje(msg)
     }
 
-    fun recuperarContrasenia_Codigo(codigo: String){
+    fun recuperarContrasenia_Codigo(codigo: String) {
         var msg = Mensaje()
         msg.setTipo("INTENTA_CODIGO")
         msg.addParam(codigo)
-        this.dos?.writeUTF(Serializador.codificarMensaje(msg))
-        this.dos?.flush()
+        enviarMensaje(msg)
     }
 
-    fun recuperarContrasenia_Contrasenias(contrasenia: String){
+    fun recuperarContrasenia_Contrasenias(contrasenia: String) {
         // TODO: Reiniciar las contraseñas
     }
 
@@ -330,12 +339,40 @@ class LoginViewModel(
     }
 
     // Recuperar Contraseña
-    fun asignarGoToCodigo(goToCodigo: Boolean){
+    fun asignarGoToCodigo(goToCodigo: Boolean) {
         _uiState.value = _uiState.value.copy(goToCodigo = goToCodigo)
     }
 
-    fun asignarGoToReiniciarContrasenia(goToReiniciarContrasenia: Boolean){
+    fun asignarGoToReiniciarContrasenia(goToReiniciarContrasenia: Boolean) {
         _uiState.value = _uiState.value.copy(goToReiniciarContrasenia = goToReiniciarContrasenia)
+    }
+
+    fun reconectar() {
+        val properties = Properties()
+        val assetManager = context.assets
+
+        properties.load(InputStreamReader(assetManager.open("conf.properties")))
+
+        conectionViewModel.cerrarConexion()
+
+        conectionViewModel.conectar(
+            properties.getProperty("ADDRESS"),
+            Integer.parseInt(properties.getProperty("PORT"))
+        )
+
+        this.dis = conectionViewModel.getDataInputStream()
+        this.dos = conectionViewModel.getDataOutputStream()
+
+        Log.d("Login", "Se te ha vuelto a conectar a la aplicación.")
+    }
+
+    fun enviarMensaje(msg: Mensaje) {
+        if (conectionViewModel.uiState.value.socket != null && !conectionViewModel.uiState.value.socket!!.isClosed) {
+            this.dos?.writeUTF(Serializador.codificarMensaje(msg))
+            this.dos?.flush()
+        } else {
+            Log.d("Login", "No se puede realizar esa acción por un error en la conexión")
+        }
     }
 
     fun mostrarToast(msg: String) {
