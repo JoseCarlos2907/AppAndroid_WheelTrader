@@ -275,7 +275,10 @@ class LoginViewModel(
     }
 
     fun recuperarContrasenia_Contrasenias(contrasenia: String) {
-        // TODO: Reiniciar las contraseñas
+        var msg = Mensaje()
+        msg.setTipo("REINICIAR_CONTRASENIA")
+        msg.addParam(contrasenia)
+        enviarMensaje(msg)
     }
 
     // Login

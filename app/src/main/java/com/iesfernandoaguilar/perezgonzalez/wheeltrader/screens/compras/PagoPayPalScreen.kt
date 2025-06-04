@@ -35,17 +35,14 @@ fun PagoPayPalScreen(
 ){
     val appUiState by appViewModel.uiState.collectAsState()
 
-    var hiloPeticiones by remember { mutableStateOf<Job?>(null) }
-
     LaunchedEffect(Unit) {
         appViewModel.viewModelScope.launch(Dispatchers.IO) {
-            hiloPeticiones = appViewModel.preguntarEstadoPago()
+            appViewModel.preguntarEstadoPago()
         }
     }
 
     DisposableEffect(Unit) {
         onDispose {
-            hiloPeticiones?.cancel()
             appViewModel.reiniciarNotificacion()
         }
     }

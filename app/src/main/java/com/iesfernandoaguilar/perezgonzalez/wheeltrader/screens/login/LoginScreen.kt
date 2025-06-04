@@ -235,6 +235,7 @@ fun LoginScreen(
             composable(route = LoginScreens.RecuperarContrasenia3.screenName){
                 RecuperarContrasenia3(
                     loginViewModel = loginViewModel,
+                    loginUiState = loginUiState,
                     recuperarContraseniaUiState = recuperarContraseniaUiState,
                     recuperarContraseniaViewModel = recuperarContraseniaViewModel,
                     goToLogin = {

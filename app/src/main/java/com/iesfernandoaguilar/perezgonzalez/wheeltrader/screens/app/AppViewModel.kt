@@ -564,7 +564,7 @@ class AppViewModel(
             idNotificacionSeleccionada = null,
             idAnuncioNotificacionSeleccionada = null,
             idCompradorNotificacionSeleccionada = null,
-            precioAnuncioNotificacionSeleccionada = null
+            precioAnuncioNotificacionSeleccionada = null,
         )
     }
 
@@ -590,18 +590,17 @@ class AppViewModel(
         _uiState.value = _uiState.value.copy(goToPayPalScreen = goToPayPalScreen)
     }
 
-    fun preguntarEstadoPago(): Job {
-        return viewModelScope.launch(Dispatchers.IO) {
+    fun preguntarEstadoPago() {
+        viewModelScope.launch(Dispatchers.IO) {
             while (!_uiState.value.confirmaPago) {
                 var msg = Mensaje()
                 msg.setTipo("OBTENER_ESTADO_PAGO")
                 msg.addParam(_uiState.value.idNotificacionSeleccionada.toString())
                 msg.addParam(_uiState.value.precioAnuncioNotificacionSeleccionada.toString())
 
-                dos?.writeUTF(Serializador.codificarMensaje(msg))
-                dos?.flush()
+                enviarMensaje(msg)
 
-                Thread.sleep(5000)
+                Thread.sleep(4000)
             }
         }
     }

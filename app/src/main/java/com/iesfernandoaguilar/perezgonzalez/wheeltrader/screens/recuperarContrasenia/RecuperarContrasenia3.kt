@@ -1,5 +1,7 @@
 package com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.recuperarContrasenia
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -35,12 +37,16 @@ import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.login.LoginScree
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.login.LoginUiState
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.login.LoginViewModel
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.registro.textField
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.utils.SecureUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.Base64
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun RecuperarContrasenia3(
     loginViewModel: LoginViewModel,
+    loginUiState: LoginUiState,
     goToLogin: () -> Unit,
     recuperarContraseniaViewModel: RecuperarContraseniaViewModel,
     recuperarContraseniaUiState: RecuperarContraseniaUiState,
@@ -149,7 +155,7 @@ fun RecuperarContrasenia3(
                             } else if (recuperarContraseniaUiState.contrasenia != recuperarContraseniaUiState.repetirContrasenia) {
                                 loginViewModel.mostrarToast("Las contraseñas no coinciden")
                             } else {
-                                loginViewModel.recuperarContrasenia_Contrasenias(recuperarContraseniaUiState.contrasenia)
+                                loginViewModel.recuperarContrasenia_Contrasenias(SecureUtils.generate512(recuperarContraseniaUiState.contrasenia, Base64.getDecoder().decode(loginUiState.saltUsuario)))
                                 bien = true
                             }
                         }
