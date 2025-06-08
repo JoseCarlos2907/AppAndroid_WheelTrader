@@ -39,6 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -167,7 +168,7 @@ fun mainAppBar(
             ) {
                 Image(
                     painter = painterResource(R.drawable.logoazul),
-                    contentDescription = null,
+                    contentDescription = stringResource(R.string.desc_imagen_logo_barra_superior),
                     modifier = Modifier.height(54.dp),
                 )
             }
@@ -205,8 +206,10 @@ fun mainBottomBar(
                     icon = {
                         Image(
                             painter = painterResource(iconos.get(opciones.indexOf(item))),
-                            contentDescription = "",
-                            modifier = Modifier.height(30.dp).width(30.dp)
+                            contentDescription = stringResource(R.string.desc_imagen_menu_inferior),
+                            modifier = Modifier
+                                .height(30.dp)
+                                .width(30.dp)
                         )
                     },
                     modifier = Modifier.width(40.dp)
@@ -228,7 +231,9 @@ fun AlertConexion(
     AlertDialog(
         onDismissRequest = onCancel,
         title = {
-            Text("Configuración del servidor")
+            Text(
+                text = stringResource(R.string.texto_conf_servidor)
+            )
         },
         text = {
             Column {
@@ -237,7 +242,7 @@ fun AlertConexion(
                     onValueChange = { direccion = it },
                     placeholder = {
                         Text(
-                            text = "Dirección",
+                            text = stringResource(R.string.texto_direccion),
                             color = Color(0x00FF1c1c1c)
                         )
                     },
@@ -263,7 +268,7 @@ fun AlertConexion(
                     onValueChange = { puerto = it },
                     placeholder = {
                         Text(
-                            text = "Puerto",
+                            text = stringResource(R.string.texto_puerto),
                             color = Color(0x00FF1c1c1c)
                         )
                     },
@@ -295,7 +300,7 @@ fun AlertConexion(
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
             ) {
                 Text(
-                    text = "Conectar",
+                    text = stringResource(R.string.texto_conectar),
                     style = MaterialTheme.typography.labelMedium,
                     color = Color.Black
                 )
@@ -307,13 +312,14 @@ fun AlertConexion(
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
             ) {
                 Text(
-                    text = "Cancelar",
+                    text = stringResource(R.string.texto_cancelar),
                     style = MaterialTheme.typography.labelMedium,
                     color = Color.White
                 )
             }
         },
-        containerColor = MaterialTheme.colorScheme.primaryContainer
+        containerColor = MaterialTheme.colorScheme.primaryContainer,
+        modifier = modifier.height(500.dp)
     )
 }
 

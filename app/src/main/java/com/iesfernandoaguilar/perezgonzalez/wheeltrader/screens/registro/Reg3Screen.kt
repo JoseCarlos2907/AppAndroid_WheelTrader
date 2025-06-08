@@ -26,6 +26,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
@@ -58,23 +59,27 @@ fun Reg3Screen(
     Column(
         verticalArrangement = Arrangement.SpaceEvenly,
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier.fillMaxSize().background(
-            brush = Brush.linearGradient(
-                colors = listOf(Color.Black, Color(0xFF525151)),
-                start = Offset(0f, 0f),
-                end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
+        modifier = modifier
+            .fillMaxSize()
+            .background(
+                brush = Brush.linearGradient(
+                    colors = listOf(Color.Black, Color(0xFF525151)),
+                    start = Offset(0f, 0f),
+                    end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
+                )
             )
-        )
     ) {
         // Imagen barra de progreso
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
-            modifier = Modifier.weight(0.15f).padding(top = 50.dp, start = 35.dp, end = 35.dp)
+            modifier = Modifier
+                .weight(0.15f)
+                .padding(top = 50.dp, start = 35.dp, end = 35.dp)
         ) {
             Image(
                 painter = painterResource(R.drawable.barrareg3),
-                contentDescription = null,
+                contentDescription = stringResource(R.string.desc_imagen_barra_registro_3),
                 modifier = Modifier.fillMaxSize()
             )
         }
@@ -83,10 +88,12 @@ fun Reg3Screen(
         Row(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxSize().weight(0.1f)
+            modifier = Modifier
+                .fillMaxSize()
+                .weight(0.1f)
         ) {
             Text(
-                text = "Contraseña",
+                text = stringResource(R.string.texto_contrasena),
                 style = MaterialTheme.typography.titleLarge,
                 color = Color.White
             )
@@ -96,11 +103,15 @@ fun Reg3Screen(
         Row(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxSize().weight(0.55f)
+            modifier = Modifier
+                .fillMaxSize()
+                .weight(0.55f)
         ) {
             Card(
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
-                modifier = Modifier.fillMaxSize().padding(20.dp)
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(20.dp)
             ) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -110,7 +121,9 @@ fun Reg3Screen(
                     Column(
                         verticalArrangement = Arrangement.SpaceEvenly,
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.weight(0.7f).fillMaxSize()
+                        modifier = Modifier
+                            .weight(0.7f)
+                            .fillMaxSize()
                     ) {
                         textField(placeHolder = "Contraseña", value = loginUiState.contrasenia, onValueChange = { loginViewModel.onContraseniaRegistroChange(it) })
 
@@ -123,25 +136,25 @@ fun Reg3Screen(
                         modifier = Modifier.weight(0.3f)
                     ) {
                         Text(
-                            text = "Requisitos de la contraseña",
+                            text = stringResource(R.string.texto_requisitos_contrasena),
                             color = Color.White,
                             style = MaterialTheme.typography.labelMedium
                         )
 
                         Text(
-                            text = "· Mínimo 6 caracteres",
+                            text = stringResource(R.string.texto_minimo_6_caracteres),
                             color = Color.White,
                             style = MaterialTheme.typography.bodyLarge
                         )
 
                         Text(
-                            text = "· Mínimo 1 mayúscula y 1 minúscula",
+                            text = stringResource(R.string.texto_minimo_mayusculas_minusculas),
                             color = Color.White,
                             style = MaterialTheme.typography.bodyLarge
                         )
 
                         Text(
-                            text = "· Mínimo 1 número",
+                            text = stringResource(R.string.texto_minimo_numeros),
                             color = Color.White,
                             style = MaterialTheme.typography.bodyLarge
                         )
@@ -154,7 +167,9 @@ fun Reg3Screen(
         Row(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxSize().weight(0.25f)
+            modifier = Modifier
+                .fillMaxSize()
+                .weight(0.25f)
         ) {
             Column(
                 verticalArrangement = Arrangement.SpaceEvenly,
@@ -175,11 +190,13 @@ fun Reg3Screen(
 
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-                    modifier = Modifier.width(150.dp).height(40.dp)
+                    modifier = Modifier
+                        .width(150.dp)
+                        .height(40.dp)
 
                 ) {
                     Text(
-                        text = "Siguiente",
+                        text = stringResource(R.string.texto_siguiente),
                         style = MaterialTheme.typography.labelMedium,
                         color = Color.Black
                     )
@@ -190,7 +207,9 @@ fun Reg3Screen(
                         loginNavController.navigate(LoginScreens.Reg2.screenName)
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
-                    modifier = Modifier.width(150.dp).height(40.dp)
+                    modifier = Modifier
+                        .width(150.dp)
+                        .height(40.dp)
                 ) {
                     Row(
                         horizontalArrangement = Arrangement.Center,
@@ -198,7 +217,7 @@ fun Reg3Screen(
                         modifier = Modifier.fillMaxSize()
                     ) {
                         Text(
-                            text = "Anterior",
+                            text = stringResource(R.string.texto_anterior),
                             style = MaterialTheme.typography.labelMedium,
                             color = Color.White
                         )

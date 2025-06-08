@@ -29,6 +29,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
@@ -73,7 +74,7 @@ fun RecuperarContrasenia3(
             modifier = Modifier.fillMaxSize().weight(0.1f)
         ) {
             Text(
-                text = "Reiniciar Contraseña",
+                text = stringResource(R.string.texto_reiniciar_contrasena),
                 style = MaterialTheme.typography.titleLarge,
                 color = Color.White
             )
@@ -109,25 +110,25 @@ fun RecuperarContrasenia3(
                         modifier = Modifier.weight(0.3f)
                     ) {
                         Text(
-                            text = "Requisitos de la contraseña",
+                            text = stringResource(R.string.texto_requisitos_contrasena),
                             color = Color.White,
                             style = MaterialTheme.typography.labelMedium
                         )
 
                         Text(
-                            text = "· Mínimo 6 caracteres",
+                            text = stringResource(R.string.texto_minimo_6_caracteres),
                             color = Color.White,
                             style = MaterialTheme.typography.bodyLarge
                         )
 
                         Text(
-                            text = "· Mínimo 1 mayúscula y 1 minúscula",
+                            text = stringResource(R.string.texto_minimo_mayusculas_minusculas),
                             color = Color.White,
                             style = MaterialTheme.typography.bodyLarge
                         )
 
                         Text(
-                            text = "· Mínimo 1 número",
+                            text = stringResource(R.string.texto_minimo_numeros),
                             color = Color.White,
                             style = MaterialTheme.typography.bodyLarge
                         )
@@ -170,7 +171,7 @@ fun RecuperarContrasenia3(
 
                 ) {
                     Text(
-                        text = "Reiniciar Contraseña",
+                        text = stringResource(R.string.texto_reiniciar_contrasena),
                         style = MaterialTheme.typography.labelMedium,
                         color = Color.Black
                     )

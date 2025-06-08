@@ -47,6 +47,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -54,6 +55,7 @@ import androidx.compose.ui.unit.toSize
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.R
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Anuncio
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.ValorCaracteristica
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.ConectionUiState
@@ -84,13 +86,15 @@ fun PublicarMaquinaria(
     }
 
     LazyColumn(
-        modifier = Modifier.fillMaxSize().background(
-            brush = Brush.linearGradient(
-                colors = listOf(Color.Black, Color(0xFF525151)),
-                start = Offset(0f, 0f),
-                end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                brush = Brush.linearGradient(
+                    colors = listOf(Color.Black, Color(0xFF525151)),
+                    start = Offset(0f, 0f),
+                    end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
+                )
             )
-        )
     ) {
         item{
             formularioSuperiorMaquinaria(
@@ -150,7 +154,7 @@ fun PublicarMaquinaria(
                         .padding(12.dp)
                 ) {
                     Text(
-                        text = "Publicar anuncio",
+                        text = stringResource(R.string.texto_publicar_anuncio),
                         color = Color.White,
                         style = MaterialTheme.typography.labelMedium
                     )
@@ -195,7 +199,7 @@ fun formularioSuperiorMaquinaria(
                 .padding(16.dp)
         ) {
             Text(
-                text = "Especificaciones de\nla Maquinaria",
+                text = stringResource(R.string.texto_especificaciones_de_la_maquinaria),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.titleLarge,
                 color = Color.White
@@ -215,7 +219,7 @@ fun formularioSuperiorMaquinaria(
                     onValueChange = { publicarMaquinariaViewModel.cambiarMarca_Maquinaria(it) },
                     placeholder = {
                         Text(
-                            text = "Marca",
+                            text = stringResource(R.string.texto_marca),
                             color = Color(0x00FF1c1c1c)
                         )
                     },
@@ -246,7 +250,7 @@ fun formularioSuperiorMaquinaria(
                     onValueChange = { publicarMaquinariaViewModel.cambiarModelo_Maquinaria(it) },
                     placeholder = {
                         Text(
-                            text = "Modelo",
+                            text = stringResource(R.string.texto_modelo),
                             color = Color(0x00FF1c1c1c)
                         )
                     },
@@ -281,7 +285,7 @@ fun formularioSuperiorMaquinaria(
                     onValueChange = { publicarMaquinariaViewModel.cambiarAnio_Maquinaria(it) },
                     placeholder = {
                         Text(
-                            text = "Año",
+                            text = stringResource(R.string.texto_ano),
                             color = Color(0x00FF1c1c1c)
                         )
                     },
@@ -313,7 +317,7 @@ fun formularioSuperiorMaquinaria(
                     onValueChange = { publicarMaquinariaViewModel.cambiarNSerieBastidor_Maquinaria(it) },
                     placeholder = {
                         Text(
-                            text = "Nº de Bastidor",
+                            text = stringResource(R.string.texto_n_de_bastidor),
                             color = Color(0x00FF1c1c1c)
                         )
                     },
@@ -350,7 +354,7 @@ fun formularioSuperiorMaquinaria(
                     onValueChange = { publicarMaquinariaViewModel.cambiarTipoComb_Maquinaria(it) },
                     placeholder = {
                         Text(
-                            text = "Combustible",
+                            text = stringResource(R.string.texto_combustible),
                             color = Color(0x00FF1c1c1c)
                         )
                     },
@@ -372,7 +376,7 @@ fun formularioSuperiorMaquinaria(
                     trailingIcon = {
                         Icon(
                             imageVector = if (tiposCombustiblesDesplegado) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-                            contentDescription = "",
+                            contentDescription = stringResource(R.string.desc_icono_flecha_arriba_abajo),
                             modifier = Modifier.clickable {
                                 tiposCombustiblesDesplegado = !tiposCombustiblesDesplegado
                             }
@@ -434,7 +438,7 @@ fun formularioSuperiorMaquinaria(
                     onValueChange = { publicarMaquinariaViewModel.cambiarCiudad_Maquinaria(it) },
                     placeholder = {
                         Text(
-                            text = "Ciudad",
+                            text = stringResource(R.string.texto_ciudad),
                             color = Color(0x00FF1c1c1c)
                         )
                     },
@@ -465,7 +469,7 @@ fun formularioSuperiorMaquinaria(
                     onValueChange = { publicarMaquinariaViewModel.cambiarProvincia_Maquinaria(it) },
                     placeholder = {
                         Text(
-                            text = "Provincia",
+                            text = stringResource(R.string.texto_provincia),
                             color = Color(0x00FF1c1c1c)
                         )
                     },
@@ -500,7 +504,7 @@ fun formularioSuperiorMaquinaria(
                     onValueChange = { publicarMaquinariaViewModel.cambiarPrecio_Maquinaria(it) },
                     placeholder = {
                         Text(
-                            text = "Precio",
+                            text = stringResource(R.string.texto_precio),
                             color = Color(0x00FF1c1c1c)
                         )
                     },
@@ -544,7 +548,7 @@ fun formularioSuperiorMaquinaria(
                     onValueChange = { publicarMaquinariaViewModel.cambiarDescripcion_Maquinaria(it) },
                     placeholder = {
                         Text(
-                            text = "Descripción",
+                            text = stringResource(R.string.texto_descripcion_sinp),
                             color = Color(0x00FF1c1c1c)
                         )
                     },
@@ -589,7 +593,7 @@ fun formularioSuperiorMaquinaria(
                     .padding(12.dp)
             ) {
                 Text(
-                    text = "Añadir Imagen",
+                    text = stringResource(R.string.texto_anadir_imagen),
                     color = Color.Black,
                     style = MaterialTheme.typography.labelMedium
                 )

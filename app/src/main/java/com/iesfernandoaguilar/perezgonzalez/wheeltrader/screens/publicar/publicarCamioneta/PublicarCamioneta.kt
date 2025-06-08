@@ -47,6 +47,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -54,6 +55,7 @@ import androidx.compose.ui.unit.toSize
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.R
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Anuncio
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.ValorCaracteristica
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.ConectionUiState
@@ -84,13 +86,15 @@ fun PublicarCamioneta(
     }
 
     LazyColumn(
-        modifier = Modifier.fillMaxSize().background(
-            brush = Brush.linearGradient(
-                colors = listOf(Color.Black, Color(0xFF525151)),
-                start = Offset(0f, 0f),
-                end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                brush = Brush.linearGradient(
+                    colors = listOf(Color.Black, Color(0xFF525151)),
+                    start = Offset(0f, 0f),
+                    end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
+                )
             )
-        )
     ) {
         item{
             formularioSuperiorCamioneta(
@@ -156,7 +160,7 @@ fun PublicarCamioneta(
                         .padding(12.dp)
                 ) {
                     Text(
-                        text = "Publicar anuncio",
+                        text = stringResource(R.string.texto_publicar_anuncio),
                         color = Color.White,
                         style = MaterialTheme.typography.labelMedium
                     )
@@ -205,7 +209,7 @@ fun formularioSuperiorCamioneta(
                 .padding(16.dp)
         ) {
             Text(
-                text = "Especificaciones de\nla Camioneta",
+                text = stringResource(R.string.texto_especificaciones_de_la_camioneta),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.titleLarge,
                 color = Color.White
@@ -225,7 +229,7 @@ fun formularioSuperiorCamioneta(
                     onValueChange = { publicarCamionetaViewModel.cambiarMarca_Camioneta(it) },
                     placeholder = {
                         Text(
-                            text = "Marca",
+                            text = stringResource(R.string.texto_marca),
                             color = Color(0x00FF1c1c1c)
                         )
                     },
@@ -256,7 +260,7 @@ fun formularioSuperiorCamioneta(
                     onValueChange = { publicarCamionetaViewModel.cambiarModelo_Camioneta(it) },
                     placeholder = {
                         Text(
-                            text = "Modelo",
+                            text = stringResource(R.string.texto_modelo),
                             color = Color(0x00FF1c1c1c)
                         )
                     },
@@ -291,7 +295,7 @@ fun formularioSuperiorCamioneta(
                     onValueChange = { publicarCamionetaViewModel.cambiarAnio_Camioneta(it) },
                     placeholder = {
                         Text(
-                            text = "Año",
+                            text = stringResource(R.string.texto_ano),
                             color = Color(0x00FF1c1c1c)
                         )
                     },
@@ -323,7 +327,7 @@ fun formularioSuperiorCamioneta(
                     onValueChange = { publicarCamionetaViewModel.cambiarCv_Camioneta(it) },
                     placeholder = {
                         Text(
-                            text = "CV",
+                            text = stringResource(R.string.texto_cv),
                             color = Color(0x00FF1c1c1c)
                         )
                     },
@@ -359,7 +363,7 @@ fun formularioSuperiorCamioneta(
                     onValueChange = { publicarCamionetaViewModel.cambiarKm_Camioneta(it) },
                     placeholder = {
                         Text(
-                            text = "Kilometraje",
+                            text = stringResource(R.string.texto_kilometraje),
                             color = Color(0x00FF1c1c1c)
                         )
                     },
@@ -391,7 +395,7 @@ fun formularioSuperiorCamioneta(
                     onValueChange = { publicarCamionetaViewModel.cambiarCantMarchas_Camioneta(it) },
                     placeholder = {
                         Text(
-                            text = "Cant. de Marchas",
+                            text = stringResource(R.string.texto_cant_de_marchas),
                             color = Color(0x00FF1c1c1c)
                         )
                     },
@@ -427,7 +431,7 @@ fun formularioSuperiorCamioneta(
                     onValueChange = { publicarCamionetaViewModel.cambiarNBastidor_Camioneta(it) },
                     placeholder = {
                         Text(
-                            text = "Nº de Bastidor",
+                            text = stringResource(R.string.texto_n_de_bastidor),
                             color = Color(0x00FF1c1c1c)
                         )
                     },
@@ -459,7 +463,7 @@ fun formularioSuperiorCamioneta(
                     onValueChange = { publicarCamionetaViewModel.cambiarMatricula_Camioneta(it) },
                     placeholder = {
                         Text(
-                            text = "Matrícula",
+                            text = stringResource(R.string.texto_matricula),
                             color = Color(0x00FF1c1c1c)
                         )
                     },
@@ -494,7 +498,7 @@ fun formularioSuperiorCamioneta(
                     onValueChange = { publicarCamionetaViewModel.cambiarNPuertas_Camioneta(it) },
                     placeholder = {
                         Text(
-                            text = "Nº de Puertas",
+                            text = stringResource(R.string.texto_n_de_puertas),
                             color = Color(0x00FF1c1c1c)
                         )
                     },
@@ -526,7 +530,7 @@ fun formularioSuperiorCamioneta(
                     onValueChange = { publicarCamionetaViewModel.cambiarCapacidadCarga_Camioneta(it) },
                     placeholder = {
                         Text(
-                            text = "Carga Máxima (Kg)",
+                            text = stringResource(R.string.texto_carga_max),
                             color = Color(0x00FF1c1c1c)
                         )
                     },
@@ -563,7 +567,7 @@ fun formularioSuperiorCamioneta(
                     onValueChange = { publicarCamionetaViewModel.cambiarTipoComb_Camioneta(it) },
                     placeholder = {
                         Text(
-                            text = "Combustible",
+                            text = stringResource(R.string.texto_combustible),
                             color = Color(0x00FF1c1c1c)
                         )
                     },
@@ -585,7 +589,7 @@ fun formularioSuperiorCamioneta(
                     trailingIcon = {
                         Icon(
                             imageVector = if (tiposCombustiblesDesplegado) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-                            contentDescription = "",
+                            contentDescription = stringResource(R.string.desc_icono_flecha_arriba_abajo),
                             modifier = Modifier.clickable {
                                 tiposCombustiblesDesplegado = !tiposCombustiblesDesplegado
                             }
@@ -629,7 +633,7 @@ fun formularioSuperiorCamioneta(
                     onValueChange = { publicarCamionetaViewModel.cambiarTipoTraccion_Camioneta(it) },
                     placeholder = {
                         Text(
-                            text = "Transmisión",
+                            text = stringResource(R.string.texto_transmision),
                             color = Color(0x00FF1c1c1c)
                         )
                     },
@@ -651,7 +655,7 @@ fun formularioSuperiorCamioneta(
                     trailingIcon = {
                         Icon(
                             imageVector = if (tiposTraccionDesplegado) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-                            contentDescription = "",
+                            contentDescription = stringResource(R.string.desc_icono_flecha_arriba_abajo),
                             modifier = Modifier.clickable {
                                 tiposTraccionDesplegado = !tiposTraccionDesplegado
                             }
@@ -703,7 +707,7 @@ fun formularioSuperiorCamioneta(
                     onValueChange = { publicarCamionetaViewModel.cambiarCiudad_Camioneta(it) },
                     placeholder = {
                         Text(
-                            text = "Ciudad",
+                            text = stringResource(R.string.texto_ciudad),
                             color = Color(0x00FF1c1c1c)
                         )
                     },
@@ -734,7 +738,7 @@ fun formularioSuperiorCamioneta(
                     onValueChange = { publicarCamionetaViewModel.cambiarProvincia_Camioneta(it) },
                     placeholder = {
                         Text(
-                            text = "Provincia",
+                            text = stringResource(R.string.texto_provincia),
                             color = Color(0x00FF1c1c1c)
                         )
                     },
@@ -769,7 +773,7 @@ fun formularioSuperiorCamioneta(
                     onValueChange = { publicarCamionetaViewModel.cambiarPrecio_Camioneta(it) },
                     placeholder = {
                         Text(
-                            text = "Precio",
+                            text = stringResource(R.string.texto_precio),
                             color = Color(0x00FF1c1c1c)
                         )
                     },
@@ -813,7 +817,7 @@ fun formularioSuperiorCamioneta(
                     onValueChange = { publicarCamionetaViewModel.cambiarDescripcion_Camioneta(it) },
                     placeholder = {
                         Text(
-                            text = "Descripción",
+                            text = stringResource(R.string.texto_descripcion_sinp),
                             color = Color(0x00FF1c1c1c)
                         )
                     },
@@ -858,7 +862,7 @@ fun formularioSuperiorCamioneta(
                     .padding(12.dp)
             ) {
                 Text(
-                    text = "Añadir Imagen",
+                    text = stringResource(R.string.texto_anadir_imagen),
                     color = Color.Black,
                     style = MaterialTheme.typography.labelMedium
                 )

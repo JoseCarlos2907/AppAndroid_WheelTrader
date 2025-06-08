@@ -28,6 +28,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
@@ -80,7 +81,7 @@ fun Reg1Screen(
         ) {
             Image(
                 painter = painterResource(R.drawable.barrareg1),
-                contentDescription = null,
+                contentDescription = stringResource(R.string.desc_imagen_barra_registro_1),
                 modifier = Modifier.fillMaxSize()
             )
         }
@@ -94,7 +95,7 @@ fun Reg1Screen(
                 .weight(0.1f)
         ) {
             Text(
-                text = "Datos personales",
+                text = stringResource(R.string.texto_datos_personales),
                 style = MaterialTheme.typography.titleLarge,
                 color = Color.White
             )
@@ -168,7 +169,7 @@ fun Reg1Screen(
 
                 ) {
                     Text(
-                        text = "Siguiente",
+                        text = stringResource(R.string.texto_siguiente),
                         style = MaterialTheme.typography.labelMedium,
                         color = Color.Black
                     )
@@ -190,7 +191,7 @@ fun Reg1Screen(
                         modifier = Modifier.fillMaxSize()
                     ) {
                         Text(
-                            text = "Volver",
+                            text = stringResource(R.string.texto_volver),
                             style = MaterialTheme.typography.labelMedium,
                             color = Color.White
                         )

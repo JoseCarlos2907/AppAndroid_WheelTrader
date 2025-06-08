@@ -30,10 +30,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.R
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Reporte
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.ConectionUiState
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.app.AppViewModel
@@ -59,21 +61,25 @@ fun ReporteScreen(
     }
 
     Column(
-        modifier = modifier.fillMaxSize().background(
-            brush = Brush.linearGradient(
-                colors = listOf(Color.Black, Color(0xFF525151)),
-                start = Offset(0f, 0f),
-                end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
+        modifier = modifier
+            .fillMaxSize()
+            .background(
+                brush = Brush.linearGradient(
+                    colors = listOf(Color.Black, Color(0xFF525151)),
+                    start = Offset(0f, 0f),
+                    end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
+                )
             )
-        )
     ) {
         Row(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.weight(0.2F).fillMaxSize()
+            modifier = Modifier
+                .weight(0.2F)
+                .fillMaxSize()
         ) {
             Text(
-                text = "Reportar",
+                text = stringResource(R.string.texto_reportar),
                 style = MaterialTheme.typography.titleLarge,
                 color = Color.White,
                 textAlign = TextAlign.Center
@@ -85,21 +91,28 @@ fun ReporteScreen(
         ) {
             Card(
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
-                modifier = Modifier.fillMaxSize().padding(8.dp)
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(8.dp)
             ) {
                 Column(
                     verticalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.fillMaxSize().padding(12.dp)
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(12.dp)
                 ) {
                     Row(
-                        modifier = Modifier.fillMaxWidth().weight(0.2F).padding(8.dp)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(0.2F)
+                            .padding(8.dp)
                     ) {
                         OutlinedTextField(
                             value = reporteUiState.motivo,
                             onValueChange = { reporteViewModel.onMotivoChange(it) },
                             placeholder = {
                                 Text(
-                                    text = "Motivo",
+                                    text = stringResource(R.string.texto_motivo),
                                     color = Color(0x00FF1c1c1c)
                                 )
                             },
@@ -122,14 +135,17 @@ fun ReporteScreen(
                     }
 
                     Row(
-                        modifier = Modifier.fillMaxWidth().weight(0.5F).padding(8.dp)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(0.5F)
+                            .padding(8.dp)
                     ) {
                         OutlinedTextField(
                             value = reporteUiState.explicacion,
                             onValueChange = { reporteViewModel.onExplicacionChange(it) },
                             placeholder = {
                                 Text(
-                                    text = "Explicación",
+                                    text = stringResource(R.string.texto_explicacion),
                                     color = Color(0x00FF1c1c1c)
                                 )
                             },
@@ -160,7 +176,9 @@ fun ReporteScreen(
         Row(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.weight(0.2F).fillMaxSize()
+            modifier = Modifier
+                .weight(0.2F)
+                .fillMaxSize()
         ) {
             Button(
                 onClick = {
@@ -180,7 +198,7 @@ fun ReporteScreen(
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
             ) {
                 Text(
-                    text = "Reportar",
+                    text = stringResource(R.string.texto_reportar),
                     style = MaterialTheme.typography.labelMedium,
                     color = Color.White
                 )

@@ -23,9 +23,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.R
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.login.LoginUiState
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.login.LoginViewModel
 import kotlinx.coroutines.Dispatchers
@@ -51,21 +53,25 @@ fun RecuperarContrasenia2(
     }
 
     Column(
-        modifier = modifier.fillMaxSize().background(
-            brush = Brush.linearGradient(
-                colors = listOf(Color.Black, Color(0xFF525151)),
-                start = Offset(0f, 0f),
-                end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
+        modifier = modifier
+            .fillMaxSize()
+            .background(
+                brush = Brush.linearGradient(
+                    colors = listOf(Color.Black, Color(0xFF525151)),
+                    start = Offset(0f, 0f),
+                    end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
+                )
             )
-        )
     ) {
         Row(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.weight(0.15F).fillMaxSize()
+            modifier = Modifier
+                .weight(0.15F)
+                .fillMaxSize()
         ) {
             Text(
-                text = "Recuperar contraseña",
+                text = stringResource(R.string.texto_recuperar_contrasena),
                 style = MaterialTheme.typography.titleLarge,
                 color = Color.White,
                 textAlign = TextAlign.Center
@@ -75,10 +81,12 @@ fun RecuperarContrasenia2(
         Row(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.weight(0.3F).fillMaxSize()
+            modifier = Modifier
+                .weight(0.3F)
+                .fillMaxSize()
         ) {
             Text(
-                text = "Escribe el código que se te ha enviado por correo",
+                text = stringResource(R.string.texto_descripcion_recuperar_contrasena_2),
                 style = MaterialTheme.typography.labelMedium,
                 color = Color.White,
                 textAlign = TextAlign.Center
@@ -92,19 +100,23 @@ fun RecuperarContrasenia2(
         ) {
             Card(
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
-                modifier = Modifier.fillMaxWidth().padding(12.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(12.dp)
             ) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center,
-                    modifier = Modifier.fillMaxSize().padding(12.dp)
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(12.dp)
                 ) {
                     OutlinedTextField(
                         value = recuperarContraseniaUiState.codigo,
                         onValueChange = { recuperarContraseniaViewModel.onCodigoChange(it) },
                         placeholder = {
                             Text(
-                                text = "Código",
+                                text = stringResource(R.string.texto_codigo),
                                 color = Color(0x00FF1c1c1c)
                             )
                         },
@@ -131,7 +143,9 @@ fun RecuperarContrasenia2(
         Row(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.weight(0.2F).fillMaxSize()
+            modifier = Modifier
+                .weight(0.2F)
+                .fillMaxSize()
         ) {
             Button(
                 onClick = {
@@ -142,7 +156,7 @@ fun RecuperarContrasenia2(
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
             ) {
                 Text(
-                    text = "Siguiente",
+                    text = stringResource(R.string.texto_siguiente),
                     style = MaterialTheme.typography.labelMedium,
                     color = Color.Black
                 )

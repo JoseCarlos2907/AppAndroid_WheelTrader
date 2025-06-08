@@ -32,6 +32,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -97,13 +98,15 @@ fun NotificacionesScreen(
     }
 
     Column(
-        modifier = modifier.fillMaxSize().background(
-            brush = Brush.linearGradient(
-                colors = listOf(Color.Black, Color(0xFF525151)),
-                start = Offset(0f, 0f),
-                end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
+        modifier = modifier
+            .fillMaxSize()
+            .background(
+                brush = Brush.linearGradient(
+                    colors = listOf(Color.Black, Color(0xFF525151)),
+                    start = Offset(0f, 0f),
+                    end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
+                )
             )
-        )
     ) {
         LazyColumn(
             state = listState,
@@ -113,7 +116,10 @@ fun NotificacionesScreen(
             item {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth().height(60.dp).padding(top = 20.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(60.dp)
+                        .padding(top = 20.dp)
                 ) {
                     Text(
                         text = "Mis Notificaciones",
@@ -164,10 +170,14 @@ fun CardNotificacion(
 ){
     Card(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
-        modifier = modifier.height(160.dp).padding(6.dp)
+        modifier = modifier
+            .height(160.dp)
+            .padding(6.dp)
     ) {
         Row (
-            modifier = Modifier.fillMaxSize().padding(12.dp)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(12.dp)
         ){
             Column(
                 modifier = Modifier.weight(0.15F)
@@ -186,7 +196,9 @@ fun CardNotificacion(
                 modifier = Modifier.weight(0.85F)
             ) {
                 Row(
-                    modifier = Modifier.weight(0.2F).fillMaxWidth()
+                    modifier = Modifier
+                        .weight(0.2F)
+                        .fillMaxWidth()
                 ) {
                     Text(
                         text = notificacion.titulo!!,
@@ -198,7 +210,10 @@ fun CardNotificacion(
                 }
 
                 Row(
-                    modifier = Modifier.weight(0.5F).fillMaxWidth().padding(start = 6.dp)
+                    modifier = Modifier
+                        .weight(0.5F)
+                        .fillMaxWidth()
+                        .padding(start = 6.dp)
                 ) {
                     Text(
                         text = notificacion.mensaje!!,
@@ -211,7 +226,9 @@ fun CardNotificacion(
 
                 Row(
                     horizontalArrangement = Arrangement.End,
-                    modifier = Modifier.weight(0.3F).fillMaxWidth()
+                    modifier = Modifier
+                        .weight(0.3F)
+                        .fillMaxWidth()
                 ) {
                     if(!"OFERTA_RECHAZADA".equals(notificacion.tipo)){
                         Button(
@@ -237,7 +254,7 @@ fun CardNotificacion(
                             enabled = if ("RESPONDIDO".equals(notificacion.estado)) false else true
                         ) {
                             Text(
-                                text = if("OFERTA_ACEPTADA".equals(notificacion.tipo)) "Pagar" else "Ver Oferta",
+                                text = if("OFERTA_ACEPTADA".equals(notificacion.tipo)) stringResource(R.string.texto_pagar) else stringResource(R.string.texto_ver_oferta),
                                 style = MaterialTheme.typography.labelMedium,
                                 color = Color.Black
                             )

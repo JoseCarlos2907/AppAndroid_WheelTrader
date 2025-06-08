@@ -22,6 +22,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -38,23 +39,27 @@ fun Reg4Screen(
     Column(
         verticalArrangement = Arrangement.SpaceEvenly,
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier.fillMaxSize().background(
-            brush = Brush.linearGradient(
-                colors = listOf(Color.Black, Color(0xFF525151)),
-                start = Offset(0f, 0f),
-                end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
+        modifier = modifier
+            .fillMaxSize()
+            .background(
+                brush = Brush.linearGradient(
+                    colors = listOf(Color.Black, Color(0xFF525151)),
+                    start = Offset(0f, 0f),
+                    end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
+                )
             )
-        )
     ) {
         // Imagen barra de progreso
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
-            modifier = Modifier.weight(0.15f).padding(top = 50.dp, start = 35.dp, end = 35.dp)
+            modifier = Modifier
+                .weight(0.15f)
+                .padding(top = 50.dp, start = 35.dp, end = 35.dp)
         ) {
             Image(
                 painter = painterResource(R.drawable.barrareg4),
-                contentDescription = null,
+                contentDescription = stringResource(R.string.desc_imagen_barra_registro_4),
                 modifier = Modifier.fillMaxSize()
             )
         }
@@ -67,7 +72,7 @@ fun Reg4Screen(
         ) {
             Image(
                 painter = painterResource(R.drawable.imagenticksinfondo),
-                contentDescription = null,
+                contentDescription = stringResource(R.string.desc_imagen_tick),
                 modifier = Modifier.fillMaxSize()
             )
         }
@@ -76,10 +81,12 @@ fun Reg4Screen(
         Row(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxSize().weight(0.1f)
+            modifier = Modifier
+                .fillMaxSize()
+                .weight(0.1f)
         ) {
             Text(
-                text = "Registro Finalizado",
+                text = stringResource(R.string.texto_registro_finalizado),
                 style = MaterialTheme.typography.titleLarge,
                 color = Color.White
             )
@@ -91,7 +98,7 @@ fun Reg4Screen(
             modifier = Modifier.weight(0.3f)
         ) {
             Text(
-                text = "Se ha completado el registro, \n se te enviará un correo informativo",
+                text = stringResource(R.string.texto_descripcion_registro_completado),
                 style = MaterialTheme.typography.labelMedium,
                 textAlign = TextAlign.Center,
                 color = Color.White
@@ -102,7 +109,9 @@ fun Reg4Screen(
         Row(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxSize().weight(0.25f)
+            modifier = Modifier
+                .fillMaxSize()
+                .weight(0.25f)
         ) {
             Column(
                 verticalArrangement = Arrangement.SpaceEvenly,
@@ -114,10 +123,12 @@ fun Reg4Screen(
                         loginNavController.navigate(LoginScreens.Login.screenName)
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-                    modifier = Modifier.width(160.dp).height(40.dp)
+                    modifier = Modifier
+                        .width(160.dp)
+                        .height(40.dp)
                 ) {
                     Text(
-                        text = "Iniciar Sesión",
+                        text = stringResource(R.string.texto_iniciar_sesion),
                         style = MaterialTheme.typography.labelMedium,
                         color = Color.Black
                     )
