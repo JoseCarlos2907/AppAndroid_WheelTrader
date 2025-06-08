@@ -13,17 +13,21 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -32,6 +36,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -48,6 +53,7 @@ import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.app.AppScreen
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.app.AppViewModel
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.app.AppViewModelFactory
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.login.LoginScreen
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.login.LoginScreens
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.login.LoginViewModel
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.login.LoginViewModelFactory
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.ui.theme.WheelTraderTheme
@@ -221,36 +227,93 @@ fun AlertConexion(
 
     AlertDialog(
         onDismissRequest = onCancel,
-        title = { Text("Configuración del servidor") },
+        title = {
+            Text("Configuración del servidor")
+        },
         text = {
             Column {
-                TextField(
+                OutlinedTextField(
                     value = direccion,
                     onValueChange = { direccion = it },
-                    label = { Text("Dirección") }
+                    placeholder = {
+                        Text(
+                            text = "Dirección",
+                            color = Color(0x00FF1c1c1c)
+                        )
+                    },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    enabled = true,
+                    singleLine = true,
+                    colors = TextFieldDefaults.colors(
+                        unfocusedContainerColor = Color.White,
+                        focusedContainerColor = Color.White,
+                        cursorColor = Color(0x00FF1c1c1c),
+                        focusedTextColor = Color(0x00FF1c1c1c),
+                        unfocusedTextColor = Color(0x00FF1c1c1c),
+                        focusedLabelColor = Color(0x00FF1c1c1c),
+                        unfocusedLabelColor = Color(0x00FF1c1c1c),
+                        unfocusedIndicatorColor = Color.Transparent,
+                        focusedIndicatorColor = Color.Transparent
+                    ),
+                    shape = RoundedCornerShape(22.dp)
                 )
-                TextField(
+
+                OutlinedTextField(
                     value = puerto,
                     onValueChange = { puerto = it },
-                    label = { Text("Puerto") },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                    placeholder = {
+                        Text(
+                            text = "Puerto",
+                            color = Color(0x00FF1c1c1c)
+                        )
+                    },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    enabled = true,
+                    singleLine = true,
+                    colors = TextFieldDefaults.colors(
+                        unfocusedContainerColor = Color.White,
+                        focusedContainerColor = Color.White,
+                        cursorColor = Color(0x00FF1c1c1c),
+                        focusedTextColor = Color(0x00FF1c1c1c),
+                        unfocusedTextColor = Color(0x00FF1c1c1c),
+                        focusedLabelColor = Color(0x00FF1c1c1c),
+                        unfocusedLabelColor = Color(0x00FF1c1c1c),
+                        unfocusedIndicatorColor = Color.Transparent,
+                        focusedIndicatorColor = Color.Transparent
+                    ),
+                    shape = RoundedCornerShape(22.dp)
                 )
             }
         },
         confirmButton = {
-            Button (onClick = {
-                if (!direccion.isEmpty() && !puerto.isEmpty()) {
-                    onConnect(direccion, puerto.toInt())
-                }
-            }) {
-                Text("Conectar")
+            Button(
+                onClick = {
+                    if (!direccion.isEmpty() && !puerto.isEmpty()) {
+                        onConnect(direccion, puerto.toInt())
+                    }
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+            ) {
+                Text(
+                    text = "Conectar",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = Color.Black
+                )
             }
         },
         dismissButton = {
-            Button(onClick = onCancel) {
-                Text("Cancelar")
+            Button(
+                onClick = { onCancel() },
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
+            ) {
+                Text(
+                    text = "Cancelar",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = Color.White
+                )
             }
-        }
+        },
+        containerColor = MaterialTheme.colorScheme.primaryContainer
     )
 }
 

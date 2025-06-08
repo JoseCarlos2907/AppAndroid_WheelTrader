@@ -37,11 +37,13 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.R
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.filtros.FiltroCoche
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.filtros.FiltroMaquinaria
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros.FiltrosViewModel
@@ -81,7 +83,7 @@ fun FiltroMaquinaria(
                 .weight(0.15F)
         ) {
             Text(
-                text = "Filtro de coches",
+                text = stringResource(R.string.texto_filtro_de_maquinaria),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.titleLarge,
                 color = Color.White
@@ -106,7 +108,7 @@ fun FiltroMaquinaria(
                         onValueChange = { filtroMaquinariaViewModel.cambiarMarca_Maquinaria(it) },
                         placeholder = {
                             Text(
-                                text = "Marca",
+                                text = stringResource(R.string.texto_marca),
                                 color = Color(0x00FF1c1c1c)
                             )
                         },
@@ -137,7 +139,7 @@ fun FiltroMaquinaria(
                         onValueChange = { filtroMaquinariaViewModel.cambiarModelo_Maquinaria(it) },
                         placeholder = {
                             Text(
-                                text = "Modelo",
+                                text = stringResource(R.string.texto_modelo),
                                 color = Color(0x00FF1c1c1c)
                             )
                         },
@@ -174,7 +176,7 @@ fun FiltroMaquinaria(
                         onValueChange = { filtroMaquinariaViewModel.cambiarAnioMin_Maquinaria(it) },
                         placeholder = {
                             Text(
-                                text = "Año Mínimo",
+                                text = stringResource(R.string.texto_ano_minimo),
                                 color = Color(0x00FF1c1c1c)
                             )
                         },
@@ -206,7 +208,7 @@ fun FiltroMaquinaria(
                         onValueChange = { filtroMaquinariaViewModel.cambiarAnioMax_Maquinaria(it) },
                         placeholder = {
                             Text(
-                                text = "Año Máximo",
+                                text = stringResource(R.string.texto_ano_maximo),
                                 color = Color(0x00FF1c1c1c)
                             )
                         },
@@ -244,7 +246,7 @@ fun FiltroMaquinaria(
                         onValueChange = { filtroMaquinariaViewModel.cambiarCiudad_Maquinaria(it) },
                         placeholder = {
                             Text(
-                                text = "Ciudad",
+                                text = stringResource(R.string.texto_ciudad),
                                 color = Color(0x00FF1c1c1c)
                             )
                         },
@@ -275,7 +277,7 @@ fun FiltroMaquinaria(
                         onValueChange = { filtroMaquinariaViewModel.cambiarProvincia_Maquinaria(it) },
                         placeholder = {
                             Text(
-                                text = "Provincia",
+                                text = stringResource(R.string.texto_provincia),
                                 color = Color(0x00FF1c1c1c)
                             )
                         },
@@ -312,7 +314,7 @@ fun FiltroMaquinaria(
                         onValueChange = { filtroMaquinariaViewModel.cambiarTipoComb_Maquinaria(it) },
                         placeholder = {
                             Text(
-                                text = "Combustible",
+                                text = stringResource(R.string.texto_combustible),
                                 color = Color(0x00FF1c1c1c)
                             )
                         },
@@ -334,7 +336,7 @@ fun FiltroMaquinaria(
                         trailingIcon = {
                             Icon(
                                 imageVector = if (tiposCombustiblesDesplegado) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-                                contentDescription = "",
+                                contentDescription = stringResource(R.string.desc_icono_flecha_arriba_abajo),
                                 modifier = Modifier.clickable {
                                     tiposCombustiblesDesplegado = !tiposCombustiblesDesplegado
                                 }
@@ -408,7 +410,7 @@ fun FiltroMaquinaria(
                 modifier = Modifier.width(300.dp)
             ) {
                 Text(
-                    text = "Buscar",
+                    text = stringResource(R.string.texto_buscar),
                     color = Color.White,
                     style = MaterialTheme.typography.labelMedium
                 )

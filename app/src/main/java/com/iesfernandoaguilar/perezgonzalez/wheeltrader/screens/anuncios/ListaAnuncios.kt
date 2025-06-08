@@ -1,7 +1,6 @@
 package com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.anuncios
 
 import android.graphics.BitmapFactory
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -12,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -36,22 +36,16 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavController
-import coil.ImageLoader
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.R
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Anuncio
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.ConectionUiState
-import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.app.AppScreens
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.app.AppViewModel
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros.FiltrosUiState
-import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros.FiltrosViewModel
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.ui.theme.WheelTraderTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -71,10 +65,16 @@ fun ListaAnuncios(
 
     LaunchedEffect(listState) {
         snapshotFlow {
+            // Obtengo el índicce del último anuncio visible
             val ultimoAnuncioVisible = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
+            // Obtengo la cantidad total de anuncios
             val anunciosTotales = listState.layoutInfo.totalItemsCount
             ultimoAnuncioVisible to anunciosTotales
         }.collect{(ultimoAnuncioVisible, anunciosTotales) ->
+            // Se comprueba que el último anuncio visible no sea nulo,
+            // Cuando el último anuncio visible esté en la última posición (ya que puede ser el 3 el último visible siendo 10 elementos en total)
+            // Que no esté cargando
+            // Y que haya anuncios en la base de datos para seguir pidiendo, si no hay más se pone el valor a true para evitar que entre porque no hay más para cargar
             if(ultimoAnuncioVisible != null && ultimoAnuncioVisible >= anunciosTotales-1 && !appUiState.cargando && !appUiState.noHayMasAnuncios){
                 withContext(Dispatchers.IO){
                     appViewModel.obtenerAnuncios(filtrosUiState.filtro, false)
@@ -105,18 +105,16 @@ fun ListaAnuncios(
     }
 
     Column(
-        modifier = modifier.fillMaxSize().background(
-            brush = Brush.linearGradient(
-                colors = listOf(Color.Black, Color(0xFF525151)),
-                start = Offset(0f, 0f),
-                end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
+        modifier = modifier
+            .fillMaxSize()
+            .background(
+                brush = Brush.linearGradient(
+                    colors = listOf(Color.Black, Color(0xFF525151)),
+                    start = Offset(0f, 0f),
+                    end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
+                )
             )
-        )
     ) {
-        Text(
-            text = "Total anuncios: ${appUiState.anunciosEncontrados.size}",
-            color = Color.White
-        )
 
         LazyColumn(
             state = listState,
@@ -149,9 +147,12 @@ fun ListaAnuncios(
                 item{
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
+                        horizontalArrangement = Arrangement.Center,
+                        modifier = Modifier.fillMaxSize()
                     ) {
-                        CircularProgressIndicator()
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(16.dp)
+                        )
                     }
                 }
             }
@@ -187,38 +188,48 @@ fun CardAnuncio(
     }
 
     Row(
-        modifier = modifier.fillMaxWidth().padding(16.dp)
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(16.dp)
     ) {
         Card(
             onClick = { onClickAnuncio() },
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
-            modifier = Modifier.fillMaxSize().height(320.dp)
+            modifier = Modifier
+                .fillMaxSize()
+                .height(320.dp)
         ) {
             Column(
                 modifier = Modifier.fillMaxSize()
             ) {
                 Row(
                     horizontalArrangement = Arrangement.Center,
-                    modifier = Modifier.fillMaxWidth().padding(12.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(12.dp)
                 ) {
                     imagenByteArray(bytesImagen)
                 }
 
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(12.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(12.dp)
                 ) {
                     Text(
-                        text = "${marca} | ${modelo}",
+                        text = stringResource(R.string.texto_marca_modelo, marca, modelo),
                         style = MaterialTheme.typography.headlineMedium,
                         color = MaterialTheme.colorScheme.primary
                     )
                 }
 
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(12.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(12.dp)
                 ) {
                     Text(
-                        text = String.format("%.1f€", anuncio.precio),
+                        text = stringResource(R.string.precio, anuncio.precio),
                         style = MaterialTheme.typography.bodyMedium,
                         color = Color.White
                     )
@@ -226,21 +237,34 @@ fun CardAnuncio(
 
                 Row (
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.fillMaxWidth().padding(start = 12.dp, end = 12.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 12.dp, end = 12.dp)
                 ){
                     Text(
-                        text = if (!"Maquinaria".equals(anuncio.tipoVehiculo)) "${anuncio.tipoVehiculo} - ${anio} - ${km}" else "${anuncio.tipoVehiculo} - ${anio}",
+                        text = if (!"Maquinaria".equals(anuncio.tipoVehiculo)) stringResource(
+                            R.string.caracteristicas_anuncio,
+                            anuncio.tipoVehiculo!!,
+                            anio,
+                            km
+                        ) else stringResource(
+                            R.string.caracteristicas_anuncio_maquinaria,
+                            anuncio.tipoVehiculo!!,
+                            anio
+                        ),
                         style = MaterialTheme.typography.bodyMedium,
                         color = Color.White
                     )
 
                     Icon(
                         painter = if (isGuardado) painterResource(R.drawable.iconoguardado) else painterResource(R.drawable.iconoguardar),
-                        contentDescription = "",
-                        modifier = Modifier.height(60.dp).clickable(onClick = {
-                            isGuardado = !isGuardado
-                            onClickGuardar()
-                        }),
+                        contentDescription = stringResource(R.string.desc_icono_guardado_o_no_guardado),
+                        modifier = Modifier
+                            .height(60.dp)
+                            .clickable(onClick = {
+                                isGuardado = !isGuardado
+                                onClickGuardar()
+                            }),
                         tint = Color.White
                     )
                 }
@@ -262,7 +286,7 @@ fun imagenByteArray(
         val imagenBitmap = it.asImageBitmap()
         Image(
             bitmap = imagenBitmap,
-            contentDescription = "",
+            contentDescription = stringResource(R.string.desc_imagen_de_anuncio_ba),
             modifier = Modifier.height(150.dp)
         )
     }

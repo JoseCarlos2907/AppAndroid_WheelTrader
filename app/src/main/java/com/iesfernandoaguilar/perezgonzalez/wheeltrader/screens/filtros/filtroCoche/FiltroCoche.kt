@@ -41,11 +41,13 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.R
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.filtros.FiltroCoche
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.filtros.FiltroTodo
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros.FiltrosViewModel
@@ -88,7 +90,7 @@ fun FiltroCoche(
                 .weight(0.15F)
         ) {
             Text(
-                text = "Filtro de coches",
+                text = stringResource(R.string.texto_filtro_de_coches),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.titleLarge,
                 color = Color.White
@@ -113,7 +115,7 @@ fun FiltroCoche(
                         onValueChange = { filtroCocheViewModel.cambiarMarca_Coche(it) },
                         placeholder = {
                             Text(
-                                text = "Marca",
+                                text = stringResource(R.string.texto_marca),
                                 color = Color(0x00FF1c1c1c)
                             )
                         },
@@ -144,7 +146,7 @@ fun FiltroCoche(
                         onValueChange = { filtroCocheViewModel.cambiarModelo_Coche(it) },
                         placeholder = {
                             Text(
-                                text = "Modelo",
+                                text = stringResource(R.string.texto_modelo),
                                 color = Color(0x00FF1c1c1c)
                             )
                         },
@@ -181,7 +183,7 @@ fun FiltroCoche(
                         onValueChange = { filtroCocheViewModel.cambiarAnioMin_Coche(it) },
                         placeholder = {
                             Text(
-                                text = "Año Mínimo",
+                                text = stringResource(R.string.texto_ano_minimo),
                                 color = Color(0x00FF1c1c1c)
                             )
                         },
@@ -213,7 +215,7 @@ fun FiltroCoche(
                         onValueChange = { filtroCocheViewModel.cambiarAnioMax_Coche(it) },
                         placeholder = {
                             Text(
-                                text = "Año Máximo",
+                                text = stringResource(R.string.texto_ano_maximo),
                                 color = Color(0x00FF1c1c1c)
                             )
                         },
@@ -251,7 +253,7 @@ fun FiltroCoche(
                         onValueChange = { filtroCocheViewModel.cambiarCvMinimo_Coche(it) },
                         placeholder = {
                             Text(
-                                text = "CV Mínimo",
+                                text = stringResource(R.string.texto_cv_minimo),
                                 color = Color(0x00FF1c1c1c)
                             )
                         },
@@ -283,7 +285,7 @@ fun FiltroCoche(
                         onValueChange = { filtroCocheViewModel.cambiarCvMaximo_Coche(it) },
                         placeholder = {
                             Text(
-                                text = "CV Máximo",
+                                text = stringResource(R.string.texto_cv_maximo),
                                 color = Color(0x00FF1c1c1c)
                             )
                         },
@@ -321,7 +323,7 @@ fun FiltroCoche(
                         onValueChange = { filtroCocheViewModel.cambiarCiudad_Coche(it) },
                         placeholder = {
                             Text(
-                                text = "Ciudad",
+                                text = stringResource(R.string.texto_ciudad),
                                 color = Color(0x00FF1c1c1c)
                             )
                         },
@@ -352,7 +354,7 @@ fun FiltroCoche(
                         onValueChange = { filtroCocheViewModel.cambiarProvincia_Coche(it) },
                         placeholder = {
                             Text(
-                                text = "Provincia",
+                                text = stringResource(R.string.texto_provincia),
                                 color = Color(0x00FF1c1c1c)
                             )
                         },
@@ -389,7 +391,7 @@ fun FiltroCoche(
                         onValueChange = { filtroCocheViewModel.cambiarKmMinimo_Coche(it) },
                         placeholder = {
                             Text(
-                                text = "Km mínimo",
+                                text = stringResource(R.string.texto_km_minimo),
                                 color = Color(0x00FF1c1c1c)
                             )
                         },
@@ -421,7 +423,7 @@ fun FiltroCoche(
                         onValueChange = { filtroCocheViewModel.cambiarKmMaximo_Coche(it) },
                         placeholder = {
                             Text(
-                                text = "Km máximo",
+                                text = stringResource(R.string.texto_km_maximo),
                                 color = Color(0x00FF1c1c1c)
                             )
                         },
@@ -459,7 +461,7 @@ fun FiltroCoche(
                         onValueChange = { filtroCocheViewModel.cambiarCantMarchas_Coche(it) },
                         placeholder = {
                             Text(
-                                text = "Cant. de Marchas",
+                                text = stringResource(R.string.texto_cant_de_marchas),
                                 color = Color(0x00FF1c1c1c)
                             )
                         },
@@ -491,7 +493,7 @@ fun FiltroCoche(
                         onValueChange = { filtroCocheViewModel.cambiarNPuertas_Coche(it) },
                         placeholder = {
                             Text(
-                                text = "Nº de Puertas",
+                                text = stringResource(R.string.texto_n_de_puertas),
                                 color = Color(0x00FF1c1c1c)
                             )
                         },
@@ -529,7 +531,7 @@ fun FiltroCoche(
                         onValueChange = { filtroCocheViewModel.cambiarTipoComb_Coche(it) },
                         placeholder = {
                             Text(
-                                text = "Combustible",
+                                text = stringResource(R.string.texto_combustible),
                                 color = Color(0x00FF1c1c1c)
                             )
                         },
@@ -551,7 +553,7 @@ fun FiltroCoche(
                         trailingIcon = {
                             Icon(
                                 imageVector = if (tiposCombustiblesDesplegado) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-                                contentDescription = "",
+                                contentDescription = stringResource(R.string.desc_icono_flecha_arriba_abajo),
                                 modifier = Modifier.clickable {
                                     tiposCombustiblesDesplegado = !tiposCombustiblesDesplegado
                                 }
@@ -595,7 +597,7 @@ fun FiltroCoche(
                         onValueChange = { filtroCocheViewModel.cambiarTransmision_Coche(it) },
                         placeholder = {
                             Text(
-                                text = "Transmisión",
+                                text = stringResource(R.string.texto_transmision),
                                 color = Color(0x00FF1c1c1c)
                             )
                         },
@@ -617,7 +619,7 @@ fun FiltroCoche(
                         trailingIcon = {
                             Icon(
                                 imageVector = if (transmisionDesplegado) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-                                contentDescription = "",
+                                contentDescription = stringResource(R.string.desc_icono_flecha_arriba_abajo),
                                 modifier = Modifier.clickable {
                                     transmisionDesplegado = !transmisionDesplegado
                                 }
@@ -688,7 +690,7 @@ fun FiltroCoche(
                 modifier = Modifier.width(300.dp)
             ) {
                 Text(
-                    text = "Buscar",
+                    text = stringResource(R.string.texto_buscar),
                     color = Color.White,
                     style = MaterialTheme.typography.labelMedium
                 )

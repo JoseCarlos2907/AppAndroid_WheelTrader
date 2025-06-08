@@ -19,6 +19,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.R
@@ -31,32 +32,39 @@ fun AdminFailScreen(
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier.fillMaxSize().background(
-            brush = Brush.linearGradient(
-                colors = listOf(Color.Black, Color(0xFF525151)),
-                start = Offset(0f, 0f),
-                end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
+        modifier = modifier
+            .fillMaxSize()
+            .background(
+                brush = Brush.linearGradient(
+                    colors = listOf(Color.Black, Color(0xFF525151)),
+                    start = Offset(0f, 0f),
+                    end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
+                )
             )
-        ).padding(12.dp)
+            .padding(12.dp)
     ) {
         Row(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth().weight(0.3F)
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(0.3F)
         ) {
             Image(
                 painter = painterResource(R.drawable.iconoadvertencia),
-                contentDescription = ""
+                contentDescription = stringResource(R.string.desc_icono_advertencia)
             )
         }
 
         Row(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth().weight(0.1F)
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(0.1F)
         ) {
             Text(
-                text = "Hola Moderador",
+                text = stringResource(R.string.texto_bienvenida_moderador),
                 style = MaterialTheme.typography.titleLarge,
                 color = Color.White,
                 textAlign = TextAlign.Center
@@ -66,10 +74,12 @@ fun AdminFailScreen(
         Row(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth().weight(0.2F)
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(0.2F)
         ) {
             Text(
-                text = "Esta funcionalidad no está disponible en la aplicación de móvil, por favor, accede desde la aplicación de escritorio para poder gestionar los usuarios y los anuncios",
+                text = stringResource(R.string.texto_advertencia_admin),
                 style = MaterialTheme.typography.labelMedium,
                 color = Color.White,
                 textAlign = TextAlign.Center
@@ -79,14 +89,16 @@ fun AdminFailScreen(
         Row(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth().weight(0.2F)
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(0.2F)
         ) {
             Button(
                 onClick = { onClickCerrarSesion() },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
             ) {
                 Text(
-                    text = "Cerrar Sesión",
+                    text = stringResource(R.string.texto_cerrar_sesion),
                     style = MaterialTheme.typography.labelMedium,
                     color = Color.White
                 )

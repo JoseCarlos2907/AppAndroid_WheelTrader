@@ -1,38 +1,26 @@
 package com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.anuncios
 
-import android.graphics.BitmapFactory
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Divider
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -46,35 +34,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavController
-import coil.ImageLoader
 import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.R
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Anuncio
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Reporte
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.ConectionUiState
-import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.app.AppScreens
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.app.AppViewModel
-import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros.FiltrosUiState
-import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros.FiltrosViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @Composable
 fun DetalleAnuncio(
@@ -86,7 +59,6 @@ fun DetalleAnuncio(
     modifier: Modifier = Modifier
 ) {
     val appUiState by appViewModel.uiState.collectAsState()
-    // var anuncio = Anuncio(provincia = "pr", ciudad = "ciu", estado = "est", precio = 0.01, guardado = true, descripcion = "desc", tipoVehiculo = "tipo", fechaPublicacion = null, fechaExpiracion = null, numSerieBastidor = "serie", matricula = "mat", vendedor = null, venta = null)
 
     DisposableEffect(Unit) {
         onDispose {
@@ -194,13 +166,14 @@ fun DetallesVehiculo(
                 modifier = Modifier.fillMaxSize()
             ){
                 Text(
-                    text = "${marca} | ${modelo}",
+                    text = stringResource(R.string.texto_marca_modelo, marca, modelo),
                     style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.primary,
                     textAlign = TextAlign.Center,
                     modifier = Modifier
                         .fillMaxWidth()
                         .align(Alignment.Center)
+                        .padding(top = 12.dp)
                 )
 
                 IconButton (
@@ -218,7 +191,7 @@ fun DetallesVehiculo(
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.iconoreporte),
-                        contentDescription = "",
+                        contentDescription = stringResource(R.string.desc_icono_reportar),
                         tint = if(conectionUiState.usuario!!.idUsuario == anuncio.vendedor!!.idUsuario) Color.Gray else Color.Red,
                         modifier = Modifier.size(24.dp)
                     )
@@ -239,7 +212,9 @@ fun DetallesVehiculo(
                 if (!imagenes.isEmpty()) {
                     ImagenAsync(
                         bytes = imagenes.get(posImagen),
-                        modifier = Modifier.height(200.dp).align(Alignment.Center)
+                        modifier = Modifier
+                            .height(200.dp)
+                            .align(Alignment.Center)
                     )
                 } else {
                     CircularProgressIndicator()
@@ -257,11 +232,13 @@ fun DetallesVehiculo(
                         bottomEnd = 16.dp
                     ),
                     color = if(posImagen < 1) Color.LightGray else MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(width = 36.dp, height = 60.dp).align(Alignment.CenterStart)
+                    modifier = Modifier
+                        .size(width = 36.dp, height = 60.dp)
+                        .align(Alignment.CenterStart)
                 ) {
                     Image(
                         painter = painterResource(R.drawable.iconoflechaizqgris),
-                        contentDescription = "",
+                        contentDescription = stringResource(R.string.desc_icono_flecha_izquierda_gris),
                         modifier = Modifier.padding(4.dp)
                     )
                 }
@@ -278,11 +255,13 @@ fun DetallesVehiculo(
                     ),
                     enabled = if(posImagen > imagenes.size-2) false else true,
                     color = if(posImagen > imagenes.size-2) Color.LightGray else MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(width = 36.dp, height = 60.dp).align(Alignment.CenterEnd)
+                    modifier = Modifier
+                        .size(width = 36.dp, height = 60.dp)
+                        .align(Alignment.CenterEnd)
                 ) {
                     Image(
                         painter = painterResource(R.drawable.iconoflechadrcgris),
-                        contentDescription = "",
+                        contentDescription = stringResource(R.string.desc_icono_flecha_derecha_gris),
                         modifier = Modifier.padding(4.dp)
                     )
                 }
@@ -304,7 +283,7 @@ fun DetallesVehiculo(
 
             if(anuncio.vendedor != null){
                 Text(
-                    text = "De ${anuncio.vendedor!!.nombreUsuario}",
+                    text = stringResource(R.string.de_propietario, anuncio.vendedor!!.nombreUsuario),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.primary
                 )
@@ -331,7 +310,7 @@ fun DetallesVehiculo(
                             .weight(0.5F)
                     ) {
                         Text(
-                            text = anuncio.precio.toString() + "€",
+                            text = stringResource(R.string.precio, anuncio.precio),
                             style = MaterialTheme.typography.headlineMedium,
                             color = Color.Black
                         )
@@ -350,22 +329,11 @@ fun DetallesVehiculo(
                             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                         ) {
                             Text(
-                                text = "Comprar",
+                                text = stringResource(R.string.comprar),
                                 style = MaterialTheme.typography.labelMedium,
                                 color = Color.Black
                             )
                         }
-
-                        /*Button(
-                            onClick = { /* TODO: Función de reunión */ },
-                            colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
-                        ) {
-                            Text(
-                                text = "Reunión",
-                                style = MaterialTheme.typography.labelMedium,
-                                color = Color.White
-                            )
-                        }*/
                     }
                 }
             }
@@ -385,7 +353,7 @@ fun DetallesVehiculo(
                         .padding(6.dp)
                 ) {
                     Text(
-                        text = "Descripción:",
+                        text = stringResource(R.string.descripcion),
                         style = MaterialTheme.typography.bodyMedium,
                         color = Color.Black,
                         modifier = Modifier.padding(bottom = 4.dp)
@@ -412,8 +380,8 @@ fun ImagenAsync(
         model = bytes,
         contentDescription = null,
         modifier = modifier,
-        placeholder = painterResource(R.drawable.iconopwvisible),
-        error = painterResource(R.drawable.iconopwnovisible),
+        placeholder = painterResource(R.drawable.iconocargando),
+        error = painterResource(R.drawable.iconoerrorimagen),
         contentScale = ContentScale.Crop
     )
 }

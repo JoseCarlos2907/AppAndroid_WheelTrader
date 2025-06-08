@@ -52,11 +52,13 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewModelScope
 import com.github.gcacace.signaturepad.views.SignaturePad
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.R
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.ConectionUiState
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.app.AppViewModel
 import com.itextpdf.io.image.ImageData
@@ -90,8 +92,6 @@ fun CompraCompradorScreen(
     val campoFirma = remember { SignaturePad(context, null) }
 
     LaunchedEffect(Unit) {
-        // bitmaps = paginasPDF(pdfFile)
-        // copyPdfFromAssets(context, "prueba_Python_27_02_25.pdf")
         bitmaps = paginasPDF(File(context.cacheDir, "Temp_Aplanado.pdf"))
     }
 
@@ -109,23 +109,28 @@ fun CompraCompradorScreen(
     }
 
     LazyColumn(
-        modifier = modifier.fillMaxSize().background(
-            brush = Brush.linearGradient(
-                colors = listOf(Color.Black, Color(0xFF525151)),
-                start = Offset(0f, 0f),
-                end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
+        modifier = modifier
+            .fillMaxSize()
+            .background(
+                brush = Brush.linearGradient(
+                    colors = listOf(Color.Black, Color(0xFF525151)),
+                    start = Offset(0f, 0f),
+                    end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
+                )
             )
-        )
     ) {
         item{
             if(bitmaps.isNotEmpty()){
                 Row(
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth().height(60.dp).padding(top = 20.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(60.dp)
+                        .padding(top = 20.dp)
                 ) {
                     Text(
-                        text = "Documento de acuerdo",
+                        text = stringResource(R.string.documento_de_acuerdo),
                         color = Color.White,
                         style = MaterialTheme.typography.titleLarge,
                         textAlign = TextAlign.Center,
@@ -133,7 +138,10 @@ fun CompraCompradorScreen(
                     )
                 }
                 Row(
-                    modifier = Modifier.horizontalScroll(rememberScrollState()).padding(12.dp).height(480.dp)
+                    modifier = Modifier
+                        .horizontalScroll(rememberScrollState())
+                        .padding(12.dp)
+                        .height(480.dp)
                 ) {
                     bitmaps.forEach{ bitmap ->
                         Column(
@@ -141,25 +149,27 @@ fun CompraCompradorScreen(
                         ) {
                             Image(
                                 bitmap = bitmap.asImageBitmap(),
-                                contentDescription = null,
-                                modifier = Modifier.padding(12.dp).background(color = Color.White).fillMaxSize()
+                                contentDescription = stringResource(R.string.des_imagen_pagina_pdf),
+                                modifier = Modifier
+                                    .padding(12.dp)
+                                    .background(color = Color.White)
+                                    .fillMaxSize()
                             )
                         }
                     }
                 }
-            }else{
-                Text(
-                    text = "Casi"
-                )
             }
 
             Row(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth().height(60.dp).padding(top = 12.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(60.dp)
+                    .padding(top = 12.dp)
             ) {
                 Text(
-                    text = "Precio total",
+                    text = stringResource(R.string.texto_precio_total),
                     color = Color.White,
                     style = MaterialTheme.typography.titleLarge,
                     textAlign = TextAlign.Center,
@@ -168,17 +178,23 @@ fun CompraCompradorScreen(
             }
 
             Row(
-                modifier = Modifier.fillMaxWidth().height(200.dp).padding(top = 16.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+                    .padding(top = 16.dp)
             ) {
                 Column(
                     modifier = Modifier.padding(horizontal = 20.dp)
                 ) {
                     Row(
                         horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier.fillMaxWidth().weight(0.3F).padding(horizontal = 20.dp)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(0.3F)
+                            .padding(horizontal = 20.dp)
                     ) {
                         Text(
-                            text = "Precio vehículo",
+                            text = stringResource(R.string.texto_precio_vehiculo),
                             color = Color.White,
                             style = MaterialTheme.typography.labelMedium
                         )
@@ -192,10 +208,13 @@ fun CompraCompradorScreen(
 
                     Row(
                         horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier.fillMaxWidth().weight(0.3F).padding(horizontal = 20.dp)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(0.3F)
+                            .padding(horizontal = 20.dp)
                     ) {
                         Text(
-                            text = "Comisión (5%)",
+                            text = stringResource(R.string.texto_comision),
                             color = Color.White,
                             style = MaterialTheme.typography.labelMedium
                         )
@@ -215,10 +234,13 @@ fun CompraCompradorScreen(
 
                     Row(
                         horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier.fillMaxWidth().weight(0.3F).padding(horizontal = 20.dp)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(0.3F)
+                            .padding(horizontal = 20.dp)
                     ) {
                         Text(
-                            text = "Precio total",
+                            text = stringResource(R.string.texto_precio_total),
                             color = Color.White,
                             style = MaterialTheme.typography.labelMedium
                         )
@@ -236,10 +258,12 @@ fun CompraCompradorScreen(
             Row(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth().height(60.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(60.dp)
             ) {
                 Text(
-                    text = "Firma",
+                    text = stringResource(R.string.texto_firma),
                     color = Color.White,
                     style = MaterialTheme.typography.titleLarge,
                     textAlign = TextAlign.Center,
@@ -248,12 +272,14 @@ fun CompraCompradorScreen(
             }
 
             Row(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
                     .height(220.dp)
                     .padding(horizontal = 16.dp)
             ) {
                 Box(
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier
+                        .fillMaxSize()
                         .background(color = Color.White)
                 ) {
                     AndroidView(
@@ -267,11 +293,15 @@ fun CompraCompradorScreen(
                             firma = null
                         },
                         colors = IconButtonDefaults.iconButtonColors(containerColor = Color.Black),
-                        modifier = Modifier.align(alignment = Alignment.TopEnd).size(40.dp).padding(top = 4.dp, end = 4.dp).clip(RectangleShape)
+                        modifier = Modifier
+                            .align(alignment = Alignment.TopEnd)
+                            .size(40.dp)
+                            .padding(top = 4.dp, end = 4.dp)
+                            .clip(RectangleShape)
                     ) {
                         Icon(
                             imageVector = Icons.Default.Delete,
-                            contentDescription = "",
+                            contentDescription = stringResource(R.string.desc_icono_borrar_limpiar),
                             tint = Color.White
                         )
                     }
@@ -281,7 +311,9 @@ fun CompraCompradorScreen(
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center,
-                modifier = Modifier.fillMaxWidth().padding(8.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp)
             ) {
                 Button(
                     onClick = {
@@ -314,26 +346,12 @@ fun CompraCompradorScreen(
                     ),
                 ) {
                     Text(
-                        text = "Enviar oferta"
+                        text = stringResource(R.string.texto_enviar_oferta)
                     )
                 }
             }
         }
     }
-}
-
-private fun copyPdfFromAssets(context: Context, nombreArchivo: String): File{
-    val file = File(context.filesDir, nombreArchivo)
-
-    if(!file.exists()){
-        context.assets.open(nombreArchivo).use { inputStream ->
-            FileOutputStream(file).use { outputStream ->
-                inputStream.copyTo(outputStream)
-            }
-        }
-    }
-
-    return file
 }
 
 private fun paginasPDF(file: File): List<Bitmap>{

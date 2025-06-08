@@ -19,8 +19,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewModelScope
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.R
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Mensaje
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.app.AppViewModel
 import kotlinx.coroutines.Dispatchers
@@ -61,7 +63,7 @@ fun PagoPayPalScreen(
             modifier = modifier.fillMaxSize()
         ) {
             Text(
-                text = "Página no\ndisponible"
+                text = stringResource(R.string.texto_pagina_no_disponible)
             )
         }
     }else{

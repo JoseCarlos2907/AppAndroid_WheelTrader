@@ -42,6 +42,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -181,13 +182,15 @@ fun HomeScreen(
 
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(20.dp),
-        modifier = modifier.fillMaxSize().background(
-            brush = Brush.linearGradient(
-                colors = listOf(Color.Black, Color(0xFF525151)),
-                start = Offset(0f, 0f),
-                end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
+        modifier = modifier
+            .fillMaxSize()
+            .background(
+                brush = Brush.linearGradient(
+                    colors = listOf(Color.Black, Color(0xFF525151)),
+                    start = Offset(0f, 0f),
+                    end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
+                )
             )
-        )
     ) {
         item{
             parteSuperiorHome(
@@ -219,15 +222,19 @@ fun tipoVehiculoCard(
         Card(
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
             onClick = onClick,
-            modifier = Modifier.height(100.dp).padding(10.dp)
+            modifier = Modifier
+                .height(100.dp)
+                .padding(10.dp)
         ) {
             Row {
                 Column(
-                    modifier = Modifier.fillMaxHeight().weight(0.2F)
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .weight(0.2F)
                 ) {
                     Image(
                         painter = painterResource(imagen),
-                        contentDescription = "",
+                        contentDescription = stringResource(R.string.desc_imagen_card_vehiculo),
                         modifier = Modifier.fillMaxSize(),
                     )
                 }
@@ -235,7 +242,9 @@ fun tipoVehiculoCard(
                 Column(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.fillMaxSize().weight(0.6F)
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .weight(0.6F)
                 ) {
                     Text(
                         text = texto,
@@ -261,11 +270,15 @@ fun parteSuperiorHome(
         Row(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.height(60.dp).fillMaxWidth()
+            modifier = Modifier
+                .height(60.dp)
+                .fillMaxWidth()
         ) {
             Text(
-                text = "Hola,${conectionUiState.usuario?.nombreUsuario ?: "_NOMBRE_"}",
-                // text = "Hola, prueba123",
+                text = stringResource(
+                    R.string.texto_bienvenida,
+                    conectionUiState.usuario?.nombreUsuario ?: "_NOMBRE_"
+                ),
                 style = MaterialTheme.typography.labelMedium,
                 color = Color.White,
                 textAlign = TextAlign.Center,
@@ -277,14 +290,19 @@ fun parteSuperiorHome(
         ){
             Card(
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
-                modifier = Modifier.fillMaxSize().padding(10.dp).height(200.dp)
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(10.dp)
+                    .height(200.dp)
             ) {
                 Column(
                     verticalArrangement = Arrangement.SpaceEvenly,
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.weight(0.6F).padding(top = 6.dp, start = 12.dp, end = 12.dp)
+                        modifier = Modifier
+                            .weight(0.6F)
+                            .padding(top = 6.dp, start = 12.dp, end = 12.dp)
                     ) {
                         OutlinedTextField(
                             value = texto,
@@ -309,7 +327,11 @@ fun parteSuperiorHome(
                                 unfocusedIndicatorColor = Color.Black,
                                 focusedIndicatorColor = Color.Black,
                             ),
-                            modifier = Modifier.weight(1F).height(50.dp).fillMaxWidth().offset(x = 4.dp),
+                            modifier = Modifier
+                                .weight(1F)
+                                .height(50.dp)
+                                .fillMaxWidth()
+                                .offset(x = 4.dp),
                         )
 
                         Button(
@@ -324,11 +346,14 @@ fun parteSuperiorHome(
                                 containerColor = Color.Black,
                                 contentColor = Color.White
                             ),
-                            modifier = Modifier.padding(start = 8.dp).height(50.dp).offset(x = (-4).dp)
+                            modifier = Modifier
+                                .padding(start = 8.dp)
+                                .height(50.dp)
+                                .offset(x = (-4).dp)
                         ) {
                             Image(
                                 painter = painterResource(R.drawable.iconofiltroblanco),
-                                contentDescription = ""
+                                contentDescription = stringResource(R.string.desc_icono_filtro_blanco)
                             )
                         }
                     }
@@ -336,7 +361,10 @@ fun parteSuperiorHome(
                     Row(
                         horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth().weight(0.4F).padding(bottom = 10.dp)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(0.4F)
+                            .padding(bottom = 10.dp)
                     ) {
                         Button(
                             onClick = {
@@ -362,7 +390,7 @@ fun parteSuperiorHome(
                             colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
                         ) {
                             Text(
-                                text = "Buscar",
+                                text = stringResource(R.string.texto_buscar),
                                 color = Color.White,
                                 style = MaterialTheme.typography.labelMedium
                             )

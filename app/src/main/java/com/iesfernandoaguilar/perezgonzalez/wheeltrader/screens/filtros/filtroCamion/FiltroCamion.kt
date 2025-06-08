@@ -37,15 +37,15 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.R
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.filtros.FiltroCamion
-import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.filtros.FiltroCoche
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros.FiltrosViewModel
-import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros.filtroCoche.FiltroCocheViewModel
 
 @Composable
 fun FiltroCamion(
@@ -80,7 +80,7 @@ fun FiltroCamion(
                 .weight(0.15F)
         ) {
             Text(
-                text = "Filtro de coches",
+                text = stringResource(R.string.texto_filtro_de_camiones),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.titleLarge,
                 color = Color.White
@@ -105,7 +105,7 @@ fun FiltroCamion(
                         onValueChange = { filtroCamionViewModel.cambiarMarca_Camion(it) },
                         placeholder = {
                             Text(
-                                text = "Marca",
+                                text = stringResource(R.string.texto_marca),
                                 color = Color(0x00FF1c1c1c)
                             )
                         },
@@ -136,7 +136,7 @@ fun FiltroCamion(
                         onValueChange = { filtroCamionViewModel.cambiarModelo_Camion(it) },
                         placeholder = {
                             Text(
-                                text = "Modelo",
+                                text = stringResource(R.string.texto_modelo),
                                 color = Color(0x00FF1c1c1c)
                             )
                         },
@@ -173,7 +173,7 @@ fun FiltroCamion(
                         onValueChange = { filtroCamionViewModel.cambiarAnioMin_Camion(it) },
                         placeholder = {
                             Text(
-                                text = "Año Mínimo",
+                                text = stringResource(R.string.texto_ano_minimo),
                                 color = Color(0x00FF1c1c1c)
                             )
                         },
@@ -205,7 +205,7 @@ fun FiltroCamion(
                         onValueChange = { filtroCamionViewModel.cambiarAnioMax_Camion(it) },
                         placeholder = {
                             Text(
-                                text = "Año Máximo",
+                                text = stringResource(R.string.texto_ano_maximo),
                                 color = Color(0x00FF1c1c1c)
                             )
                         },
@@ -243,7 +243,7 @@ fun FiltroCamion(
                         onValueChange = { filtroCamionViewModel.cambiarCvMinimo_Camion(it) },
                         placeholder = {
                             Text(
-                                text = "CV Mínimo",
+                                text = stringResource(R.string.texto_cv_minimo),
                                 color = Color(0x00FF1c1c1c)
                             )
                         },
@@ -275,7 +275,7 @@ fun FiltroCamion(
                         onValueChange = { filtroCamionViewModel.cambiarCvMaximo_Camion(it) },
                         placeholder = {
                             Text(
-                                text = "CV Máximo",
+                                text = stringResource(R.string.texto_cv_maximo),
                                 color = Color(0x00FF1c1c1c)
                             )
                         },
@@ -313,7 +313,7 @@ fun FiltroCamion(
                         onValueChange = { filtroCamionViewModel.cambiarCiudad_Camion(it) },
                         placeholder = {
                             Text(
-                                text = "Ciudad",
+                                text = stringResource(R.string.texto_ciudad),
                                 color = Color(0x00FF1c1c1c)
                             )
                         },
@@ -344,7 +344,7 @@ fun FiltroCamion(
                         onValueChange = { filtroCamionViewModel.cambiarProvincia_Camion(it) },
                         placeholder = {
                             Text(
-                                text = "Provincia",
+                                text = stringResource(R.string.texto_provincia),
                                 color = Color(0x00FF1c1c1c)
                             )
                         },
@@ -381,7 +381,7 @@ fun FiltroCamion(
                         onValueChange = { filtroCamionViewModel.cambiarKmMinimo_Camion(it) },
                         placeholder = {
                             Text(
-                                text = "Km mínimo",
+                                text = stringResource(R.string.texto_km_minimo),
                                 color = Color(0x00FF1c1c1c)
                             )
                         },
@@ -413,7 +413,7 @@ fun FiltroCamion(
                         onValueChange = { filtroCamionViewModel.cambiarKmMaximo_Camion(it) },
                         placeholder = {
                             Text(
-                                text = "Km máximo",
+                                text = stringResource(R.string.texto_km_maximo),
                                 color = Color(0x00FF1c1c1c)
                             )
                         },
@@ -451,7 +451,7 @@ fun FiltroCamion(
                         onValueChange = { filtroCamionViewModel.cambiarTipoComb_Camion(it) },
                         placeholder = {
                             Text(
-                                text = "Combustible",
+                                text = stringResource(R.string.texto_combustible),
                                 color = Color(0x00FF1c1c1c)
                             )
                         },
@@ -473,7 +473,7 @@ fun FiltroCamion(
                         trailingIcon = {
                             Icon(
                                 imageVector = if (tiposCombustiblesDesplegado) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-                                contentDescription = "",
+                                contentDescription = stringResource(R.string.desc_icono_flecha_arriba_abajo),
                                 modifier = Modifier.clickable {
                                     tiposCombustiblesDesplegado = !tiposCombustiblesDesplegado
                                 }
@@ -551,7 +551,7 @@ fun FiltroCamion(
                 modifier = Modifier.width(300.dp)
             ) {
                 Text(
-                    text = "Buscar",
+                    text = stringResource(R.string.texto_buscar),
                     color = Color.White,
                     style = MaterialTheme.typography.labelMedium
                 )

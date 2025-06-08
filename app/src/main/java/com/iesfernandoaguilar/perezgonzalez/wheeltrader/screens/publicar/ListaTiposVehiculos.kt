@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -70,23 +71,25 @@ fun ListaTiposVehiculos(
             )
         )
     ) {
-        Row (
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center,
-            modifier = Modifier.fillMaxWidth().weight(0.25F)
-        ){
-            Text(
-                text = "Tipo del vehículo\na publicar",
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.titleLarge,
-                color = Color.White
-            )
-        }
-
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(20.dp),
-            modifier = modifier.fillMaxSize().weight(0.75F)
+            modifier = modifier.fillMaxSize()
         ) {
+            item{
+                Row (
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.fillMaxWidth().height(150.dp)
+                ){
+                    Text(
+                        text = "Tipo del vehículo\na publicar",
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.titleLarge,
+                        color = Color.White
+                    )
+                }
+            }
+
             items(opciones) { opcion ->
                 tipoVehiculoCard(
                     onClick = onClicks.get(opciones.indexOf(opcion)),

@@ -41,6 +41,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
@@ -156,7 +157,9 @@ fun LoginScreen(
         NavHost(
             navController = loginNavController,
             startDestination = LoginScreens.Login.screenName,
-            modifier = modifier.fillMaxSize().padding(innerPadding)
+            modifier = modifier
+                .fillMaxSize()
+                .padding(innerPadding)
         ){
             composable(route = LoginScreens.Login.screenName){
                 LoginForm(
@@ -261,13 +264,15 @@ fun LoginForm(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceAround,
-        modifier = modifier.fillMaxSize().background(
-            brush = Brush.linearGradient(
-                colors = listOf(Color.Black, Color(0xFF525151)),
-                start = Offset(0f, 0f),
-                end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
+        modifier = modifier
+            .fillMaxSize()
+            .background(
+                brush = Brush.linearGradient(
+                    colors = listOf(Color.Black, Color(0xFF525151)),
+                    start = Offset(0f, 0f),
+                    end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
+                )
             )
-        )
     ) {
         Row(
             horizontalArrangement = Arrangement.Center,
@@ -275,7 +280,7 @@ fun LoginForm(
             modifier = Modifier.weight(0.2F)
         ) {
             Text(
-                text = "Bienvenido",
+                text = stringResource(R.string.texto_bienvenido),
                 style = MaterialTheme.typography.titleLarge,
                 color = Color.White
             )
@@ -288,15 +293,19 @@ fun LoginForm(
         ) {
             Card(
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
-                modifier = Modifier.fillMaxSize().padding(20.dp)
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(20.dp)
             ) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.SpaceAround,
-                    modifier = Modifier.fillMaxSize().padding(8.dp)
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(8.dp)
                 ) {
                     Text(
-                        text = "Iniciar Sesión",
+                        text = stringResource(R.string.texto_iniciar_sesion),
                         style = MaterialTheme.typography.titleLarge,
                         color = MaterialTheme.colorScheme.primary
                     )
@@ -306,7 +315,7 @@ fun LoginForm(
                         onValueChange = { loginViewModel.onNombreUsuarioChange(it) },
                         placeholder = {
                             Text(
-                                text = "Correo o nombre de usuario",
+                                text = stringResource(R.string.texto_campo_correo_nomusu),
                                 color = Color(0x00FF1c1c1c)
                             )
                         },
@@ -331,7 +340,7 @@ fun LoginForm(
                         onValueChange = { loginViewModel.onContraseniaChange(it) },
                         placeholder = {
                             Text(
-                                text = "Contraseña",
+                                text = stringResource(R.string.texto_contrasena),
                                 color = Color(0x00FF1c1c1c)
                             )
                         },
@@ -339,7 +348,7 @@ fun LoginForm(
                         trailingIcon = {
                             Image(
                                 painter = if(pwVisible) painterResource(R.drawable.iconopwvisible) else painterResource(R.drawable.iconopwnovisible),
-                                contentDescription = "",
+                                contentDescription = stringResource(R.string.icono_contrasena_visible_no_visible),
                                 modifier = Modifier.clickable { pwVisible = !pwVisible }
                             )
                         },
@@ -370,7 +379,7 @@ fun LoginForm(
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                     ) {
                         Text(
-                            text = "Iniciar Sesión",
+                            text = stringResource(R.string.texto_iniciar_sesion),
                             style = MaterialTheme.typography.labelMedium,
                             color = Color.Black
                         )
@@ -383,7 +392,7 @@ fun LoginForm(
                         colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
                     ) {
                         Text(
-                            text = "Registrarse",
+                            text = stringResource(R.string.texto_registrarse),
                             style = MaterialTheme.typography.labelMedium,
                             color = Color.White
                         )
@@ -398,7 +407,7 @@ fun LoginForm(
             modifier = Modifier.weight(0.2F)
         ) {
             Text(
-                text = "Recuperar contraseña",
+                text = stringResource(R.string.texto_recuperar_contrasena),
                 style = MaterialTheme.typography.labelMedium,
                 textDecoration = TextDecoration.Underline,
                 modifier = Modifier.clickable {

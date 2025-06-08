@@ -34,9 +34,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.R
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.filtros.FiltroCompras
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.filtros.FiltroGuardados
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.filtros.FiltroPublicados
@@ -78,28 +80,34 @@ fun ConfUsuario(
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier.fillMaxSize().background(
-            brush = Brush.linearGradient(
-                colors = listOf(Color.Black, Color(0xFF525151)),
-                start = Offset(0f, 0f),
-                end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
+        modifier = modifier
+            .fillMaxSize()
+            .background(
+                brush = Brush.linearGradient(
+                    colors = listOf(Color.Black, Color(0xFF525151)),
+                    start = Offset(0f, 0f),
+                    end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
+                )
             )
-        ).verticalScroll(rememberScrollState())
+            .verticalScroll(rememberScrollState())
     ) {
         Column(
             modifier = Modifier.padding(bottom = 12.dp)
         ) {
             Row(
-                modifier = Modifier.clickable(onClick = { acordeon1 = !acordeon1 }).fillMaxWidth().padding(16.dp)
+                modifier = Modifier
+                    .clickable(onClick = { acordeon1 = !acordeon1 })
+                    .fillMaxWidth()
+                    .padding(16.dp)
             ) {
                 Icon(
                     imageVector = if (acordeon1) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-                    contentDescription = "",
+                    contentDescription = stringResource(R.string.desc_icono_flecha_arriba_abajo),
                     tint = Color.White
                 )
 
                 Text(
-                    text = "Datos Personales",
+                    text = stringResource(R.string.texto_datos_personales),
                     style = MaterialTheme.typography.titleLarge,
                     color = Color.White
                 )
@@ -107,28 +115,42 @@ fun ConfUsuario(
 
             AnimatedVisibility(visible = acordeon1) {
                 Column(
-                    modifier = Modifier.fillMaxWidth().padding(16.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
                 ) {
                     Text(
-                        text = "Nombre: ${conectionUiState.usuario?.nombre}",
+                        text = stringResource(
+                            R.string.texto_perfil_nombre,
+                            conectionUiState.usuario!!.nombre
+                        ),
                         style = MaterialTheme.typography.labelMedium,
                         color = Color.White
                     )
 
                     Text(
-                        text = "Apellidos: ${conectionUiState.usuario?.apellidos}",
+                        text = stringResource(
+                            R.string.texto_perfil_apellidos,
+                            conectionUiState.usuario!!.apellidos
+                        ),
                         style = MaterialTheme.typography.labelMedium,
                         color = Color.White
                     )
 
                     Text(
-                        text = "DNI: ${conectionUiState.usuario?.dni}",
+                        text = stringResource(
+                            R.string.texto_perfil_dni,
+                            conectionUiState.usuario!!.dni
+                        ),
                         style = MaterialTheme.typography.labelMedium,
                         color = Color.White
                     )
 
                     Text(
-                        text = "Dirección: ${conectionUiState.usuario?.direccion}",
+                        text = stringResource(
+                            R.string.texto_perfil_direccion,
+                            conectionUiState.usuario!!.direccion
+                        ),
                         style = MaterialTheme.typography.labelMedium,
                         color = Color.White
                     )
@@ -136,16 +158,19 @@ fun ConfUsuario(
             }
 
             Row(
-                modifier = Modifier.clickable(onClick = { acordeon2 = !acordeon2 }).fillMaxWidth().padding(16.dp)
+                modifier = Modifier
+                    .clickable(onClick = { acordeon2 = !acordeon2 })
+                    .fillMaxWidth()
+                    .padding(16.dp)
             ) {
                 Icon(
                     imageVector = if (acordeon2) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-                    contentDescription = "",
+                    contentDescription = stringResource(R.string.desc_icono_flecha_arriba_abajo),
                     tint = Color.White
                 )
 
                 Text(
-                    text = "Datos de Cuenta",
+                    text = stringResource(R.string.texto_datos_de_cuenta),
                     style = MaterialTheme.typography.titleLarge,
                     color = Color.White
                 )
@@ -153,22 +178,33 @@ fun ConfUsuario(
 
             AnimatedVisibility(visible = acordeon2) {
                 Column(
-                    modifier = Modifier.fillMaxWidth().padding(16.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
                 ) {
                     Text(
-                        text = "Nombre de Usuario: ${conectionUiState.usuario?.nombreUsuario}",
+                        text = stringResource(
+                            R.string.texto_perfil_nombre_de_usuario,
+                            conectionUiState.usuario!!.nombreUsuario
+                        ),
                         style = MaterialTheme.typography.labelMedium,
                         color = Color.White
                     )
 
                     Text(
-                        text = "Correo: ${conectionUiState.usuario?.correo}",
+                        text = stringResource(
+                            R.string.texto_perfil_correo,
+                            conectionUiState.usuario!!.correo
+                        ),
                         style = MaterialTheme.typography.labelMedium,
                         color = Color.White
                     )
 
                     Text(
-                        text = "Correo de PayPal: ${conectionUiState.usuario?.correoPP}",
+                        text = stringResource(
+                            R.string.texto_perfil_correo_de_paypal,
+                            conectionUiState.usuario!!.correoPP
+                        ),
                         style = MaterialTheme.typography.labelMedium,
                         color = Color.White
                     )
@@ -176,16 +212,19 @@ fun ConfUsuario(
             }
 
             Row(
-                modifier = Modifier.clickable(onClick = { acordeon3 = !acordeon3 }).fillMaxWidth().padding(16.dp)
+                modifier = Modifier
+                    .clickable(onClick = { acordeon3 = !acordeon3 })
+                    .fillMaxWidth()
+                    .padding(16.dp)
             ) {
                 Icon(
                     imageVector = if (acordeon3) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-                    contentDescription = "",
+                    contentDescription = stringResource(R.string.desc_icono_flecha_arriba_abajo),
                     tint = Color.White
                 )
 
                 Text(
-                    text = "Contraseña",
+                    text = stringResource(R.string.texto_perfil_contrasena),
                     style = MaterialTheme.typography.titleLarge,
                     color = Color.White
                 )
@@ -195,16 +234,20 @@ fun ConfUsuario(
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.SpaceEvenly,
-                    modifier = Modifier.fillMaxSize().height(400.dp)
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .height(400.dp)
                 ) {
                     Column(
                         verticalArrangement = Arrangement.SpaceEvenly,
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.weight(0.7f).fillMaxSize()
+                        modifier = Modifier
+                            .weight(0.7f)
+                            .fillMaxSize()
                     ) {
-                        textField(placeHolder = "Contraseña", value = appUiState.contraseniaReiniciarContrasenia, onValueChange = { appViewModel.onContraseniaConfUsuarioChange(it) })
+                        textField(placeHolder = stringResource(R.string.texto_perfil_contrasena), value = appUiState.contraseniaReiniciarContrasenia, onValueChange = { appViewModel.onContraseniaConfUsuarioChange(it) })
 
-                        textField(placeHolder = "Confirmar contraseña", value = appUiState.repetirContraseniaReiniciarContrasenia, onValueChange = { appViewModel.onRepetirContraseniaConfUsuarioChange(it) })
+                        textField(placeHolder = stringResource(R.string.texto_perfil_confirmar_contrasena), value = appUiState.repetirContraseniaReiniciarContrasenia, onValueChange = { appViewModel.onRepetirContraseniaConfUsuarioChange(it) })
                     }
 
                     Column(
@@ -213,25 +256,25 @@ fun ConfUsuario(
                         modifier = Modifier.weight(0.3f)
                     ) {
                         Text(
-                            text = "Requisitos de la contraseña",
+                            text = stringResource(R.string.texto_requisitos_contrasena),
                             color = Color.White,
                             style = MaterialTheme.typography.labelMedium
                         )
 
                         Text(
-                            text = "· Mínimo 6 caracteres",
+                            text = stringResource(R.string.texto_minimo_6_caracteres),
                             color = Color.White,
                             style = MaterialTheme.typography.bodyLarge
                         )
 
                         Text(
-                            text = "· Mínimo 1 mayúscula y 1 minúscula",
+                            text = stringResource(R.string.texto_minimo_mayusculas_minusculas),
                             color = Color.White,
                             style = MaterialTheme.typography.bodyLarge
                         )
 
                         Text(
-                            text = "· Mínimo 1 número",
+                            text = stringResource(R.string.texto_minimo_numeros),
                             color = Color.White,
                             style = MaterialTheme.typography.bodyLarge
                         )
@@ -250,10 +293,12 @@ fun ConfUsuario(
                             }
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
-                        modifier = Modifier.width(220.dp).height(40.dp)
+                        modifier = Modifier
+                            .width(220.dp)
+                            .height(40.dp)
                     ) {
                         Text(
-                            text = "Reiniciar Contraseña",
+                            text = stringResource(R.string.texto_reiniciar_contrasena),
                             style = MaterialTheme.typography.labelMedium,
                             color = Color.White
                         )
@@ -274,22 +319,16 @@ fun ConfUsuario(
                 appNavController.navigate(AppScreens.ListaAnuncios.screenName)
             }, "Mis Guardados")
 
-            /*boton({
-
-            }, "Mis Pagos")*/
-
             boton({
                 filtrosViewModel.asignarFiltro(FiltroCompras(conectionUiState.usuario!!.nombreUsuario))
                 appNavController.navigate(AppScreens.MisCompras.screenName)
             }, "Mis Compras")
-
-            /*boton({
-
-            }, "Mis Reuniones")*/
         }
 
         Row (
-            modifier = Modifier.fillMaxWidth().padding(start = 12.dp, end = 12.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 12.dp, end = 12.dp)
         ){
             Button(
                 onClick = { onClickCerrarSesion() },
@@ -297,7 +336,7 @@ fun ConfUsuario(
                 modifier = Modifier.fillMaxWidth()
             ){
                 Text(
-                    text = "Cerrar Sesión",
+                    text = stringResource(R.string.texto_cerrar_sesion),
                     style = MaterialTheme.typography.labelMedium,
                     color = Color.White
                 )
@@ -313,7 +352,9 @@ private fun boton(
     texto: String
 ){
     Row(
-        modifier = Modifier.fillMaxWidth().padding(start = 12.dp, end = 12.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 12.dp, end = 12.dp)
     ) {
         Button(
             onClick = onClick,

@@ -568,12 +568,13 @@ class AppViewModel(
         )
     }
 
-    fun usuarioPaga(idComprador: Long, idVendedor: Long, precio: Double) {
+    fun usuarioPaga(idComprador: Long, idVendedor: Long, precio: Double, idAnuncio: Long) {
         var msg = Mensaje()
         msg.setTipo("USUARIO_PAGA")
         msg.addParam(idComprador.toString())
         msg.addParam(idVendedor.toString())
         msg.addParam(precio.toString())
+        msg.addParam(idAnuncio.toString())
 
         enviarMensaje(msg)
     }
@@ -593,10 +594,14 @@ class AppViewModel(
     fun preguntarEstadoPago() {
         viewModelScope.launch(Dispatchers.IO) {
             while (!_uiState.value.confirmaPago) {
+                if(_uiState.value.idNotificacionSeleccionada == null){
+                    break;
+                }
                 var msg = Mensaje()
                 msg.setTipo("OBTENER_ESTADO_PAGO")
                 msg.addParam(_uiState.value.idNotificacionSeleccionada.toString())
                 msg.addParam(_uiState.value.precioAnuncioNotificacionSeleccionada.toString())
+                msg.addParam(_uiState.value.idAnuncioNotificacionSeleccionada.toString())
 
                 enviarMensaje(msg)
 

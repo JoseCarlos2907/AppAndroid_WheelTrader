@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -140,9 +141,12 @@ fun NotificacionesScreen(
                 item{
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
+                        horizontalArrangement = Arrangement.Center,
+                        modifier = Modifier.fillMaxSize()
                     ) {
-                        CircularProgressIndicator()
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(16.dp)
+                        )
                     }
                 }
             }
@@ -219,7 +223,8 @@ fun CardNotificacion(
                                         appViewModel.usuarioPaga(
                                             idComprador = conectionUiState.usuario!!.idUsuario,
                                             idVendedor = notificacion.usuarioEnvia!!.idUsuario,
-                                            precio = precioTotal
+                                            precio = precioTotal,
+                                            notificacion.anuncio!!.idAnuncio
                                         )
                                     }else if("OFERTA_ANUNCIO".equals(notificacion.tipo)){
                                         appViewModel.obtenerPDFAcuerdoVendedor(notificacion.usuarioEnvia!!.idUsuario, notificacion.anuncio!!.idAnuncio)

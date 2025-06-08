@@ -1,7 +1,6 @@
 package com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.compras
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,13 +8,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,19 +28,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewModelScope
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.R
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Venta
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.ConectionUiState
-import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.anuncios.CardAnuncio
-import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.anuncios.imagenByteArray
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.app.AppViewModel
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros.FiltrosUiState
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @Composable
@@ -84,13 +79,15 @@ fun MisComprasScreen(
     }
 
     Column(
-        modifier = modifier.fillMaxSize().background(
-            brush = Brush.linearGradient(
-                colors = listOf(Color.Black, Color(0xFF525151)),
-                start = Offset(0f, 0f),
-                end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
+        modifier = modifier
+            .fillMaxSize()
+            .background(
+                brush = Brush.linearGradient(
+                    colors = listOf(Color.Black, Color(0xFF525151)),
+                    start = Offset(0f, 0f),
+                    end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
+                )
             )
-        )
     ) {
         LazyColumn(
             state = listState,
@@ -108,9 +105,12 @@ fun MisComprasScreen(
                 item{
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
+                        horizontalArrangement = Arrangement.Center,
+                        modifier = Modifier.fillMaxSize()
                     ) {
-                        CircularProgressIndicator()
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(16.dp)
+                        )
                     }
                 }
             }
@@ -135,26 +135,36 @@ fun CardCompra(
     }
 
     Row(
-        modifier = modifier.fillMaxWidth().padding(16.dp)
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(16.dp)
     ) {
         Card(
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
-            modifier = Modifier.fillMaxSize().height(160.dp)
+            modifier = Modifier
+                .fillMaxSize()
+                .height(160.dp)
         ) {
             Column(
-                modifier = Modifier.fillMaxSize().padding(12.dp)
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(12.dp)
             ) {
                 Row(
                     horizontalArrangement = Arrangement.Center,
-                    modifier = Modifier.fillMaxWidth().weight(0.65F)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(0.65F)
                 ) {
                     Column(
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.Start,
-                        modifier = modifier.fillMaxSize().weight(0.5F)
+                        modifier = modifier
+                            .fillMaxSize()
+                            .weight(0.5F)
                     ) {
                         Text(
-                            text = marca + " | " + modelo,
+                            text = stringResource(R.string.texto_marca_modelo),
                             color = MaterialTheme.colorScheme.primary,
                             style = MaterialTheme.typography.headlineMedium,
                             textAlign = TextAlign.Start
@@ -164,10 +174,15 @@ fun CardCompra(
                     Column(
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.End,
-                        modifier = modifier.fillMaxSize().weight(0.35F)
+                        modifier = modifier
+                            .fillMaxSize()
+                            .weight(0.35F)
                     ) {
                         Text(
-                            text = "La garantía termina el " + venta.fechaFinGarantia,
+                            text = stringResource(
+                                R.string.texto_fin_garantia,
+                                venta.fechaFinGarantia
+                            ),
                             color = Color.White,
                             style = MaterialTheme.typography.labelSmall,
                             textAlign = TextAlign.End
@@ -177,15 +192,19 @@ fun CardCompra(
 
                 Row(
                     horizontalArrangement = Arrangement.Center,
-                    modifier = Modifier.fillMaxWidth().weight(0.5F)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(0.5F)
                 ) {
                     Column(
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.Start,
-                        modifier = modifier.fillMaxSize().weight(0.5F)
+                        modifier = modifier
+                            .fillMaxSize()
+                            .weight(0.5F)
                     ) {
                         Text(
-                            text = venta.anuncio!!.precio.toString() + "€",
+                            text = stringResource(R.string.precio, venta.anuncio!!.precio),
                             color = Color.White,
                             style = MaterialTheme.typography.headlineMedium,
                             textAlign = TextAlign.Start
@@ -195,10 +214,15 @@ fun CardCompra(
                     Column(
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.End,
-                        modifier = modifier.fillMaxSize().weight(0.5F)
+                        modifier = modifier
+                            .fillMaxSize()
+                            .weight(0.5F)
                     ) {
                         Text(
-                            text = "Comprado a " + venta.anuncio!!.vendedor!!.nombreUsuario,
+                            text = stringResource(
+                                R.string.texto_comprado_a,
+                                venta.anuncio!!.vendedor!!.nombreUsuario
+                            ),
                             color = MaterialTheme.colorScheme.primary,
                             style = MaterialTheme.typography.labelMedium,
                             textAlign = TextAlign.End
