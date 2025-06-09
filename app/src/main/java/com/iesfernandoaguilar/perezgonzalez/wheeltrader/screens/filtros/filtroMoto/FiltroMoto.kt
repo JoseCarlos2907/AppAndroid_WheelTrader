@@ -18,6 +18,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -49,6 +51,7 @@ import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.filtros.FiltroMoto
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros.FiltrosViewModel
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros.filtroCoche.FiltroCocheViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FiltroMoto(
     buscarOnClick: () -> Unit,
@@ -481,61 +484,65 @@ fun FiltroMoto(
                         .weight(0.5F)
                         .padding(4.dp)
                 ) {
-                    OutlinedTextField(
-                        value = filtroMotoUiState.tipoCombustible,
-                        onValueChange = { filtroMotoViewModel.cambiarTipoComb_Moto(it) },
-                        placeholder = {
-                            Text(
-                                text = stringResource(R.string.texto_combustible),
-                                color = Color(0x00FF1c1c1c)
-                            )
-                        },
-                        readOnly = true,
-                        enabled = true,
-                        singleLine = true,
-                        colors = TextFieldDefaults.colors(
-                            unfocusedContainerColor = Color.White,
-                            focusedContainerColor = Color.White,
-                            cursorColor = Color(0x00FF1c1c1c),
-                            focusedTextColor = Color(0x00FF1c1c1c),
-                            unfocusedTextColor = Color(0x00FF1c1c1c),
-                            focusedLabelColor = Color(0x00FF1c1c1c),
-                            unfocusedLabelColor = Color(0x00FF1c1c1c),
-                            unfocusedIndicatorColor = Color.Transparent,
-                            focusedIndicatorColor = Color.Transparent
-                        ),
-                        shape = RoundedCornerShape(22.dp),
-                        trailingIcon = {
-                            Icon(
-                                imageVector = if (tiposCombustiblesDesplegado) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-                                contentDescription = stringResource(R.string.desc_icono_flecha_arriba_abajo),
-                                modifier = Modifier.clickable {
-                                    tiposCombustiblesDesplegado = !tiposCombustiblesDesplegado
-                                }
-                            )
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .onGloballyPositioned { coords ->
-                                tamanioCombustible = coords.size.toSize()
-                            }
-                    )
-
-                    DropdownMenu(
+                    ExposedDropdownMenuBox(
                         expanded = tiposCombustiblesDesplegado,
-                        onDismissRequest = { tiposCombustiblesDesplegado = false },
-                        modifier = Modifier.width(
-                            with(LocalDensity.current) { tamanioCombustible.width.toDp() }
-                        )
+                        onExpandedChange = { tiposCombustiblesDesplegado = !tiposCombustiblesDesplegado },
+                        modifier = Modifier.fillMaxWidth()
                     ) {
-                        tiposCombustible.forEach { tipo ->
-                            DropdownMenuItem(
-                                onClick = {
-                                    filtroMotoViewModel.cambiarTipoComb_Moto(tipo)
-                                    tiposCombustiblesDesplegado = false
-                                },
-                                text = { Text(text = tipo) }
+                        OutlinedTextField(
+                            value = filtroMotoUiState.tipoCombustible,
+                            onValueChange = { },
+                            placeholder = {
+                                Text(
+                                    text = stringResource(R.string.texto_combustible),
+                                    color = Color(0x00FF1c1c1c)
+                                )
+                            },
+                            readOnly = true,
+                            enabled = true,
+                            singleLine = true,
+                            colors = TextFieldDefaults.colors(
+                                unfocusedContainerColor = Color.White,
+                                focusedContainerColor = Color.White,
+                                cursorColor = Color(0x00FF1c1c1c),
+                                focusedTextColor = Color(0x00FF1c1c1c),
+                                unfocusedTextColor = Color(0x00FF1c1c1c),
+                                focusedLabelColor = Color(0x00FF1c1c1c),
+                                unfocusedLabelColor = Color(0x00FF1c1c1c),
+                                unfocusedIndicatorColor = Color.Transparent,
+                                focusedIndicatorColor = Color.Transparent
+                            ),
+                            shape = RoundedCornerShape(22.dp),
+                            trailingIcon = {
+                                Icon(
+                                    imageVector = if (tiposCombustiblesDesplegado) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                                    contentDescription = stringResource(R.string.desc_icono_flecha_arriba_abajo),
+                                )
+                            },
+                            modifier = Modifier
+                                .menuAnchor()
+                                .onGloballyPositioned { coords ->
+                                    tamanioCombustible = coords.size.toSize()
+                                }
+                        )
+
+                        ExposedDropdownMenu (
+                            expanded = tiposCombustiblesDesplegado,
+                            onDismissRequest = { tiposCombustiblesDesplegado = false },
+                            modifier = Modifier.width(
+                                with(LocalDensity.current) { tamanioCombustible.width.toDp() }
                             )
+                        ) {
+
+                            tiposCombustible.forEach { tipo ->
+                                DropdownMenuItem(
+                                    onClick = {
+                                        filtroMotoViewModel.cambiarTipoComb_Moto(tipo)
+                                        tiposCombustiblesDesplegado = false
+                                    },
+                                    text = { Text(text = tipo) }
+                                )
+                            }
                         }
                     }
                 }

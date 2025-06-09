@@ -22,6 +22,8 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -52,6 +54,7 @@ import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.filtros.FiltroCoch
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.filtros.FiltroTodo
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.filtros.FiltrosViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FiltroCoche(
     buscarOnClick: () -> Unit,
@@ -526,65 +529,68 @@ fun FiltroCoche(
                         .weight(0.5F)
                         .padding(4.dp)
                 ) {
-                    OutlinedTextField(
-                        value = filtroCocheUiState.tipoCombustible,
-                        onValueChange = { filtroCocheViewModel.cambiarTipoComb_Coche(it) },
-                        placeholder = {
-                            Text(
-                                text = stringResource(R.string.texto_combustible),
-                                color = Color(0x00FF1c1c1c)
-                            )
-                        },
-                        readOnly = true,
-                        enabled = true,
-                        singleLine = true,
-                        colors = TextFieldDefaults.colors(
-                            unfocusedContainerColor = Color.White,
-                            focusedContainerColor = Color.White,
-                            cursorColor = Color(0x00FF1c1c1c),
-                            focusedTextColor = Color(0x00FF1c1c1c),
-                            unfocusedTextColor = Color(0x00FF1c1c1c),
-                            focusedLabelColor = Color(0x00FF1c1c1c),
-                            unfocusedLabelColor = Color(0x00FF1c1c1c),
-                            unfocusedIndicatorColor = Color.Transparent,
-                            focusedIndicatorColor = Color.Transparent
-                        ),
-                        shape = RoundedCornerShape(22.dp),
-                        trailingIcon = {
-                            Icon(
-                                imageVector = if (tiposCombustiblesDesplegado) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-                                contentDescription = stringResource(R.string.desc_icono_flecha_arriba_abajo),
-                                modifier = Modifier.clickable {
-                                    tiposCombustiblesDesplegado = !tiposCombustiblesDesplegado
-                                }
-                            )
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .onGloballyPositioned { coords ->
-                                tamanioCombustible = coords.size.toSize()
-                            }
-                    )
-
-                    DropdownMenu(
+                    ExposedDropdownMenuBox(
                         expanded = tiposCombustiblesDesplegado,
-                        onDismissRequest = { tiposCombustiblesDesplegado = false },
-                        modifier = Modifier.width(
-                            with(LocalDensity.current) { tamanioCombustible.width.toDp() }
-                        )
+                        onExpandedChange = { tiposCombustiblesDesplegado = !tiposCombustiblesDesplegado },
+                        modifier = Modifier.fillMaxWidth()
                     ) {
-                        tiposCombustible.forEach { tipo ->
-                            DropdownMenuItem(
-                                onClick = {
-                                    filtroCocheViewModel.cambiarTipoComb_Coche(tipo)
-                                    tiposCombustiblesDesplegado = false
-                                },
-                                text = { Text(text = tipo) }
+                        OutlinedTextField(
+                            value = filtroCocheUiState.tipoCombustible,
+                            onValueChange = { },
+                            placeholder = {
+                                Text(
+                                    text = stringResource(R.string.texto_combustible),
+                                    color = Color(0x00FF1c1c1c)
+                                )
+                            },
+                            readOnly = true,
+                            enabled = true,
+                            singleLine = true,
+                            colors = TextFieldDefaults.colors(
+                                unfocusedContainerColor = Color.White,
+                                focusedContainerColor = Color.White,
+                                cursorColor = Color(0x00FF1c1c1c),
+                                focusedTextColor = Color(0x00FF1c1c1c),
+                                unfocusedTextColor = Color(0x00FF1c1c1c),
+                                focusedLabelColor = Color(0x00FF1c1c1c),
+                                unfocusedLabelColor = Color(0x00FF1c1c1c),
+                                unfocusedIndicatorColor = Color.Transparent,
+                                focusedIndicatorColor = Color.Transparent
+                            ),
+                            shape = RoundedCornerShape(22.dp),
+                            trailingIcon = {
+                                Icon(
+                                    imageVector = if (tiposCombustiblesDesplegado) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                                    contentDescription = stringResource(R.string.desc_icono_flecha_arriba_abajo),
+                                )
+                            },
+                            modifier = Modifier
+                                .menuAnchor()
+                                .onGloballyPositioned { coords ->
+                                    tamanioCombustible = coords.size.toSize()
+                                }
+                        )
+
+                        ExposedDropdownMenu (
+                            expanded = tiposCombustiblesDesplegado,
+                            onDismissRequest = { tiposCombustiblesDesplegado = false },
+                            modifier = Modifier.width(
+                                with(LocalDensity.current) { tamanioCombustible.width.toDp() }
                             )
+                        ) {
+
+                            tiposCombustible.forEach { tipo ->
+                                DropdownMenuItem(
+                                    onClick = {
+                                        filtroCocheViewModel.cambiarTipoComb_Coche(tipo)
+                                        tiposCombustiblesDesplegado = false
+                                    },
+                                    text = { Text(text = tipo) }
+                                )
+                            }
                         }
                     }
                 }
-
 
 
                 Column(
@@ -592,61 +598,65 @@ fun FiltroCoche(
                         .weight(0.5F)
                         .padding(4.dp)
                 ) {
-                    OutlinedTextField(
-                        value = filtroCocheUiState.transmision,
-                        onValueChange = { filtroCocheViewModel.cambiarTransmision_Coche(it) },
-                        placeholder = {
-                            Text(
-                                text = stringResource(R.string.texto_transmision),
-                                color = Color(0x00FF1c1c1c)
-                            )
-                        },
-                        readOnly = true,
-                        enabled = true,
-                        singleLine = true,
-                        colors = TextFieldDefaults.colors(
-                            unfocusedContainerColor = Color.White,
-                            focusedContainerColor = Color.White,
-                            cursorColor = Color(0x00FF1c1c1c),
-                            focusedTextColor = Color(0x00FF1c1c1c),
-                            unfocusedTextColor = Color(0x00FF1c1c1c),
-                            focusedLabelColor = Color(0x00FF1c1c1c),
-                            unfocusedLabelColor = Color(0x00FF1c1c1c),
-                            unfocusedIndicatorColor = Color.Transparent,
-                            focusedIndicatorColor = Color.Transparent
-                        ),
-                        shape = RoundedCornerShape(22.dp),
-                        trailingIcon = {
-                            Icon(
-                                imageVector = if (transmisionDesplegado) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-                                contentDescription = stringResource(R.string.desc_icono_flecha_arriba_abajo),
-                                modifier = Modifier.clickable {
-                                    transmisionDesplegado = !transmisionDesplegado
-                                }
-                            )
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .onGloballyPositioned { coords ->
-                                tamanioTransmision = coords.size.toSize()
-                            }
-                    )
-
-                    DropdownMenu(
+                    ExposedDropdownMenuBox(
                         expanded = transmisionDesplegado,
-                        onDismissRequest = { transmisionDesplegado = false },
-                        modifier = Modifier.width(
-                            with(LocalDensity.current) { tamanioTransmision.width.toDp() }
-                        )
+                        onExpandedChange = { transmisionDesplegado = !transmisionDesplegado },
+                        modifier = Modifier.fillMaxWidth()
                     ) {
-                        transmision.forEach { tipo ->
-                            DropdownMenuItem(
-                                onClick = {
-                                    filtroCocheViewModel.cambiarTransmision_Coche(tipo)
-                                    transmisionDesplegado = false
-                                },
-                                text = { Text(text = tipo) }
+                        OutlinedTextField(
+                            value = filtroCocheUiState.transmision,
+                            onValueChange = { },
+                            placeholder = {
+                                Text(
+                                    text = stringResource(R.string.texto_transmision),
+                                    color = Color(0x00FF1c1c1c)
+                                )
+                            },
+                            readOnly = true,
+                            enabled = true,
+                            singleLine = true,
+                            colors = TextFieldDefaults.colors(
+                                unfocusedContainerColor = Color.White,
+                                focusedContainerColor = Color.White,
+                                cursorColor = Color(0x00FF1c1c1c),
+                                focusedTextColor = Color(0x00FF1c1c1c),
+                                unfocusedTextColor = Color(0x00FF1c1c1c),
+                                focusedLabelColor = Color(0x00FF1c1c1c),
+                                unfocusedLabelColor = Color(0x00FF1c1c1c),
+                                unfocusedIndicatorColor = Color.Transparent,
+                                focusedIndicatorColor = Color.Transparent
+                            ),
+                            shape = RoundedCornerShape(22.dp),
+                            trailingIcon = {
+                                Icon(
+                                    imageVector = if (transmisionDesplegado) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                                    contentDescription = stringResource(R.string.desc_icono_flecha_arriba_abajo),
+                                )
+                            },
+                            modifier = Modifier
+                                .menuAnchor()
+                                .onGloballyPositioned { coords ->
+                                    tamanioTransmision = coords.size.toSize()
+                                }
+                        )
+
+                        ExposedDropdownMenu (
+                            expanded = transmisionDesplegado,
+                            onDismissRequest = { transmisionDesplegado = false },
+                            modifier = Modifier.width(
+                                with(LocalDensity.current) { tamanioTransmision.width.toDp() }
                             )
+                        ) {
+
+                            transmision.forEach { tipo ->
+                                DropdownMenuItem(
+                                    onClick = {
+                                        filtroCocheViewModel.cambiarTransmision_Coche(tipo)
+                                        transmisionDesplegado = false
+                                    },
+                                    text = { Text(text = tipo) }
+                                )
+                            }
                         }
                     }
                 }

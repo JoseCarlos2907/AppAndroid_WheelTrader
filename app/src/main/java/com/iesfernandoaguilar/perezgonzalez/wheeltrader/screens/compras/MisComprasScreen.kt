@@ -164,7 +164,7 @@ fun CardCompra(
                             .weight(0.5F)
                     ) {
                         Text(
-                            text = stringResource(R.string.texto_marca_modelo),
+                            text = stringResource(R.string.texto_marca_modelo, marca, modelo),
                             color = MaterialTheme.colorScheme.primary,
                             style = MaterialTheme.typography.headlineMedium,
                             textAlign = TextAlign.Start
