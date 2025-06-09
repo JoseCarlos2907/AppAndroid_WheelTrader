@@ -446,7 +446,7 @@ fun formularioSuperiorMoto(
                     trailingIcon = {
                         Icon(
                             imageVector = if (tiposCombustiblesDesplegado) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-                            contentDescription = "",
+                            contentDescription = stringResource(R.string.desc_icono_flecha_arriba_abajo),
                             modifier = Modifier.clickable {
                                 tiposCombustiblesDesplegado = !tiposCombustiblesDesplegado
                             }

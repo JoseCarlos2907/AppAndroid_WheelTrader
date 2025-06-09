@@ -8,6 +8,7 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -21,6 +22,7 @@ import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Notificacion
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Reporte
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Usuario
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.model.Venta
+import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.ConectionUiState
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.ConectionViewModel
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.utils.SecureUtils
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.utils.Serializador
@@ -42,6 +44,7 @@ import java.io.DataInputStream
 import java.io.DataOutputStream
 import java.io.EOFException
 import java.io.File
+import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStreamReader
@@ -61,6 +64,7 @@ class AppViewModel(
     private var dos: DataOutputStream? = null
 
     lateinit var showMsg: ((Context, String) -> Unit)
+    lateinit var conectionUiState: ConectionUiState
 
     @SuppressLint("StaticFieldLeak")
     lateinit var context: Context
@@ -288,6 +292,9 @@ class AppViewModel(
                     }
                 } catch (e: CancellationException) {
                     Log.d("App", "Cancelando corrutina de app")
+                } catch (e: NullPointerException) {
+                    Log.d("Login", "Error al leer: " + e.message)
+                    reconectar()
                 } catch (e: EOFException) {
                     Log.d("App", "Se ha cerrado el flujo del socket")
                     reconectar()
@@ -700,9 +707,9 @@ class AppViewModel(
 
     fun reconectar() {
         val properties = Properties()
-        val assetManager = context.assets
 
-        properties.load(InputStreamReader(assetManager.open("conf.properties")))
+        val archivoConfConexion = File(context.filesDir, "wheel_trader_config.properties")
+        properties.load(InputStreamReader(FileInputStream(archivoConfConexion)))
 
         conectionViewModel.cerrarConexion()
 
@@ -714,7 +721,12 @@ class AppViewModel(
         this.dis = conectionViewModel.getDataInputStream()
         this.dos = conectionViewModel.getDataOutputStream()
 
-        Log.d("App", "Se te ha vuelto a conectar a la aplicación.")
+        if (conectionViewModel.isConexionActiva()) {
+            Log.d("App", "Se te ha vuelto a conectar a la aplicación.")
+            mostrarToast("Se te ha vuelto a conectar a la aplicación.")
+        } else {
+            Thread.sleep(4000)
+        }
     }
 
     fun enviarMensaje(msg: Mensaje) {

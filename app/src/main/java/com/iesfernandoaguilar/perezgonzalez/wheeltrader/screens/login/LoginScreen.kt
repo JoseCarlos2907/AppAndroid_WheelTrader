@@ -121,9 +121,6 @@ fun LoginScreen(
     LaunchedEffect(conectionUiState.socket) {
         if(conectionUiState.socket != null && !conectionUiState.socket!!.isClosed){
             loginViewModel.escucharDelServidor_Login()
-        }else{
-            // loginViewModel.mostrarToast("El servidor no está disponible ahora mismo, vuelva más tarde.")
-            Log.d("Login", "El servidor no está disponible ahora mismo, vuelva más tarde.")
         }
     }
 

@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Context
 import android.os.Build
 import android.util.Log
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -41,6 +42,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
@@ -60,6 +62,7 @@ import com.iesfernandoaguilar.perezgonzalez.wheeltrader.screens.login.LoginViewM
 import com.iesfernandoaguilar.perezgonzalez.wheeltrader.ui.theme.WheelTraderTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileNotFoundException
@@ -125,7 +128,16 @@ fun wheeltraderApp(
     }else{
         conectionViewModel.viewModelScope.launch(Dispatchers.IO) {
             Log.d("WTApp", "Conecta")
-            conectionViewModel.conectar(properties.getProperty("ADDRESS"), Integer.parseInt(properties.getProperty("PORT")))
+            var conecta = conectionViewModel.conectar(properties.getProperty("ADDRESS"), Integer.parseInt(properties.getProperty("PORT")))
+            while (!conectionViewModel.isConexionActiva()){
+                loginViewModel.reconectar()
+                if(!conecta && (conectionUiState.socket == null || conectionUiState.socket!!.isClosed)){
+                    withContext(Dispatchers.Main){
+                        Toast.makeText(context, "Error al conectar con el servidor", Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
+
         }
     }
 
@@ -232,11 +244,16 @@ fun AlertConexion(
         onDismissRequest = onCancel,
         title = {
             Text(
-                text = stringResource(R.string.texto_conf_servidor)
+                text = stringResource(R.string.texto_conf_servidor),
+                textAlign = TextAlign.Center,
+                color = Color.White
             )
         },
         text = {
-            Column {
+            Column(
+                verticalArrangement = Arrangement.SpaceEvenly,
+                modifier = Modifier.height(150.dp)
+            ) {
                 OutlinedTextField(
                     value = direccion,
                     onValueChange = { direccion = it },
@@ -319,7 +336,7 @@ fun AlertConexion(
             }
         },
         containerColor = MaterialTheme.colorScheme.primaryContainer,
-        modifier = modifier.height(500.dp)
+        modifier = modifier.height(350.dp)
     )
 }
 

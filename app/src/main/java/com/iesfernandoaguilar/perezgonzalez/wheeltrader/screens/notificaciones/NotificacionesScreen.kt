@@ -189,7 +189,7 @@ fun CardNotificacion(
                         "OFERTA_RECHAZADA" -> painterResource(R.drawable.iconoofertarechazada)
                         else -> painterResource(R.drawable.iconoinformacion)
                     },
-                    contentDescription = null
+                    contentDescription = stringResource(R.string.desc_imagen_oferta_recibida_aceptada_rechazada)
                 )
             }
             Column(

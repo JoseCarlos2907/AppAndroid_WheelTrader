@@ -378,7 +378,7 @@ fun ImagenAsync(
 ) {
     AsyncImage(
         model = bytes,
-        contentDescription = null,
+        contentDescription = stringResource(R.string.desc_imagen_asincrona_anuncio),
         modifier = modifier,
         placeholder = painterResource(R.drawable.iconocargando),
         error = painterResource(R.drawable.iconoerrorimagen),

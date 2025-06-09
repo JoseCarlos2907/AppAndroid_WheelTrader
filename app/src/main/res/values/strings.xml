@@ -127,4 +127,6 @@
     <string name="texto_especificaciones_del_coche">Especificaciones\ndel Coche</string>
     <string name="texto_especificaciones_de_la_maquinaria">Especificaciones de\nla Maquinaria</string>
     <string name="texto_especificaciones_de_la_moto">Especificaciones\nde la Moto</string>
+    <string name="desc_imagen_oferta_recibida_aceptada_rechazada">Imagen de oferta recibida/aceptada/rechazada</string>
+    <string name="desc_imagen_asincrona_anuncio">Imagen asíncrona de anuncio</string>
 </resources>

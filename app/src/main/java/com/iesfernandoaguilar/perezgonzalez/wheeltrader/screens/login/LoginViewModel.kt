@@ -28,6 +28,8 @@ import kotlinx.coroutines.withContext
 import java.io.DataInputStream
 import java.io.DataOutputStream
 import java.io.EOFException
+import java.io.File
+import java.io.FileInputStream
 import java.io.IOException
 import java.io.InputStreamReader
 import java.util.Base64
@@ -157,6 +159,9 @@ class LoginViewModel(
                     Log.d("Login", "Cancelando corrutina de login")
                 } catch (e: EOFException) {
                     Log.d("Login", "Se ha cerrado el flujo del socket")
+                    reconectar()
+                } catch (e: NullPointerException) {
+                    Log.d("Login", "Error al leer: " + e.message)
                     reconectar()
                 } catch (e: IOException) {
                     Log.d("Login", "Error de conexión: " + e.message)
@@ -352,10 +357,9 @@ class LoginViewModel(
 
     fun reconectar() {
         val properties = Properties()
-        val assetManager = context.assets
 
-        properties.load(InputStreamReader(assetManager.open("conf.properties")))
-
+        val archivoConfConexion = File(context.filesDir, "wheel_trader_config.properties")
+        properties.load(InputStreamReader(FileInputStream(archivoConfConexion)))
         conectionViewModel.cerrarConexion()
 
         conectionViewModel.conectar(
@@ -366,7 +370,12 @@ class LoginViewModel(
         this.dis = conectionViewModel.getDataInputStream()
         this.dos = conectionViewModel.getDataOutputStream()
 
-        Log.d("Login", "Se te ha vuelto a conectar a la aplicación.")
+        if (conectionViewModel.isConexionActiva()) {
+            Log.d("Login", "Se te ha vuelto a conectar a la aplicación.")
+            mostrarToast("Se te ha vuelto a conectar a la aplicación.")
+        } else {
+            Thread.sleep(4000)
+        }
     }
 
     fun enviarMensaje(msg: Mensaje) {
@@ -375,6 +384,7 @@ class LoginViewModel(
             this.dos?.flush()
         } else {
             Log.d("Login", "No se puede realizar esa acción por un error en la conexión")
+            mostrarToast("No se puede realizar esa acción por un error en la conexión")
         }
     }
 
