@@ -40,85 +40,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 @Composable
-fun MisComprasScreen(
-    appViewModel: AppViewModel,
-    filtrosUiState: FiltrosUiState,
-    conectionUiState: ConectionUiState,
-    modifier: Modifier = Modifier
-){
-    val appUiState by appViewModel.uiState.collectAsState()
-    val listState = rememberLazyListState()
-
-    LaunchedEffect(listState) {
-        snapshotFlow {
-            val ultimoAnuncioVisible = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
-            val anunciosTotales = listState.layoutInfo.totalItemsCount
-            ultimoAnuncioVisible to anunciosTotales
-        }.collect{ (ultimoAnuncioVisible, anunciosTotales) ->
-            if(ultimoAnuncioVisible != null && ultimoAnuncioVisible >= anunciosTotales-1 && !appUiState.cargando && !appUiState.noHayMasCompras){
-                withContext(Dispatchers.IO){
-                    appViewModel.obtenerCompras(filtrosUiState.filtro!!, false)
-                    filtrosUiState.filtro!!.pagina++
-                }
-            }
-        }
-    }
-
-    LaunchedEffect (Unit) {
-        withContext(Dispatchers.IO){
-            appViewModel.vaciarCompras()
-            appViewModel.obtenerCompras(filtrosUiState.filtro!!, true)
-            filtrosUiState.filtro!!.pagina++
-        }
-    }
-
-    DisposableEffect(Unit) {
-        onDispose {
-            appViewModel.vaciarAnuncios()
-        }
-    }
-
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(
-                brush = Brush.linearGradient(
-                    colors = listOf(Color.Black, Color(0xFF525151)),
-                    start = Offset(0f, 0f),
-                    end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
-                )
-            )
-    ) {
-        LazyColumn(
-            state = listState,
-            verticalArrangement = Arrangement.spacedBy(20.dp),
-            modifier = Modifier.fillMaxSize()
-        ) {
-            items(
-                items = appUiState.comprasEncontradas,
-                key = { venta -> venta.idVenta }
-            ) { venta ->
-                CardCompra(venta = venta)
-            }
-
-            if(appUiState.cargando){
-                item{
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center,
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(16.dp)
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
 fun CardCompra(
     venta: Venta,
     modifier: Modifier = Modifier
@@ -226,6 +147,85 @@ fun CardCompra(
                             color = MaterialTheme.colorScheme.primary,
                             style = MaterialTheme.typography.labelMedium,
                             textAlign = TextAlign.End
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun MisComprasScreen(
+    appViewModel: AppViewModel,
+    filtrosUiState: FiltrosUiState,
+    conectionUiState: ConectionUiState,
+    modifier: Modifier = Modifier
+){
+    val appUiState by appViewModel.uiState.collectAsState()
+    val listState = rememberLazyListState()
+
+    LaunchedEffect(listState) {
+        snapshotFlow {
+            val ultimoAnuncioVisible = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
+            val anunciosTotales = listState.layoutInfo.totalItemsCount
+            ultimoAnuncioVisible to anunciosTotales
+        }.collect{ (ultimoAnuncioVisible, anunciosTotales) ->
+            if(ultimoAnuncioVisible != null && ultimoAnuncioVisible >= anunciosTotales-1 && !appUiState.cargando && !appUiState.noHayMasCompras){
+                withContext(Dispatchers.IO){
+                    appViewModel.obtenerCompras(filtrosUiState.filtro!!, false)
+                    filtrosUiState.filtro!!.pagina++
+                }
+            }
+        }
+    }
+
+    LaunchedEffect (Unit) {
+        withContext(Dispatchers.IO){
+            appViewModel.vaciarCompras()
+            appViewModel.obtenerCompras(filtrosUiState.filtro!!, true)
+            filtrosUiState.filtro!!.pagina++
+        }
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            appViewModel.vaciarAnuncios()
+        }
+    }
+
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .background(
+                brush = Brush.linearGradient(
+                    colors = listOf(Color.Black, Color(0xFF525151)),
+                    start = Offset(0f, 0f),
+                    end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
+                )
+            )
+    ) {
+        LazyColumn(
+            state = listState,
+            verticalArrangement = Arrangement.spacedBy(20.dp),
+            modifier = Modifier.fillMaxSize()
+        ) {
+            items(
+                items = appUiState.comprasEncontradas,
+                key = { venta -> venta.idVenta }
+            ) { venta ->
+                CardCompra(venta = venta)
+            }
+
+            if(appUiState.cargando){
+                item{
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(16.dp)
                         )
                     }
                 }
