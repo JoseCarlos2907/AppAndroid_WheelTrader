@@ -64,7 +64,7 @@
     <string name="texto_transmision">Transmisión</string>
     <string name="texto_filtro_de_maquinaria">Filtro de maquinaria</string>
     <string name="texto_filtro_de_motos">Filtro de motos</string>
-    <string name="texto_cualquier_tipo_de_veh_culo">Cualquier tipo\\nde vehículo</string>
+    <string name="texto_cualquier_tipo_de_veh_culo">Cualquier tipo\nde vehículo</string>
     <string name="texto_precio_minimo">Precio Mínimo</string>
     <string name="texto_precio_maximo">Precio Máximo</string>
     <string name="texto_coche">Coche</string>
